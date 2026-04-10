@@ -1,0 +1,1550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head') %>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding-bottom: 3rem;
+    }
+
+    .earnings-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      margin-bottom: 2rem;
+      padding: 0.75rem 1.25rem;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .back-button:hover {
+      background: rgba(255, 255, 255, 0.25);
+      color: white;
+      transform: translateX(-5px);
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 3rem;
+      color: white;
+      position: relative;
+    }
+
+    .page-header h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+      background: linear-gradient(135deg, #ff6b6b 0%, #feca57 25%, #48dbfb 50%, #ff9ff3 75%, #54a0ff 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: #ff6b6b;
+    }
+
+    .page-header p {
+      font-size: 1.125rem;
+      opacity: 1;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+      background: linear-gradient(135deg, #feca57 0%, #48dbfb 50%, #ff9ff3 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: #feca57;
+    }
+
+    /* Stats Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+    }
+
+    .stat-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .stat-icon.earnings {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .stat-icon.monthly {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+    }
+
+    .stat-icon.courses {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      color: white;
+    }
+
+    .stat-label {
+      font-size: 0.875rem;
+      color: #6b7280;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-value {
+      font-size: 2.25rem;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-subtitle {
+      font-size: 0.875rem;
+      color: #9ca3af;
+    }
+
+    /* Chart Section */
+    .chart-section {
+      background: white;
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      margin-bottom: 2rem;
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .chart-header h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1f2937;
+    }
+
+    .chart-subtitle {
+      font-size: 0.875rem;
+      color: #6b7280;
+    }
+
+    #earningsChart {
+      max-height: 350px;
+    }
+
+    /* Course Earnings Section */
+    .courses-section {
+      background: white;
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid #f3f4f6;
+    }
+
+    .section-header h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1f2937;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .course-count {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 10px;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    .table-container {
+      overflow-x: auto;
+    }
+
+    .earnings-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+
+    .earnings-table thead th {
+      background: #f9fafb;
+      color: #6b7280;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.5px;
+      padding: 1rem 1.5rem;
+      text-align: left;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    .earnings-table tbody tr {
+      transition: background-color 0.2s ease;
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    .earnings-table tbody tr:last-child {
+      border-bottom: none;
+    }
+
+    .earnings-table td {
+      padding: 1.5rem 1.5rem;
+      vertical-align: top;
+    }
+
+    .course-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .course-thumbnail {
+      width: 90px;
+      height: 55px;
+      border-radius: 10px;
+      object-fit: cover;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      flex-shrink: 0;
+    }
+
+    .course-details h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 0.25rem;
+    }
+
+    .course-meta {
+      font-size: 0.875rem;
+      color: #6b7280;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    /* Student List Styling */
+    .student-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .student-item {
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      background: #f9fafb;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      transition: background-color 0.2s ease;
+    }
+
+    .student-item:hover {
+      background: #f3f4f6;
+    }
+
+    .student-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .student-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .student-name {
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 0.25rem;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .deleted-badge {
+      color: #ef4444;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: #fee2e2;
+      padding: 3px 8px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+
+    .student-email {
+      font-size: 0.85rem;
+      color: #6b7280;
+      margin-bottom: 0.25rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .student-amount {
+      font-size: 0.875rem;
+      color: #667eea;
+      font-weight: 600;
+    }
+
+    .student-actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-shrink: 0;
+    }
+
+    .btn-view, .btn-remove {
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      white-space: nowrap;
+    }
+
+    .btn-view {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-view:hover {
+      background: #5568d3;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-remove {
+      background: #fee;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+    }
+
+    .btn-remove:hover {
+      background: #fecaca;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+    }
+
+    .btn-remove:disabled, .btn-view:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .no-students {
+      text-align: center;
+      padding: 2rem;
+      color: #9ca3af;
+      font-style: italic;
+      background: #f9fafb;
+      border-radius: 10px;
+    }
+
+    .earnings-amount {
+      text-align: right;
+    }
+
+    .main-amount {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #1f2937;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+
+    .course-price {
+      font-size: 0.875rem;
+      color: #667eea;
+      font-weight: 600;
+    }
+
+    .table-footer {
+      background: linear-gradient(135deg, #667eea10 0%, #764ba210 100%);
+      font-weight: 700;
+      border-top: 2px solid #e5e7eb;
+    }
+
+    .table-footer td {
+      padding: 1.5rem;
+      font-size: 1.125rem;
+      color: #1f2937;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .empty-icon {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 1.5rem;
+      background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      color: #667eea;
+    }
+
+    .empty-state h3 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 0.5rem;
+    }
+
+    .empty-state p {
+      font-size: 1.125rem;
+      color: #6b7280;
+      margin-bottom: 2rem;
+    }
+
+    /* Deleted Account Badges */
+    .transaction-deleted-badge,
+    .deleted-badge {
+      display: inline-block;
+      background-color: #fff3cd;
+      color: #856404;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      margin-left: 0.5rem;
+      border: 1px solid #ffeeba;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      vertical-align: middle;
+    }
+
+    .transaction-deleted-note,
+    .student-email .deleted-note {
+      display: block;
+      font-size: 0.75rem;
+      color: #6c757d;
+      font-style: italic;
+      margin-top: 0.25rem;
+    }
+
+    .left-badge {
+      display: inline-block;
+      background-color: #e2f0fd;
+      color: #0d6efd;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      margin-left: 0.5rem;
+      border: 1px solid #b8d4ff;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      vertical-align: middle;
+    }
+
+    .left-note {
+      display: block;
+      font-size: 0.75rem;
+      color: #0d6efd;
+      font-style: italic;
+      margin-top: 0.25rem;
+    }
+
+    .create-course-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 1rem 2rem;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.125rem;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .create-course-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
+      color: white;
+    }
+
+    /* Transaction History Section */
+    .transactions-section {
+      margin-top: 50px;
+      padding: 2rem;
+      background: rgba(17, 24, 39, 0.7);
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+      backdrop-filter: blur(16px);
+      color: #e5e7eb;
+    }
+
+    .transactions-section .sect-head {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .transactions-section h2 {
+      font-weight: 800;
+      color: #93c5fd;
+      font-size: 1.75rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .transactions-section .sect-head p {
+      color: #d1d5db;
+      font-size: 1rem;
+    }
+
+    .transactions-table {
+      overflow-x: auto;
+      border-radius: 12px;
+    }
+
+    .transactions-table table {
+      width: 100%;
+      border-collapse: collapse;
+      background: rgba(30, 41, 59, 0.6);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .transactions-table th,
+    .transactions-table td {
+      padding: 14px 18px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .transactions-table th {
+      background: rgba(59, 130, 246, 0.15);
+      font-weight: 700;
+      color: #93c5fd;
+      text-transform: uppercase;
+      font-size: 0.85rem;
+    }
+
+    .transactions-table tr:hover {
+      background: rgba(59, 130, 246, 0.08);
+    }
+
+    .transactions-table td {
+      font-size: 0.95rem;
+      color: #d1d5db;
+    }
+
+    .transaction-deleted-badge {
+      color: #ef4444;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: #7f1d1d;
+      padding: 3px 8px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-left: 6px;
+      white-space: nowrap;
+    }
+
+    .transaction-deleted-note {
+      color: #9ca3af;
+      font-size: 0.75rem;
+      display: block;
+      margin-top: 4px;
+      font-style: italic;
+    }
+
+    .no-transactions {
+      text-align: center;
+      padding: 30px;
+      font-size: 1.1rem;
+      color: #9ca3af;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 992px) {
+      .student-actions {
+        flex-direction: column;
+      }
+
+      .btn-view, .btn-remove {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .earnings-container {
+        padding: 1rem;
+      }
+
+      .page-header h1 {
+        font-size: 2rem;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .stat-card {
+        padding: 1.5rem;
+      }
+
+      .stat-value {
+        font-size: 1.75rem;
+      }
+
+      .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+
+      .course-info {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .course-thumbnail {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 16/9;
+      }
+
+      .student-item {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 1rem;
+      }
+
+      .student-info {
+        margin-bottom: 0.75rem;
+      }
+
+      .student-email {
+        white-space: normal;
+      }
+
+      .student-actions {
+        width: 100%;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .btn-view, .btn-remove {
+        width: 100%;
+        justify-content: center;
+        padding: 0.75rem 1rem;
+      }
+
+      .earnings-table thead {
+        display: none;
+      }
+
+      .earnings-table tbody tr {
+        display: block;
+        margin-bottom: 1.5rem;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 1rem;
+        background: white;
+      }
+
+      .earnings-table td {
+        display: block;
+        text-align: left !important;
+        padding: 0.75rem 0;
+        border: none;
+      }
+
+      .earnings-table td:first-child {
+        padding-top: 0;
+      }
+
+      .earnings-table td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #6b7280;
+        display: block;
+        margin-bottom: 0.5rem;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .earnings-amount {
+        text-align: left !important;
+      }
+
+      .table-footer {
+        display: block;
+      }
+
+      .table-footer td {
+        display: block;
+        text-align: left !important;
+        padding: 1rem;
+      }
+
+      .table-footer td:first-child::before {
+        display: none;
+      }
+
+      .transactions-table th, .transactions-table td {
+        font-size: 0.8rem;
+        padding: 10px;
+      }
+
+      .transactions-section {
+        padding: 1rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .page-header h1 {
+        font-size: 1.75rem;
+      }
+
+      .page-header p {
+        font-size: 1rem;
+      }
+
+      .stat-value {
+        font-size: 1.5rem;
+      }
+
+      .chart-section, .courses-section {
+        padding: 1rem;
+      }
+    }
+
+    /* 🌙 DARK MODE STYLING FOR EARNINGS PAGE */
+    body.dark-theme {
+      background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%) !important;
+      color: #e6e6e6 !important;
+    }
+
+    body.dark-theme .earnings-container {
+      color: #e6e6e6 !important;
+    }
+
+    body.dark-theme .back-button {
+      background: rgba(255, 255, 255, 0.1) !important;
+      color: #ffffff !important;
+      border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    }
+
+    body.dark-theme .back-button:hover {
+      background: rgba(255, 255, 255, 0.2) !important;
+      color: #ffffff !important;
+    }
+
+    body.dark-theme .page-header {
+      color: #ffffff !important;
+    }
+
+    body.dark-theme .stat-card {
+      background: #1a1a1a !important;
+      border: 1px solid #333 !important;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    body.dark-theme .stat-card:hover {
+      box-shadow: 0 15px 50px rgba(124, 91, 255, 0.3) !important;
+    }
+
+    body.dark-theme .stat-icon {
+      background: linear-gradient(135deg, #9d7dff, #ff71c8) !important;
+      color: #ffffff !important;
+    }
+
+    body.dark-theme .stat-value {
+      color: #ffffff !important;
+    }
+
+    body.dark-theme .stat-label {
+      color: #bfbfbf !important;
+    }
+
+    body.dark-theme .stat-change {
+      color: #22c55e !important;
+    }
+
+    body.dark-theme .stat-change.negative {
+      color: #ef4444 !important;
+    }
+
+    body.dark-theme .chart-section {
+      background: #1a1a1a !important;
+      border: 1px solid #333 !important;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    body.dark-theme .chart-header h2 {
+      color: #ffffff !important;
+    }
+
+    body.dark-theme .chart-header p {
+      color: #bfbfbf !important;
+    }
+
+    body.dark-theme .course-card {
+      background: #1a1a1a !important;
+      border: 1px solid #333 !important;
+    }
+
+    body.dark-theme .course-card:hover {
+      box-shadow: 0 8px 30px rgba(124, 91, 255, 0.3) !important;
+    }
+
+    body.dark-theme .course-title {
+      color: #ffffff !important;
+    }
+
+    body.dark-theme .course-meta {
+      color: #bfbfbf !important;
+    }
+
+    body.dark-theme .course-earnings {
+      color: #22c55e !important;
+    }
+
+    body.dark-theme .empty-state {
+      background: #1a1a1a !important;
+      border: 1px solid #333 !important;
+    }
+
+    body.dark-theme .empty-state h5 {
+      color: #ffffff !important;
+    }
+
+    body.dark-theme .empty-state p {
+      color: #bfbfbf !important;
+    }
+
+    body.dark-theme .btn-primary-custom {
+      background: linear-gradient(135deg, #9d7dff, #ff71c8) !important;
+      border: none !important;
+      color: #ffffff !important;
+    }
+
+    body.dark-theme .btn-primary-custom:hover {
+      background: linear-gradient(135deg, #7c5bff, #ff51c8) !important;
+      box-shadow: 0 0 20px rgba(255, 113, 200, 0.4) !important;
+    }
+
+    /* Improved Chart Canvas Dark Mode Styling */
+    body.dark-theme canvas {
+      filter: brightness(1.1) contrast(1.05);
+    }
+
+    body.dark-theme #noDataMessage {
+      color: #bfbfbf !important;
+    }
+
+    body.dark-theme #noDataMessage h4 {
+      color: #ffffff !important;
+    }
+
+    body.dark-theme #noDataMessage p {
+      color: #999 !important;
+    }
+
+    /* 🌙 FINAL DARK MODE STYLING & FIXES */
+    body.dark-theme {
+      background: radial-gradient(circle at top left, #0d0d0d 0%, #0a0a0a 45%, #000 100%) !important;
+      color: #e4e4e4 !important;
+    }
+
+    body.dark-theme .earnings-container {
+      color: #e4e4e4 !important;
+    }
+
+    /* Page Heading */
+    body.dark-theme .page-header h1 {
+      background: linear-gradient(135deg, #9d7dff, #ff71c8, #ffd86b);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 900;
+      letter-spacing: 1px;
+      text-shadow: 0 0 25px rgba(157,125,255,.4);
+    }
+
+    body.dark-theme .page-header p {
+      color: #bfc2cb !important;
+    }
+
+    /* Cards */
+    body.dark-theme .stat-card,
+    body.dark-theme .chart-section,
+    body.dark-theme .courses-section,
+    body.dark-theme .empty-state {
+      background: #1a1a1a !important;
+      border: 1px solid #2f2f2f !important;
+      box-shadow: 0 3px 18px rgba(0,0,0,0.6) !important;
+    }
+
+    /* Stat values and labels */
+    body.dark-theme .stat-label,
+    body.dark-theme .stat-subtitle {
+      color: #c9c9c9 !important;
+    }
+
+    body.dark-theme .stat-value {
+      color: #fff !important;
+    }
+
+    /* Gradient neon icons */
+    body.dark-theme .stat-icon {
+      background: linear-gradient(135deg, #9d7dff, #ff71c8) !important;
+      box-shadow: 0 0 15px rgba(255,113,200,0.5);
+    }
+
+    /* Table */
+    body.dark-theme .earnings-table thead th {
+      background: #131313 !important;
+      color: #d4d4d4 !important;
+      border-bottom-color: rgba(255,255,255,.1) !important;
+    }
+
+    body.dark-theme .earnings-table tbody tr {
+      background: #111111 !important;
+      border-bottom: 1px solid #2b2b2b !important;
+    }
+
+    body.dark-theme .earnings-table tr:hover {
+      background: #1a1a1a !important;
+    }
+
+    body.dark-theme .earnings-table td {
+      color: #d4d4d4 !important;
+    }
+
+    /* Student list items */
+    body.dark-theme .student-item {
+      background: #141414 !important;
+      border: 1px solid #333 !important;
+    }
+
+    body.dark-theme .student-amount {
+      color: #30e77c !important;
+    }
+
+    body.dark-theme .course-price {
+      color: #a5b4fc !important;
+    }
+
+    /* Remove / view buttons */
+    body.dark-theme .btn-view {
+      background: linear-gradient(135deg, #9d7dff, #ff71c8) !important;
+      border: none !important;
+      color: #fff !important;
+    }
+
+    body.dark-theme .btn-remove {
+      background: rgba(255,0,40,0.15) !important;
+      color: #ff6b7d !important;
+      border-color: rgba(255,0,40,0.4) !important;
+    }
+
+    body.dark-theme .btn-remove:hover {
+      background: rgba(255,0,40,0.3) !important;
+    }
+
+    /* Chart background */
+    body.dark-theme canvas {
+      filter: brightness(1.1) contrast(1.1);
+    }
+
+    /* Transactions Section */
+    body.dark-theme .transactions-section {
+      background: rgba(13, 13, 13, 0.9) !important;
+      color: #d4d4d4 !important;
+      border: 1px solid #444 !important;
+    }
+
+    body.dark-theme .transactions-table table {
+      background: rgba(26, 26, 26, 0.9) !important;
+    }
+
+    body.dark-theme .transactions-table th {
+      background: #181818 !important;
+      color: #a5b4fc !important;
+    }
+
+    body.dark-theme .transactions-table td {
+      color: #e4e4e4 !important;
+    }
+
+    body.dark-theme .transactions-table tr:hover {
+      background: rgba(103, 80, 255, 0.15) !important;
+    }
+
+    /* Highlight badge */
+    body.dark-theme .course-count {
+      background: linear-gradient(135deg, #9d7dff, #ff71c8) !important;
+    }
+
+    /* Empty icon */
+    body.dark-theme .empty-icon {
+      background: rgba(146,110,255,0.15) !important;
+      color: #cdb7ff !important;
+    }
+  </style>
+</head>
+<body class="">
+  <%- include('../partials/navbar') %>
+
+  <div class="earnings-container">
+    <a href="/courses/instructor/dashboard" class="back-button">
+      <i class="fas fa-arrow-left"></i>
+      <span>Back to Dashboard</span>
+    </a>
+
+    <div class="page-header">
+      <h1><i class="fas fa-chart-line"></i> Earnings Dashboard</h1>
+      <p>Track your income and course performance</p>
+    </div>
+
+    <% if (courseEarnings.length === 0) { %>
+      <div class="empty-state">
+        <div class="empty-icon">
+          <i class="fas fa-coins"></i>
+        </div>
+        <h3>No Earnings Yet</h3>
+        <p>Start earning by creating and publishing your first course!</p>
+        <a href="/courses/instructor/create" class="create-course-btn">
+          <i class="fas fa-plus-circle"></i>
+          <span>Create Your First Course</span>
+        </a>
+      </div>
+    <% } else { %>
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon earnings">
+            <i class="fas fa-wallet"></i>
+          </div>
+          <div class="stat-label">Total Earnings</div>
+          <div class="stat-value">₹<%= totalEarnings.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %></div>
+          <div class="stat-subtitle">Lifetime revenue</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon monthly">
+            <i class="fas fa-calendar-alt"></i>
+          </div>
+          <div class="stat-label">This Month</div>
+          <div class="stat-value">₹<%= currentMonthEarnings.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %></div>
+          <div class="stat-subtitle"><%= new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) %></div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon courses">
+            <i class="fas fa-graduation-cap"></i>
+          </div>
+          <div class="stat-label">Active Courses</div>
+          <div class="stat-value"><%= courseEarnings.length %></div>
+          <div class="stat-subtitle">Generating revenue</div>
+        </div>
+      </div>
+
+      <!-- Chart Section -->
+      <div class="chart-section">
+        <div class="chart-header">
+          <div>
+            <h2><i class="fas fa-chart-bar"></i> Monthly Revenue Trend</h2>
+            <p class="chart-subtitle">Track your earnings over time</p>
+          </div>
+        </div>
+        <div id="chartContainer">
+          <canvas id="earningsChart"></canvas>
+          <div id="noDataMessage" style="display: none; text-align: center; padding: 60px 20px; color: #666;">
+            <i class="fas fa-chart-line" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;"></i>
+            <h4>No Revenue Data Available</h4>
+            <p>Start earning by enrolling students in your courses!</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Course Earnings Table -->
+      <div class="courses-section">
+        <div class="section-header">
+          <h2>
+            <i class="fas fa-book-open"></i>
+            Course Performance
+          </h2>
+          <div class="course-count">
+            <%= courseEarnings.length %> <%= courseEarnings.length === 1 ? 'Course' : 'Courses' %>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table class="earnings-table">
+            <thead>
+              <tr>
+                <th>Course Details</th>
+                <th>Enrolled Students</th>
+                <th style="text-align: right;">Earnings</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% courseEarnings.forEach(course => { %>
+                <tr>
+                  <td data-label="Course">
+                    <div class="course-info">
+                      <img src="<%= course.thumbnail %>" alt="<%= course.title %>" class="course-thumbnail">
+                      <div class="course-details">
+                        <h4><%= course.title %></h4>
+                        <div class="course-meta">
+                          <i class="fas fa-users"></i>
+                          <span><%= course.enrollments %> <%= course.enrollments === 1 ? 'student' : 'students' %></span>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td data-label="Enrolled Students">
+                    <% if (course.students && course.students.length > 0) { %>
+                      <ul class="student-list">
+                        <% course.students.forEach(student => { %>
+                          <li class="student-item">
+                            <div class="student-info">
+                              <div class="student-name">
+                                <%= student.studentName || 'Unknown Student' %>
+                                <% if (!student._id) { %>
+                                  <% if (student.status === 'deleted') { %>
+                                    <span class="deleted-badge">
+                                      ⚠ Account Deleted
+                                    </span>
+                                  <% } else if (student.status === 'left') { %>
+                                    <span class="left-badge">
+                                      ⚡ Left Course
+                                    </span>
+                                  <% } %>
+                                <% } %>
+                              </div>
+                              <div class="student-email">
+                                <%= student.studentEmail || 'N/A' %>
+                                <% if (!student._id) { %>
+                                  <% if (student.status === 'deleted') { %>
+                                    <span class="deleted-note">(User left the platform)</span>
+                                  <% } else if (student.status === 'left') { %>
+                                    <span class="left-note">(Left on <%= new Date(student.leftAt).toLocaleDateString() %>)</span>
+                                  <% } %>
+                                <% } %>
+                              </div>
+                              <div class="student-amount">
+                                Paid ₹<%= student.amount.toFixed(2) %>
+                              </div>
+                            </div>
+                            <div class="student-actions">
+                              <% if (student._id) { %>
+                                <a href="/profile/<%= student._id %>" class="btn-view">
+                                  <i class="fas fa-user"></i>
+                                  <span>View Profile</span>
+                                </a>
+                              <% } else { %>
+                                <button class="btn-view" disabled>
+                                  <i class="fas fa-user-slash"></i>
+                                  <span>Account Deleted</span>
+                                </button>
+                              <% } %>
+                              
+                              <button 
+                                type="button"
+                                class="btn-remove"
+                                data-course-id="<%= course._id %>"
+                                data-student-id="<%= student._id || 'null' %>"
+                                data-student-name="<%= student.studentName || 'Unknown Student' %>">
+                                <i class="fas fa-trash"></i>
+                                <span>Remove Enrollment</span>
+                              </button>
+                            </div>
+                          </li>
+                        <% }); %>
+                      </ul>
+                    <% } else { %>
+                      <div class="no-students">
+                        <i class="fas fa-user-slash" style="font-size: 2rem; margin-bottom: 0.5rem; display: block; opacity: 0.5;"></i>
+                        No students enrolled yet
+                      </div>
+                    <% } %>
+                  </td>
+                  <td data-label="Earnings">
+                    <div class="earnings-amount">
+                      <span class="main-amount">₹<%= course.earnings.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %></span>
+                      <span class="course-price">Course Price: ₹<%= course.price ? course.price.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00' %></span>
+                    </div>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+            <tfoot>
+              <tr class="table-footer">
+                <td colspan="2" style="text-align: right;">Total Earnings:</td>
+                <td style="text-align: right;">₹<%= totalEarnings.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) %></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    <% } %>
+
+    <!-- Transaction History Section -->
+    <section class="transactions-section">
+      <div class="container">
+        <header class="sect-head">
+          <h2><i class="fas fa-receipt"></i> Transaction History</h2>
+          <p>All completed payments from students</p>
+        </header>
+
+        <% if (transactions && transactions.length > 0) { %>
+          <div class="transactions-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Course</th>
+                  <th>Student</th>
+                  <th>Email</th>
+                  <th>Amount</th>
+                  <th>Date</th>
+                  <th>Payment ID</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% transactions.forEach((t, index) => { %>
+                  <tr>
+                    <td><%= t.courseTitle %></td>
+                    <td>
+                      <%= t.studentName || 'Deleted User' %>
+                      <!-- Debug output in HTML comment -->
+                      <!-- 
+                        studentId: <%= t.studentId %>, 
+                        type: <%= typeof t.studentId %>, 
+                        !studentId: <%= !t.studentId %>
+                      -->
+                      <% if (!t.studentId || t.studentName === 'Deleted User') { %>
+                        <span class="transaction-deleted-badge">
+                          ⚠ Account Deleted
+                        </span>
+                      <% } %>
+                    </td>
+                    <td>
+                      <%= t.studentEmail || 'N/A' %>
+                      <% if (!t.studentId) { %>
+                        <span class="transaction-deleted-note">
+                          (User left the platform)
+                        </span>
+                      <% } %>
+                    </td>
+                    <td>₹<%= t.amount.toFixed(2) %></td>
+                    <td><%= t.enrolledAt %></td>
+                    <td style="font-family: monospace; font-size: 0.85rem;"><%= t.paymentId %></td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        <% } else { %>
+          <p class="no-transactions"><i class="fas fa-info-circle"></i> No transactions yet.</p>
+        <% } %>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Remove student function
+    async function removeStudent(courseId, studentId, studentName) {
+      if (!courseId || !studentId) {
+        alert('Error: Missing required information');
+        return;
+      }
+
+      if (!confirm(`Are you sure you want to remove ${studentName} from this course?\n\nThis action cannot be undone.`)) {
+        return;
+      }
+
+      const button = event.target.closest('.btn-remove');
+      const originalHTML = button.innerHTML;
+      
+      // Show loading state
+      button.disabled = true;
+      button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Removing...';
+
+      try {
+        const response = await fetch(`/courses/instructor/remove-student/${courseId}/${studentId}`, {
+          method: 'DELETE',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          credentials: 'same-origin'
+        });
+
+        const result = await response.json();
+        
+        if (response.ok && result.success) {
+          // Show success message
+          const studentItem = button.closest('.student-item');
+          studentItem.style.background = '#d1fae5';
+          studentItem.style.transition = 'all 0.3s ease';
+          
+          setTimeout(() => {
+            alert(`✅ Successfully removed ${studentName} from the course`);
+            window.location.reload();
+          }, 300);
+        } else {
+          throw new Error(result.message || 'Failed to remove student');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('❌ An error occurred: ' + error.message);
+        button.disabled = false;
+        button.innerHTML = originalHTML;
+      }
+    }
+
+    // Chart initialization
+    document.addEventListener('DOMContentLoaded', function() {
+      // Initialize theme
+      const savedTheme = localStorage.getItem("theme");
+      if (savedTheme === "dark") {
+        document.body.classList.add("dark-theme");
+        const themeIcon = document.getElementById("theme-icon");
+        if (themeIcon) {
+          themeIcon.classList.replace("fa-moon", "fa-sun");
+        }
+      }
+
+      // Theme toggle functionality
+      const themeToggle = document.getElementById("theme-toggle");
+      const themeIcon = document.getElementById("theme-icon");
+
+      if (themeToggle && themeIcon) {
+        themeToggle.addEventListener("click", () => {
+          document.body.classList.toggle("dark-theme");
+
+          if (document.body.classList.contains("dark-theme")) {
+            themeIcon.classList.replace("fa-moon", "fa-sun");
+            localStorage.setItem("theme", "dark");
+          } else {
+            themeIcon.classList.replace("fa-sun", "fa-moon");
+            localStorage.setItem("theme", "light");
+          }
+        });
+      }
+
+      const monthlyData = <%- JSON.stringify(monthlyData || []) %>;
+      
+      // Monthly data loaded
+      
+      // Show empty state if no data
+      if (monthlyData.length === 0) {
+        document.getElementById('earningsChart').style.display = 'none';
+        document.getElementById('noDataMessage').style.display = 'block';
+        return;
+      }
+      
+      // Show chart if data exists
+      document.getElementById('earningsChart').style.display = 'block';
+      document.getElementById('noDataMessage').style.display = 'none';
+      
+      // Add event listeners for remove buttons
+      document.querySelectorAll('.btn-remove').forEach(button => {
+        button.addEventListener('click', function() {
+          const courseId = this.getAttribute('data-course-id');
+          const studentId = this.getAttribute('data-student-id');
+          const studentName = this.getAttribute('data-student-name');
+          removeStudent(courseId, studentId, studentName);
+        });
+      });
+      
+      if (monthlyData.length > 0) {
+        const ctx = document.getElementById('earningsChart').getContext('2d');
+        const isDarkMode = document.body.classList.contains('dark-theme');
+        
+        // Create gradient based on theme
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        if (isDarkMode) {
+          gradient.addColorStop(0, 'rgba(157, 125, 255, 0.8)');
+          gradient.addColorStop(1, 'rgba(255, 113, 200, 0.8)');
+        } else {
+          gradient.addColorStop(0, 'rgba(102, 126, 234, 0.8)');
+          gradient.addColorStop(1, 'rgba(118, 75, 162, 0.8)');
+        }
+
+        // Chart colors based on theme
+        const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
+        const textColor = isDarkMode ? '#e6e6e6' : '#333';
+        const tooltipBg = isDarkMode ? 'rgba(0, 0, 0, 0.9)' : 'rgba(0, 0, 0, 0.8)';
+
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: monthlyData.map(item => item.formattedMonth),
+            datasets: [{
+              label: 'Earnings',
+              data: monthlyData.map(item => item.amount),
+              backgroundColor: gradient,
+              borderColor: isDarkMode ? 'rgba(157, 125, 255, 1)' : 'rgba(102, 126, 234, 1)',
+              borderWidth: 2,
+              borderRadius: 12,
+              barPercentage: 0.7,
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+              legend: {
+                display: false
+              },
+              tooltip: {
+                backgroundColor: tooltipBg,
+                padding: 12,
+                borderRadius: 8,
+                titleFont: {
+                  size: 14,
+                  weight: 'bold',
+                  color: '#ffffff'
+                },
+                bodyFont: {
+                  size: 13,
+                  color: '#ffffff'
+                },
+                callbacks: {
+                  label: function(context) {
+                    return '₹' + context.raw.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                  }
+                }
+              }
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                grid: {
+                  color: gridColor,
+                  drawBorder: false
+                },
+                ticks: {
+                  padding: 10,
+                  font: {
+                    size: 12,
+                    color: textColor
+                  },
+                  callback: function(value) {
+                    return '₹' + value.toLocaleString('en-IN');
+                  }
+                }
+              },
+              x: {
+                grid: {
+                  display: false
+                },
+                ticks: {
+                  padding: 10,
+                  font: {
+                    size: 12,
+                    weight: 500,
+                    color: textColor
+                  },
+                  color: textColor
+                }
+              }
+            }
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

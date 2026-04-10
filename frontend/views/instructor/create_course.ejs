@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head') %>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+  <%- include('../partials/navbar') %>
+
+  <!-- Hero Section -->
+  <section class="bg-primary text-white py-5 mb-4">
+    <div class="container">
+      <div class="row justify-content-center text-center">
+        <div class="col-lg-8">
+          <h1 class="display-5 fw-bold mb-3">
+            <i class="fas fa-layer-group me-2"></i> Create a New Course
+          </h1>
+          <p class="lead mb-0">Add a title, upload a thumbnail, and set your price for learners.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Create Course Form -->
+  <section class="pb-5">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-7">
+          <div class="card shadow-sm border-0">
+            <div class="card-body p-4 p-md-5">
+              <form action="/courses/instructor/create" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+
+                <!-- Title -->
+                <div class="mb-4">
+                  <label for="title" class="form-label fw-semibold">
+                    <i class="fas fa-heading me-2 text-primary"></i>Course Title
+                  </label>
+                  <input 
+                    type="text" 
+                    name="title" 
+                    id="title" 
+                    class="form-control form-control-lg" 
+                    placeholder="e.g., Mastering Node.js" 
+                    required
+                    minlength="3"
+                    maxlength="100">
+                  <div class="invalid-feedback">
+                    Please provide a course title (3-100 characters).
+                  </div>
+                </div>
+
+                <!-- Description -->
+                <div class="mb-4">
+                  <label for="description" class="form-label fw-semibold">
+                    <i class="fas fa-align-left me-2 text-primary"></i>Description
+                  </label>
+                  <textarea 
+                    name="description" 
+                    id="description" 
+                    class="form-control" 
+                    rows="5" 
+                    placeholder="Describe what students will learn in this course..."
+                    required
+                    minlength="10"
+                    maxlength="1000"></textarea>
+                  <div class="invalid-feedback">
+                    Please provide a description (10-1000 characters).
+                  </div>
+                  <div class="form-text">
+                    <span id="charCount">0</span>/1000 characters
+                  </div>
+                </div>
+
+                <!-- Price -->
+                <div class="mb-4">
+                  <label for="price" class="form-label fw-semibold">
+                    <i class="fas fa-tags me-2 text-primary"></i>Price (₹)
+                  </label>
+                  <input 
+                    type="number" 
+                    name="price" 
+                    id="price" 
+                    class="form-control" 
+                    placeholder="499" 
+                    min="0" 
+                    max="999999"
+                    step="1"
+                    required>
+                  <div class="invalid-feedback">
+                    Please enter a valid price (0 or more).
+                  </div>
+                </div>
+
+                <!-- Featured Toggle -->
+                <div class="mb-4">
+                  <div class="card bg-light border-0">
+                    <div class="card-body">
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" role="switch" id="featured" name="featured">
+                        <label class="form-check-label fw-medium" for="featured">
+                          <i class="fas fa-star me-2 text-warning"></i>Feature this course on the homepage
+                        </label>
+                      </div>
+                      <small class="text-muted d-block mt-2">
+                        Featured courses appear in the popular section on the homepage.
+                      </small>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Thumbnail Upload -->
+                <div class="mb-4">
+                  <label for="thumbnail" class="form-label fw-semibold">
+                    <i class="fas fa-image me-2 text-primary"></i>Upload Course Thumbnail
+                  </label>
+                  <input 
+                    type="file" 
+                    name="thumbnail" 
+                    id="thumbnail" 
+                    class="form-control" 
+                    accept="image/*">
+                  <small class="form-text text-muted d-block mt-2">
+                    <i class="fas fa-info-circle me-1"></i>Recommended size: 1280×720 or higher (JPG/PNG, max 5MB). 
+                    <span class="text-primary fw-medium">Optional - A default thumbnail will be used if none is provided.</span>
+                  </small>
+                </div>
+
+                <!-- Thumbnail Preview -->
+                <div class="mb-4">
+                  <div class="text-center">
+                    <img 
+                      id="preview" 
+                      src="https://cdn-icons-png.flaticon.com/512/4201/4201973.png"
+                      class="img-fluid rounded shadow-sm border"
+                      style="max-height: 300px; object-fit: cover;"
+                      alt="Thumbnail preview">
+                  </div>
+                </div>
+
+                <!-- Buttons -->
+                <div class="d-grid gap-2 d-md-flex justify-content-md-between">
+                  <a href="/courses/instructor/dashboard" class="btn btn-outline-secondary btn-lg">
+                    <i class="fas fa-arrow-left me-2"></i>Back
+                  </a>
+                  <button type="submit" class="btn btn-success btn-lg" id="submitBtn">
+                    <i class="fas fa-check-circle me-2"></i>Create Course
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <%- include('../partials/footer') %>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Bootstrap form validation
+    (function() {
+      'use strict';
+      const form = document.querySelector('.needs-validation');
+      
+      form.addEventListener('submit', function(event) {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        } else {
+          // Show loading state
+          const submitBtn = document.getElementById('submitBtn');
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = `
+            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            Creating Course...
+          `;
+        }
+        form.classList.add('was-validated');
+      }, false);
+    })();
+
+    // Character counter for description
+    const descriptionField = document.getElementById('description');
+    const charCount = document.getElementById('charCount');
+    
+    descriptionField.addEventListener('input', function() {
+      charCount.textContent = this.value.length;
+    });
+
+    // Thumbnail preview with validation
+    document.getElementById('thumbnail').addEventListener('change', function(event) {
+      const file = event.target.files[0];
+      const preview = document.getElementById('preview');
+      
+      if (file) {
+        // Validate file size (5MB max)
+        if (file.size > 5 * 1024 * 1024) {
+          this.setCustomValidity('File size must be less than 5MB');
+          this.classList.add('is-invalid');
+          return;
+        }
+        
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+          this.setCustomValidity('Please upload an image file');
+          this.classList.add('is-invalid');
+          return;
+        }
+        
+        this.setCustomValidity('');
+        this.classList.remove('is-invalid');
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          preview.src = e.target.result;
+          preview.style.animation = 'fadeIn 0.5s ease-in';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  </script>
+
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    
+    .form-control:focus,
+    .form-select:focus {
+      border-color: #0d6efd;
+      box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+    
+    .card {
+      border-radius: 1rem;
+    }
+    
+    @media (max-width: 768px) {
+      .card-body {
+        padding: 1.5rem !important;
+      }
+    }
+  </style>
+</body>
+</html>

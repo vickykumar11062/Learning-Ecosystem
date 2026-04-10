@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('partials/head') %>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+ 
+</head>
+<body class="modern-body">
+  <%- include('partials/navbar') %>
+  
+
+
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-background">
+      <div class="particle particle-1"></div>
+      <div class="particle particle-2"></div>
+      <div class="particle particle-3"></div>
+      <div class="blob blob-1"></div>
+      <div class="blob blob-2"></div>
+    </div>
+    
+    <div class="container hero-content">
+      <div class="row align-items-center">
+        <div class="col-lg-8 mx-auto text-center">
+          <div class="hero-badge mb-4">
+            <i class="fas fa-fire me-2"></i> Start Learning Today
+          </div>
+          <h1 class="hero-title mb-4">
+            Discover Your <span class="gradient-text">Perfect Course</span>
+          </h1>
+          <p class="hero-subtitle mb-4">
+            Learn from industry experts and master in-demand skills. Browse our comprehensive collection of courses designed to help you succeed.
+          </p>
+          
+          <!-- Search Bar -->
+          <div class="search-wrapper">
+            <div class="search-box">
+              <i class="fas fa-search search-icon"></i>
+              <input type="text" class="search-input" id="courseSearch" placeholder="Search for courses...">
+              <button class="search-btn" >
+                <i class="fas fa-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Quick Stats -->
+          <div class="quick-stats mt-5">
+            <div class="stat-item">
+              <div class="stat-icon">
+                <i class="fas fa-book-open"></i>
+              </div>
+              <div class="stat-text">
+                <h4><%= courses.length %>+</h4>
+                <p>Courses</p>
+              </div>
+            </div>
+            <div class="stat-item">     
+              <div class="stat-icon">
+                <i class="fas fa-users"></i>
+              </div>
+              <div class="stat-text">
+                <h4>50K+</h4>
+                <p>Students</p>
+              </div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-icon">
+                <i class="fas fa-star"></i>
+              </div>
+              <div class="stat-text">
+                <h4>4.9</h4>
+                <p>Rating</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Courses Section -->
+  <section class="courses-section">
+    <div class="container">
+      <!-- Section Header -->
+      <div class="section-header">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-5">
+          <div>
+            <h2 class="section-title mb-2">
+              <i class="fas fa-layer-group me-2"></i>All Courses
+            </h2>
+            <p class="section-subtitle mb-0">Choose your path to success</p>
+          </div>
+          
+          <!-- Filter & Sort -->
+          <div class="d-flex gap-3">
+            <select class="form-select modern-select" id="sortSelect">
+              <option value="newest">Newest First</option>
+              <option value="popular">Most Popular</option>
+              <option value="price-low">Price: Low to High</option>
+              <option value="price-high">Price: High to Low</option>
+            </select>
+            
+            <select class="form-select modern-select" id="filterCategory">
+              <option value="all">All Categories</option>
+              <option value="development">Development</option>
+              <option value="design">Design</option>
+              <option value="business">Business</option>
+              <option value="marketing">Marketing</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Courses Grid -->
+      <div class="row g-4" id="coursesGrid">
+        <% if (courses.length === 0) { %>
+          <div class="col-12">
+            <div class="no-courses-found">
+              <i class="fas fa-folder-open mb-3"></i>
+              <h3>No Courses Available Yet</h3>
+              <p>Check back soon for exciting new courses!</p>
+            </div>
+          </div>
+        <% } else { %>
+          <% courses.forEach(c => { %>
+            <div class="col-lg-4 col-md-6 course-item">
+              <div class="course-card">
+                <!-- Course Image -->
+                <div class="course-image-wrapper">
+                  <img src="<%= c.thumbnail.url %>" class="course-image" alt="<%= c.title %>">
+                  <div class="course-overlay">
+                    <div class="overlay-content">
+                      <span class="course-badge">
+                        <i class="fas fa-play-circle me-1"></i> Preview
+                      </span>
+                    </div>
+                  </div>
+                  <!-- Course Level Badge -->
+                  <div class="course-level-badge">
+                    <i class="fas fa-signal me-1"></i> Beginner
+                  </div>
+                  <!-- Enrolled Badge -->
+                  <% if (typeof user !== 'undefined' && user && user.enrolledCourses && 
+                       user.enrolledCourses.includes(c._id.toString())) { %>
+                    <div class="enrolled-badge">
+                      <i class="fas fa-check-circle me-1"></i> Enrolled
+                    </div>
+                  <% } %>
+                </div>
+
+                <!-- Course Body -->
+                <div class="course-body">
+                  <!-- Category Tag -->
+                  <span class="course-category">
+                    <i class="fas fa-tag me-1"></i> Development
+                  </span>
+
+                  <!-- Course Title -->
+                  <h5 class="course-title">
+                    <a href="/courses/<%= c.slug %>"><%= c.title %></a>
+                  </h5>
+
+                  <!-- Course Description -->
+                  <p class="course-description">
+                    <%= c.description.substring(0, 90) %>...
+                  </p>
+
+                  <!-- Course Meta Info -->
+                  <div class="course-info">
+                    <div class="info-item">
+                      <i class="fas fa-user-graduate"></i>
+                      <span>1.2K students</span>
+                    </div>
+                    <div class="info-item">
+                      <i class="fas fa-clock"></i>
+                      <span>8h 30m</span>
+                    </div>
+                    <div class="info-item">
+                      <i class="fas fa-star text-warning"></i>
+                      <span>4.8 (230)</span>
+                    </div>
+                  </div>
+
+                  <!-- Course Footer -->
+                  <div class="course-footer">
+                    <div class="course-price">
+                      <span class="price-symbol">₹</span><%= c.price %>
+                      <span class="price-old">₹<%= Math.round(c.price * 1.5) %></span>
+                    </div>
+                    <a href="/courses/<%= c.slug %>" class="btn-view-course" data-loading-text="Loading course...">
+                      View Course <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% }) %>
+        <% } %>
+      </div>
+
+      <!-- Load More Button -->
+      <% if (courses.length > 0) { %>
+        <div class="text-center mt-5">
+          <button class="btn-load-more" id="loadMoreBtn">
+            <span>Load More Courses</span>
+            <i class="fas fa-chevron-down ms-2"></i>
+          </button>
+        </div>
+      <% } %>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-wrapper">
+        <div class="row align-items-center">
+          <div class="col-lg-8">
+            <h2 class="cta-title">Ready to Start Your Learning Journey?</h2>
+            <p class="cta-text">Join thousands of students already learning with us</p>
+          </div>
+          <div class="col-lg-4 text-lg-end">
+            <a href="/register" class="btn-cta">
+              <i class="fas fa-rocket me-2" data-loading-text="Redirecting..."></i> Get Started Free
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <%- include('partials/footer') %>
+
+  <style>
+    /* Mobile-first responsive styles */
+    @media (max-width: 767.98px) {
+      .hero-title {
+        font-size: 2rem !important;
+        line-height: 1.2 !important;
+      }
+      
+      .hero-subtitle {
+        font-size: 1rem !important;
+      }
+      
+      .quick-stats {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: center;
+      }
+      
+      .stat-item {
+        width: 100% !important;
+        max-width: 250px;
+      }
+      
+      .section-header {
+        text-align: center;
+      }
+      
+      .section-header .d-flex {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      .modern-select {
+        width: 100% !important;
+      }
+      
+      .course-card {
+        margin-bottom: 1.5rem;
+      }
+      
+      .course-title {
+        font-size: 1.1rem !important;
+      }
+      
+      .course-description {
+        font-size: 0.9rem !important;
+      }
+      
+      .course-info {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+      
+      .info-item {
+        font-size: 0.8rem;
+      }
+      
+      .course-footer {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+      }
+      
+      .course-price {
+        font-size: 1.2rem;
+      }
+      
+      .btn-view-course {
+        width: 100%;
+        text-align: center;
+      }
+    }
+    
+    /* Desktop styles */
+    :root {
+      --primary: #667eea;
+      --secondary: #764ba2;
+      --accent: #f093fb;
+      --success: #10b981;
+      --warning: #fbbf24;
+      --danger: #ef4444;
+      --dark: #0f172a;
+      --gray: #64748b;
+      --light: #f8fafc;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    .modern-body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--light);
+      color: var(--dark);
+    }
+
+    /* Hero Section */
+    .hero-section {
+      position: relative;
+      min-height: 70vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      padding: 8rem 0 6rem;
+      
+    }
+
+    .hero-background {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+    }
+
+    .particle {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      animation: float 8s ease-in-out infinite;
+    }
+
+    .particle-1 { width: 80px; height: 80px; top: 20%; left: 10%; animation-delay: 0s; }
+    .particle-2 { width: 60px; height: 60px; top: 60%; right: 15%; animation-delay: 2s; }
+    .particle-3 { width: 100px; height: 100px; bottom: 20%; left: 20%; animation-delay: 4s; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); opacity: 0.3; }
+      50% { transform: translateY(-30px); opacity: 0.6; }
+    }
+
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(60px);
+      opacity: 0.4;
+      animation: pulse 8s ease-in-out infinite;
+    }
+
+    .blob-1 {
+      width: 400px;
+      height: 400px;
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      top: -10%;
+      left: -5%;
+    }
+
+    .blob-2 {
+      width: 350px;
+      height: 350px;
+      background: linear-gradient(135deg, #ec4899, #f43f5e);
+      bottom: -10%;
+      right: -5%;
+      animation-delay: 2s;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 10;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      padding: 0.7rem 1.5rem;
+      border-radius: 50px;
+      color: white;
+      font-weight: 600;
+      animation: slideDown 0.8s ease-out;
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-title {
+      font-size: 3.5rem;
+      font-weight: 800;
+      color: white;
+      line-height: 1.2;
+      animation: fadeInUp 1s ease-out;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-subtitle {
+      font-size: 1.2rem;
+      color: rgba(255, 255, 255, 0.95);
+      line-height: 1.8;
+      animation: fadeInUp 1s ease-out 0.2s both;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Search Box */
+    .search-wrapper {
+      animation: fadeInUp 1s ease-out 0.4s both;
+    }
+
+    .search-box {
+      max-width: 600px;
+      margin: 0 auto;
+      position: relative;
+      background: white;
+      border-radius: 50px;
+      padding: 0.5rem;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 1.5rem;
+      color: var(--gray);
+      font-size: 1.2rem;
+    }
+
+    .search-input {
+      flex: 1;
+      border: none;
+      outline: none;
+      padding: 1rem 1rem 1rem 3.5rem;
+      font-size: 1rem;
+      border-radius: 50px;
+    }
+
+    .search-btn {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .search-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    /* Quick Stats */
+    .quick-stats {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-top: 2.5rem;
+      flex-wrap: wrap;
+      padding: 0 15px;
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      padding: 0.8rem 1.5rem;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .stat-icon {
+      width: 50px;
+      height: 50px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.5rem;
+    }
+
+    .stat-text h4 {
+      color: white;
+      font-weight: 700;
+      font-size: 1.5rem;
+      margin: 0;
+    }
+
+    .stat-text p {
+      color: rgba(255, 255, 255, 0.9);
+      margin: 0;
+      font-size: 0.9rem;
+    }
+
+    /* Courses Section */
+    .courses-section {
+      padding: 6rem 0;
+      background: white;
+    }
+
+    .section-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--dark);
+    }
+
+    .section-subtitle {
+      color: var(--gray);
+      font-size: 1.1rem;
+    }
+
+    .modern-select {
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 0.6rem 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .modern-select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    /* Course Card */
+    .course-card {
+      background: #fff;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      margin: 0 10px 20px;
+    }
+
+    .course-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    }
+
+    .course-image-wrapper {
+      position: relative;
+      overflow: hidden;
+      height: 220px;
+    }
+
+    .course-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+
+    .course-card:hover .course-image {
+      transform: scale(1.1);
+    }
+
+    .course-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.6) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .course-card:hover .course-overlay {
+      opacity: 1;
+    }
+
+    .course-badge {
+      background: white;
+      color: var(--primary);
+      padding: 0.6rem 1.2rem;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .course-level-badge {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      z-index: 2;
+    }
+    
+    .course-level-badge {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 4px 15px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      z-index: 2;
+      display: inline-flex;
+      align-items: center;
+      max-width: 120px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .enrolled-badge {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: rgba(34, 197, 94, 0.9);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+    }
+    
+    .enrolled-badge i {
+      margin-right: 4px;
+      font-size: 0.9em;
+    }
+
+    .course-body {
+      padding: 1.5rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .course-category {
+      display: inline-flex;
+      align-items: center;
+      background: #ede9fe;
+      color: #7c3aed;
+      padding: 0.4rem 1rem;
+      border-radius: 50px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      width: fit-content;
+    }
+
+    .course-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 0.8rem;
+      line-height: 1.4;
+    }
+
+    .course-title a {
+      color: var(--dark);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .course-title a:hover {
+      color: var(--primary);
+    }
+
+    .course-description {
+      color: var(--gray);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 1rem;
+      flex: 1;
+    }
+
+    .course-info {
+      display: flex;
+      justify-content: space-between;
+      margin: 1rem 0;
+      color: #666;
+      font-size: 0.85rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--gray);
+      font-size: 0.85rem;
+    }
+
+    .info-item i {
+      font-size: 0.9rem;
+    }
+
+    .course-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .course-price {
+      font-size: 1.8rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+    }
+
+    .price-symbol {
+      font-size: 1.2rem;
+    }
+
+    .price-old {
+      font-size: 1rem;
+      color: var(--gray);
+      text-decoration: line-through;
+      font-weight: 500;
+    }
+
+    .btn-view-course {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      padding: 0.7rem 1.5rem;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.3s;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .btn-view-course:hover {
+      transform: translateX(5px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+      color: white;
+    }
+
+    /* No Courses Found */
+    .no-courses-found {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .no-courses-found i {
+      font-size: 4rem;
+      color: var(--gray);
+      opacity: 0.5;
+    }
+
+    .no-courses-found h3 {
+      color: var(--dark);
+      margin-top: 1rem;
+    }
+
+    .no-courses-found p {
+      color: var(--gray);
+    }
+
+    /* Load More Button */
+    .btn-load-more {
+      background: white;
+      border: 2px solid var(--primary);
+      color: var(--primary);
+      padding: 1rem 3rem;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-load-more:hover {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      border-color: transparent;
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+
+    /* CTA Section */
+    .cta-section {
+      padding: 4rem 0;
+      background: var(--light);
+    }
+
+    .cta-wrapper {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 30px;
+      padding: 3rem;
+      box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
+    }
+
+    .cta-title {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 0.5rem;
+    }
+
+    .cta-text {
+      font-size: 1.1rem;
+      color: rgba(255, 255, 255, 0.9);
+      margin: 0;
+    }
+
+    .btn-cta {
+      background: white;
+      color: var(--primary);
+      padding: 1rem 2.5rem;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.1rem;
+      display: inline-flex;
+      align-items: center;
+      transition: all 0.3s;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-cta:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+      color: var(--primary);
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+      .hero-title {
+        font-size: 2.5rem;
+      }
+
+      .quick-stats {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .search-box {
+        flex-direction: column;
+        padding: 1rem;
+      }
+
+      .search-input {
+        padding: 1rem;
+      }
+
+      .search-btn {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .hero-title {
+        font-size: 2rem;
+      }
+
+      .section-title {
+        font-size: 2rem;
+      }
+
+      .cta-title {
+        font-size: 1.8rem;
+      }
+
+      .stat-item {
+        padding: 0.8rem 1.5rem;
+      }
+    }
+
+    /* 🌙 DARK MODE STYLING FOR COURSES PAGE */
+    body.dark-theme {
+      background: #0e0e0e !important;
+      color: #e6e6e6 !important;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    /* Dark Hero Section */
+    body.dark-theme .hero-section {
+      background: radial-gradient(circle at top left, #141414 0%, #0d0d0d 40%, #000000 90%) !important;
+    }
+
+    body.dark-theme .hero-title {
+      color: #ffffff !important;
+      font-weight: 900;
+      background: linear-gradient(135deg, #9d7dff 0%, #ff71c8 50%, #ffd86b 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 1px;
+      text-shadow: 0 0 30px rgba(146, 110, 255, 0.4);
+    }
+
+    body.dark-theme .hero-subtitle {
+      color: #dcdcdc !important;
+      text-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+
+    body.dark-theme .hero-badge {
+      background: rgba(255, 255, 255, 0.1) !important;
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    body.dark-theme .particle {
+      background: rgba(146, 110, 255, 0.25) !important;
+      filter: blur(2px);
+    }
+
+    /* Dark Search Box */
+    body.dark-theme .search-box {
+      background: #1a1a1a !important;
+      border: 1px solid #333 !important;
+    }
+
+    body.dark-theme .search-input {
+      background: transparent !important;
+      color: #e6e6e6 !important;
+    }
+
+    body.dark-theme .search-input::placeholder {
+      color: #999 !important;
+    }
+
+    body.dark-theme .search-icon {
+      color: #999 !important;
+    }
+
+    /* Dark Stats */
+    body.dark-theme .stat-item {
+      background: rgba(255, 255, 255, 0.1) !important;
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    body.dark-theme .stat-text h4,
+    body.dark-theme .stat-text p {
+      color: #ffffff !important;
+    }
+
+    body.dark-theme .stat-icon {
+      background: rgba(255, 255, 255, 0.2) !important;
+    }
+
+    /* Dark Courses Section */
+    body.dark-theme .courses-section {
+      background: #111 !important;
+    }
+
+    body.dark-theme .section-title {
+      color: #ffffff !important;
+      font-weight: 800;
+      background: linear-gradient(135deg, #9d7dff, #ff71c8, #ffd86b);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 35px rgba(146, 110, 255, 0.25);
+    }
+
+    body.dark-theme .section-subtitle {
+      color: #bfbfbf !important;
+      text-shadow: 0 0 20px rgba(0,0,0,0.4);
+    }
+
+    body.dark-theme .modern-select {
+      background: #1a1a1a !important;
+      border-color: #333 !important;
+      color: #e6e6e6 !important;
+    }
+
+    body.dark-theme .modern-select:focus {
+      border-color: #7c5bff !important;
+    }
+
+    /* Dark Course Cards */
+    body.dark-theme .course-card {
+      background: #1c1c1c !important;
+      border-color: #333 !important;
+      box-shadow: 0 5px 25px rgba(0,0,0,0.5) !important;
+    }
+
+    body.dark-theme .course-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 0 30px rgba(124, 91, 255, 0.3) !important;
+    }
+
+    body.dark-theme .course-category {
+      background: #272727 !important;
+      color: #9b87ff !important;
+    }
+
+    body.dark-theme .course-title a {
+      color: #ffffff !important;
+    }
+
+    body.dark-theme .course-title a:hover {
+      color: #7c5bff !important;
+    }
+
+    body.dark-theme .course-description {
+      color: #c9c9c9 !important;
+    }
+
+    body.dark-theme .course-info {
+      color: #b3b3b3 !important;
+    }
+
+    body.dark-theme .info-item {
+      color: #b3b3b3 !important;
+    }
+
+    body.dark-theme .course-price {
+      color: #ffffff !important;
+      background: none !important;
+      -webkit-text-fill-color: #ffffff !important;
+      text-shadow: 0 0 15px rgba(124, 91, 255, 0.5);
+    }
+
+    body.dark-theme .price-old {
+      color: #999 !important;
+    }
+
+    body.dark-theme .btn-view-course {
+      background: linear-gradient(135deg, #9d7dff, #ff71c8) !important;
+      box-shadow: 0 0 20px rgba(255, 113, 200, 0.4) !important;
+    }
+
+    body.dark-theme .btn-view-course:hover {
+      transform: translateX(5px);
+      box-shadow: 0 0 40px rgba(255, 113, 200, 0.65) !important;
+    }
+
+    /* Dark No Courses Found */
+    body.dark-theme .no-courses-found {
+      background: #1a1a1a !important;
+      color: #ffffff !important;
+    }
+
+    body.dark-theme .no-courses-found i {
+      color: #999 !important;
+    }
+
+    body.dark-theme .no-courses-found h3 {
+      color: #ffffff !important;
+    }
+
+    body.dark-theme .no-courses-found p {
+      color: #bfbfbf !important;
+    }
+
+    /* Dark Load More Button */
+    body.dark-theme .btn-load-more {
+      background: #1a1a1a !important;
+      border-color: #7c5bff !important;
+      color: #7c5bff !important;
+    }
+
+    body.dark-theme .btn-load-more:hover {
+      background: linear-gradient(135deg, #9d7dff, #ff71c8) !important;
+      color: white !important;
+      border-color: transparent !important;
+    }
+
+    /* Dark CTA Section */
+    body.dark-theme .cta-section {
+      background: #111 !important;
+    }
+
+    body.dark-theme .cta-wrapper {
+      background: linear-gradient(135deg, #151515 0%, #000 100%) !important;
+      box-shadow: 0 20px 60px rgba(124, 91, 255, 0.3) !important;
+    }
+
+    body.dark-theme .cta-title {
+      color: #ffffff !important;
+      text-shadow: 0 0 25px rgba(120, 93, 255, 0.4);
+    }
+
+    body.dark-theme .btn-cta {
+      background: linear-gradient(135deg, #9d7dff, #ff71c8) !important;
+      color: white !important;
+      box-shadow: 0 0 25px rgba(124, 91, 255, 0.3) !important;
+    }
+
+    body.dark-theme .btn-cta:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 40px rgba(255, 113, 200, 0.65) !important;
+    }
+
+    /* Dark badges and overlays */
+    body.dark-theme .course-badge {
+      background: #1a1a1a !important;
+      color: #7c5bff !important;
+    }
+
+    body.dark-theme .course-level-badge,
+    body.dark-theme .enrolled-badge {
+      background: rgba(124, 91, 255, 0.8) !important;
+    }
+  </style>
+
+  <script>
+    // Search functionality
+    document.getElementById('courseSearch').addEventListener('input', function(e) {
+      const searchTerm = e.target.value.toLowerCase();
+      const courseItems = document.querySelectorAll('.course-item');
+      
+      courseItems.forEach(item => {
+        const title = item.querySelector('.course-title').textContent.toLowerCase();
+        const description = item.querySelector('.course-description').textContent.toLowerCase();
+        
+        if (title.includes(searchTerm) || description.includes(searchTerm)) {
+          item.style.display = 'block';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

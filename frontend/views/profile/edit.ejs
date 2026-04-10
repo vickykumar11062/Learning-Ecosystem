@@ -1,0 +1,848 @@
+<!-- frontend/views/profile/edit.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Profile - EduLearn</title>
+  
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      padding-bottom: 3rem;
+    }
+
+    /* Page Header */
+    .page-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 2.5rem 0;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .page-header h1 {
+      color: white;
+      font-size: 2rem;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .page-header .breadcrumb {
+      background: transparent;
+      margin: 0;
+      padding: 0;
+    }
+
+    .page-header .breadcrumb-item {
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .page-header .breadcrumb-item a {
+      color: white;
+      text-decoration: none;
+      transition: opacity 0.3s;
+    }
+
+    .page-header .breadcrumb-item a:hover {
+      opacity: 0.8;
+    }
+
+    .page-header .breadcrumb-item.active {
+      color: white;
+    }
+
+    .page-header .breadcrumb-item + .breadcrumb-item::before {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    /* Main Container */
+    .edit-profile-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+
+    /* Profile Card */
+    .profile-card {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+
+    /* Avatar Section */
+    .avatar-section {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      padding: 2rem;
+      text-align: center;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .avatar-wrapper {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 1rem;
+    }
+
+    .avatar-preview {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border: 5px solid white;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .avatar-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .avatar-preview i {
+      font-size: 3.5rem;
+      color: white;
+    }
+
+    .avatar-upload-btn {
+      position: absolute;
+      bottom: 5px;
+      right: 5px;
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: 3px solid white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .avatar-upload-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .avatar-upload-btn i {
+      color: white;
+      font-size: 1rem;
+    }
+
+    .avatar-upload-btn input {
+      position: absolute;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+
+    .avatar-info {
+      margin-top: 1rem;
+    }
+
+    .avatar-info h5 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 0.25rem;
+    }
+
+    .avatar-info p {
+      font-size: 0.85rem;
+      color: #64748b;
+      margin: 0;
+    }
+
+    /* Form Section */
+    .form-section {
+      padding: 2rem;
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .section-title i {
+      color: #667eea;
+      font-size: 1.1rem;
+    }
+
+    /* Form Groups */
+    .form-label {
+      font-weight: 600;
+      color: #334155;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .form-label .required {
+      color: #ef4444;
+      margin-left: 2px;
+    }
+
+    .form-control,
+    .form-select {
+      border: 2px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-control::placeholder {
+      color: #94a3b8;
+    }
+
+    textarea.form-control {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    /* Input Icons */
+    .input-group-text {
+      background: #f8fafc;
+      border: 2px solid #e5e7eb;
+      border-right: none;
+      border-radius: 10px 0 0 10px;
+      color: #667eea;
+    }
+
+    .input-group .form-control {
+      border-left: none;
+      border-radius: 0 10px 10px 0;
+    }
+
+    .input-group:focus-within .input-group-text {
+      border-color: #667eea;
+      background: #f0f4ff;
+    }
+
+    /* Social Media Section */
+    .social-input {
+      position: relative;
+    }
+
+    .social-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #667eea;
+      z-index: 10;
+    }
+
+    .social-input .form-control {
+      padding-left: 2.75rem;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+      display: flex;
+      gap: 1rem;
+      padding: 2rem;
+      background: #f8fafc;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .btn {
+      padding: 0.75rem 2rem;
+      font-weight: 600;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+      border: none;
+      font-size: 0.95rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-outline-secondary {
+      border: 2px solid #e5e7eb;
+      color: #64748b;
+      background: white;
+    }
+
+    .btn-outline-secondary:hover {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+      color: #475569;
+    }
+
+    /* Alert Messages */
+    .alert {
+      border-radius: 12px;
+      border: none;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .alert-success {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .alert-danger {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .alert i {
+      margin-right: 0.5rem;
+    }
+
+    /* Loading State */
+    .btn-loading {
+      position: relative;
+      pointer-events: none;
+      opacity: 0.7;
+    }
+
+    .btn-loading::after {
+      content: "";
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      top: 50%;
+      left: 50%;
+      margin-left: -8px;
+      margin-top: -8px;
+      border: 2px solid transparent;
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Character Counter */
+    .char-counter {
+      font-size: 0.8rem;
+      color: #64748b;
+      text-align: right;
+      margin-top: 0.25rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .page-header {
+        padding: 1.5rem 0;
+      }
+
+      .page-header h1 {
+        font-size: 1.5rem;
+      }
+
+      .avatar-preview {
+        width: 110px;
+        height: 110px;
+      }
+
+      .avatar-preview i {
+        font-size: 2.5rem;
+      }
+
+      .form-section {
+        padding: 1.5rem;
+      }
+
+      .action-buttons {
+        flex-direction: column;
+        padding: 1.5rem;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .edit-profile-container {
+        padding: 0 0.5rem;
+      }
+
+      .profile-card {
+        border-radius: 15px;
+      }
+
+      .avatar-section {
+        padding: 1.5rem;
+      }
+
+      .form-section {
+        padding: 1rem;
+      }
+
+      .section-title {
+        font-size: 1.1rem;
+      }
+    }
+  </style>
+</head>
+<body class="">
+  <%- include('../partials/navbar') %>
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="container">
+      <h1><i class="fa-solid fa-user-pen me-2"></i>Edit Profile</h1>
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/"><i class="fa-solid fa-house me-1"></i>Home</a></li>
+          <li class="breadcrumb-item"><a href="/profile">Profile</a></li>
+          <li class="breadcrumb-item active">Edit</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="edit-profile-container">
+    <!-- Success/Error Messages -->
+    <% if (typeof success !== 'undefined' && success) { %>
+      <div class="alert alert-success" role="alert">
+        <i class="fa-solid fa-circle-check"></i>
+        <%= success %>
+      </div>
+    <% } %>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+      <div class="alert alert-danger" role="alert">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <%= error %>
+      </div>
+    <% } %>
+
+    <!-- Profile Card -->
+    <div class="profile-card">
+      <form action="/profile/edit" method="POST" enctype="multipart/form-data" id="profileForm">
+        <!-- Avatar Section - Only for Instructors -->
+        <% if (user.role === 'instructor') { %>
+          <div class="avatar-section">
+            <div class="avatar-wrapper">
+              <div class="avatar-preview" id="avatarPreview">
+                <% if (user.avatar && user.avatar.url) { %>
+                  <img src="<%= user.avatar.url %>" alt="Profile Picture" id="avatarImage">
+                <% } else { %>
+                  <i class="fa-solid fa-user" id="avatarIcon"></i>
+                <% } %>
+              </div>
+              <label class="avatar-upload-btn" for="avatarInput">
+                <i class="fa-solid fa-camera"></i>
+                <input type="file" id="avatarInput" name="avatar" accept="image/*" hidden>
+              </label>
+            </div>
+            <div class="avatar-info">
+              <h5><%= user.name || 'Instructor' %></h5>
+              <p>Click the camera icon to update your profile picture</p>
+            </div>
+          </div>
+        <% } %>
+
+        <!-- Basic Information -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <i class="fa-solid fa-user"></i>
+            Basic Information
+          </h3>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="name" class="form-label">Full Name <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="name" name="name" value="<%= user.name %>" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
+                <input type="email" class="form-control" id="email" name="email" value="<%= user.email %>" required>
+              </div>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="phone" class="form-label">Phone Number</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fa-solid fa-phone"></i></span>
+                <input type="tel" class="form-control" id="phone" name="phone" value="<%= user.phone || '' %>" placeholder="+1234567890">
+              </div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="dateOfBirth" class="form-label">Date of Birth</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="fa-solid fa-calendar-days"></i></span>
+                <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth" 
+                       value="<%= user.dateOfBirth ? new Date(user.dateOfBirth).toISOString().split('T')[0] : '' %>"
+                       max="<%= new Date().toISOString().split('T')[0] %>">
+              </div>
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="bio" class="form-label">Bio</label>
+            <textarea class="form-control" id="bio" name="bio" rows="3" maxlength="500"
+                      placeholder="Tell us about yourself..."><%= user.bio || '' %></textarea>
+            <div class="form-text">Max 500 characters</div>
+          </div>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <i class="fa-solid fa-location-dot"></i>
+            Contact Information
+          </h3>
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Country</label>
+              <select class="form-select" name="country">
+                <option value="">Select Country</option>
+                <option value="India" <%= user.country === 'India' ? 'selected' : '' %>>India</option>
+                <option value="USA" <%= user.country === 'USA' ? 'selected' : '' %>>United States</option>
+                <option value="UK" <%= user.country === 'UK' ? 'selected' : '' %>>United Kingdom</option>
+                <option value="Canada" <%= user.country === 'Canada' ? 'selected' : '' %>>Canada</option>
+                <option value="Australia" <%= user.country === 'Australia' ? 'selected' : '' %>>Australia</option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">City</label>
+              <input type="text" class="form-control" name="city" value="<%= user.city || '' %>" placeholder="Enter your city">
+            </div>
+
+            <div class="col-12">
+              <label class="form-label">Address</label>
+              <input type="text" class="form-control" name="address" value="<%= user.address || '' %>" placeholder="Enter your full address">
+            </div>
+          </div>
+        </div>
+
+        <!-- Social Links -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <i class="fa-solid fa-share-nodes"></i>
+            Social Links
+          </h3>
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">LinkedIn</label>
+              <div class="social-input">
+                <i class="fa-brands fa-linkedin social-icon"></i>
+                <input type="url" class="form-control" name="linkedin" value="<%= user.socialLinks?.linkedin || '' %>" placeholder="https://linkedin.com/in/username">
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Twitter / X</label>
+              <div class="social-input">
+                <i class="fa-brands fa-twitter social-icon"></i>
+                <input type="url" class="form-control" name="twitter" value="<%= user.socialLinks?.twitter || '' %>" placeholder="https://twitter.com/username">
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">GitHub</label>
+              <div class="social-input">
+                <i class="fa-brands fa-github social-icon"></i>
+                <input type="url" class="form-control" name="github" value="<%= user.socialLinks?.github || '' %>" placeholder="https://github.com/username">
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Website</label>
+              <div class="social-input">
+                <i class="fa-solid fa-globe social-icon"></i>
+                <input type="url" class="form-control" name="website" value="<%= user.socialLinks?.website || '' %>" placeholder="https://yourwebsite.com">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Instructor-Only Fields -->
+        <% if (user.role === 'instructor') { %>
+        <!-- Instructor Information -->
+        <div class="form-section">
+          <h3 class="section-title">
+            <i class="fa-solid fa-chalkboard-teacher"></i>
+            Instructor Information
+          </h3>
+          <div class="mb-3">
+            <label for="expertise" class="form-label">Areas of Expertise</label>
+            <input type="text" 
+                   class="form-control" 
+                   id="expertise" 
+                   name="expertise" 
+                   value="<%= Array.isArray(user.expertise) ? user.expertise.join(', ') : (user.expertise || '') %>"
+                   placeholder="e.g., Web Development, Data Science, UI/UX Design">
+            <div class="form-text">Separate multiple areas with commas</div>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="experience" class="form-label">Years of Experience</label>
+              <div class="input-group">
+                <input type="number" 
+                       class="form-control" 
+                       id="experience" 
+                       name="experience" 
+                       min="0" 
+                       step="0.5" 
+                       value="<%= user.experience || '0' %>">
+                <span class="input-group-text">years</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="teachingPhilosophy" class="form-label">Teaching Philosophy</label>
+            <textarea class="form-control" 
+                      id="teachingPhilosophy" 
+                      name="teachingPhilosophy" 
+                      rows="4" 
+                      maxlength="1000"
+                      placeholder="Describe your approach to teaching and education..."><%= user.teachingPhilosophy || '' %></textarea>
+            <div class="form-text">Max 1000 characters. <span id="philosophyChars"><%= user.teachingPhilosophy ? 1000 - user.teachingPhilosophy.length : 1000 %></span> characters remaining</div>
+          </div>
+        </div>
+        <% } %>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <button type="submit" class="btn btn-primary" id="saveBtn">
+            <i class="fa-solid fa-floppy-disk me-2"></i>
+            Save Changes
+          </button>
+          <a href="/profile" class="btn btn-outline-secondary">
+            <i class="fa-solid fa-xmark me-2"></i>
+            Cancel
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    // Form validation
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.getElementById('profileForm');
+      
+      if (form) {
+        form.addEventListener('submit', function(e) {
+          if (!form.checkValidity()) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+          form.classList.add('was-validated');
+        });
+      }
+      
+      // Character counter for teaching philosophy
+      const teachingPhilosophy = document.getElementById('teachingPhilosophy');
+      const philosophyChars = document.getElementById('philosophyChars');
+      
+      if (teachingPhilosophy && philosophyChars) {
+        teachingPhilosophy.addEventListener('input', function() {
+          const remaining = 1000 - this.value.length;
+          philosophyChars.textContent = remaining;
+          
+          // Optional: Add warning when characters are running low
+          if (remaining < 50) {
+            philosophyChars.classList.add('text-warning');
+          } else {
+            philosophyChars.classList.remove('text-warning');
+          }
+        });
+      }
+      
+      // Initialize phone input with international format
+      const phoneInput = document.getElementById('phone');
+      if (phoneInput) {
+        // You can integrate a library like intl-tel-input here
+        // For now, we'll just add basic formatting
+        phoneInput.addEventListener('input', function(e) {
+          // Remove all non-digit characters
+          let value = this.value.replace(/\D/g, '');
+          
+          // Format as (123) 456-7890
+          if (value.length > 0) {
+            value = value.match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+            value = !value[2] ? value[1] : '(' + value[1] + ') ' + value[2] + (value[3] ? '-' + value[3] : '');
+          }
+          
+          this.value = value;
+        });
+      }
+      
+      // Image preview for avatar upload
+      const avatarInput = document.getElementById('avatarInput');
+      if (avatarInput) {
+        avatarInput.addEventListener('change', function(e) {
+          const file = e.target.files[0];
+          if (file) {
+            // Validate file type
+            const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+            if (!validTypes.includes(file.type)) {
+              alert('Please select a valid image file (JPEG, PNG, or GIF)');
+              this.value = '';
+              return;
+            }
+            
+            // Validate file size (max 2MB)
+            if (file.size > 2 * 1024 * 1024) {
+              alert('Image size should be less than 2MB');
+              this.value = '';
+              return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              const preview = document.getElementById('avatarPreview');
+              if (preview) {
+                preview.src = e.target.result;
+                const container = document.getElementById('avatarPreviewContainer');
+                if (container) container.style.display = 'block';
+              }
+            }
+            reader.readAsDataURL(file);
+          }
+        });
+      }
+    });
+    const bioCounter = document.getElementById('bioCounter');
+
+    if (bioText && bioCounter) {
+      bioText.addEventListener('input', function() {
+        bioCounter.textContent = this.value.length;
+      });
+    }
+
+    // Form Submission with Loading State
+    const profileForm = document.getElementById('profileForm');
+    const saveBtn = document.getElementById('saveBtn');
+
+    profileForm.addEventListener('submit', function() {
+      saveBtn.classList.add('btn-loading');
+      saveBtn.disabled = true;
+    });
+
+    // Auto-dismiss alerts
+    setTimeout(function() {
+      const alerts = document.querySelectorAll('.alert');
+      alerts.forEach(alert => {
+        alert.style.transition = 'opacity 0.5s ease';
+        alert.style.opacity = '0';
+        setTimeout(() => alert.remove(), 500);
+      });
+    }, 5000);
+
+    // Theme Toggle Functionality
+    const savedTheme = localStorage.getItem('theme');
+    const themeIcon = document.getElementById('theme-icon');
+    
+    if (savedTheme === 'dark') {
+      document.body.classList.add('dark-theme');
+      if (themeIcon) {
+        themeIcon.classList.replace('fa-moon', 'fa-sun');
+      }
+    }
+
+    // Theme toggle functionality
+    const themeToggle = document.getElementById('theme-toggle');
+    const mobileThemeToggles = document.querySelectorAll('#mobileThemeToggle');
+    
+    if (themeToggle && themeIcon) {
+      themeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('dark-theme');
+        
+        if (document.body.classList.contains('dark-theme')) {
+          themeIcon.classList.replace('fa-moon', 'fa-sun');
+          localStorage.setItem('theme', 'dark');
+        } else {
+          themeIcon.classList.replace('fa-sun', 'fa-moon');
+          localStorage.setItem('theme', 'light');
+        }
+      });
+    }
+
+    // Mobile theme toggles
+    mobileThemeToggles.forEach(mobileThemeToggle => {
+      if (mobileThemeToggle) {
+        mobileThemeToggle.addEventListener('click', () => {
+          document.body.classList.toggle('dark-theme');
+          
+          if (themeIcon) {
+            if (document.body.classList.contains('dark-theme')) {
+              themeIcon.classList.replace('fa-moon', 'fa-sun');
+              localStorage.setItem('theme', 'dark');
+            } else {
+              themeIcon.classList.replace('fa-sun', 'fa-moon');
+              localStorage.setItem('theme', 'light');
+            }
+          } else {
+            // Fallback for mobile menu icon
+            const mobileIcon = mobileThemeToggle.querySelector('i');
+            if (mobileIcon) {
+              if (document.body.classList.contains('dark-theme')) {
+                mobileIcon.classList.replace('fa-moon', 'fa-sun');
+                localStorage.setItem('theme', 'dark');
+              } else {
+                mobileIcon.classList.replace('fa-sun', 'fa-moon');
+                localStorage.setItem('theme', 'light');
+              }
+            }
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head') %>
+  <title><%= title %></title>
+  <meta name="description" content="<%= lesson.description || 'Watch this lesson' %>">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #0f172a;
+      color: #e5e7eb;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .header {
+      margin-bottom: 20px;
+    }
+
+    .lesson-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+
+    .lesson-desc {
+      color: #94a3b8;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    /* Player Wrapper */
+    .player-wrapper {
+      background: #1e293b;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .video-container {
+      position: relative;
+      background: #000;
+      aspect-ratio: 16/9;
+    }
+
+    video {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Simple Play Button Overlay */
+    .play-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.3);
+      opacity: 0;
+      transition: opacity 0.2s;
+      cursor: pointer;
+    }
+
+    .video-container:hover .play-overlay {
+      opacity: 1;
+    }
+
+    .play-btn-center {
+      width: 60px;
+      height: 60px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s;
+    }
+
+    .play-btn-center:hover {
+      transform: scale(1.1);
+    }
+
+    .play-btn-center i {
+      color: #000;
+      font-size: 1.5rem;
+      margin-left: 3px;
+    }
+
+    /* Seek Buttons */
+    .seek-buttons {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 30px;
+      pointer-events: none;
+    }
+
+    .seek-btn {
+      width: 50px;
+      height: 50px;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      pointer-events: auto;
+      opacity: 0;
+      transition: all 0.2s;
+    }
+
+    .video-container:hover .seek-btn {
+      opacity: 1;
+    }
+
+    .seek-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: scale(1.1);
+    }
+
+    .seek-btn:active {
+      transform: scale(0.95);
+    }
+
+    .seek-btn i {
+      font-size: 1.2rem;
+    }
+
+    /* Simple Controls */
+    .controls {
+      background: #1e293b;
+      padding: 12px 16px;
+    }
+
+    .progress-bar {
+      height: 4px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 2px;
+      cursor: pointer;
+      margin-bottom: 12px;
+      position: relative;
+    }
+
+    .progress-filled {
+      height: 100%;
+      background: #3b82f6;
+      border-radius: 2px;
+      transition: width 0.1s;
+    }
+
+    .controls-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .control-btn {
+      background: none;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      padding: 6px;
+      display: flex;
+      align-items: center;
+      opacity: 0.8;
+      transition: opacity 0.2s;
+    }
+
+    .control-btn:hover {
+      opacity: 1;
+    }
+
+    .control-btn i {
+      font-size: 1.1rem;
+    }
+
+    .time-text {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      font-family: monospace;
+    }
+
+    .spacer {
+      flex: 1;
+    }
+
+    .volume-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .volume-bar {
+      width: 60px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 2px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .volume-filled {
+      height: 100%;
+      background: #fff;
+      border-radius: 2px;
+    }
+
+    .speed-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      position: relative;
+    }
+
+    .speed-menu {
+      position: absolute;
+      bottom: calc(100% + 5px);
+      right: 0;
+      background: #1e293b;
+      border-radius: 6px;
+      padding: 6px;
+      min-width: 80px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      display: none;
+    }
+
+    .speed-btn:hover .speed-menu {
+      display: block;
+    }
+
+    .speed-option {
+      padding: 6px 12px;
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      text-align: center;
+      transition: background 0.2s;
+    }
+
+    .speed-option:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .speed-option.active {
+      background: #3b82f6;
+      color: #fff;
+    }
+
+    /* PDF & Image Viewer */
+    .pdf-viewer, .image-viewer {
+      background: #1e293b;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .pdf-viewer iframe {
+      width: 100%;
+      height: 70vh;
+      border: none;
+      border-radius: 6px;
+      background: #fff;
+    }
+
+    .image-viewer img {
+      max-width: 100%;
+      border-radius: 6px;
+    }
+
+    .resource-label {
+      margin-top: 12px;
+      color: #94a3b8;
+      font-size: 0.9rem;
+    }
+
+    /* Navigation */
+    .nav-controls {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .nav-btn {
+      flex: 1;
+      background: #1e293b;
+      color: #fff;
+      border: 1px solid #334155;
+      padding: 12px 20px;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .nav-btn:hover:not(:disabled) {
+      background: #334155;
+      border-color: #475569;
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    /* Next Lesson Banner */
+    .next-banner {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      padding: 16px 20px;
+      margin-top: 20px;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .next-banner.show {
+      display: flex;
+    }
+
+    .next-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .next-text {
+      font-size: 0.95rem;
+    }
+
+    .countdown {
+      font-weight: 700;
+      color: #3b82f6;
+    }
+
+    .timer-bar {
+      flex: 1;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .timer-filled {
+      height: 100%;
+      background: #3b82f6;
+      transition: width 0.1s linear;
+    }
+
+    .cancel-btn {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.2s;
+    }
+
+    .cancel-btn:hover {
+      background: rgba(239, 68, 68, 0.2);
+    }
+
+    /* Completed Banner */
+    .completed-banner {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      flex-direction: column;
+      text-align: center;
+      padding: 24px;
+      display: flex !important;
+    }
+
+    .completed-banner .next-text {
+      font-size: 1.1rem;
+      color: #10b981;
+      margin-bottom: 8px;
+    }
+
+    .completed-msg {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      margin-bottom: 16px;
+    }
+
+    .back-course-btn {
+      background: #10b981;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 6px;
+      text-decoration: none;
+      display: inline-block;
+      transition: background 0.2s;
+    }
+
+    .back-course-btn:hover {
+      background: #059669;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      body {
+        padding: 12px;
+      }
+
+      .lesson-title {
+        font-size: 1.2rem;
+      }
+
+      .nav-controls {
+        flex-direction: column;
+      }
+
+      .volume-group {
+        display: none;
+      }
+
+      .next-banner {
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+      }
+    }
+  </style>
+</head>
+<body class="">
+  <div class="container">
+    <div class="header">
+      <h1 class="lesson-title"><%= lesson.title %></h1>
+      <% if (lesson.description) { %>
+        <p class="lesson-desc"><%= lesson.description %></p>
+      <% } %>
+    </div>
+
+    <div class="player-wrapper">
+      <% if (lesson.resourceType === 'video') { %>
+        <!-- VIDEO PLAYER -->
+        <div class="video-container">
+          <video id="video" preload="metadata">
+            <source src="<%= lesson.resource.url %>" type="video/mp4">
+          </video>
+
+          <div class="play-overlay" id="playOverlay">
+            <div class="seek-buttons">
+              <div class="seek-btn" id="seekBackward">
+                <i class="fas fa-backward"></i>
+              </div>
+              <div class="play-btn-center">
+                <i class="fas fa-play"></i>
+              </div>
+              <div class="seek-btn" id="seekForward">
+                <i class="fas fa-forward"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="controls">
+          <div class="progress-bar" id="progressBar">
+            <div class="progress-filled" id="progressFilled"></div>
+          </div>
+
+          <div class="controls-row">
+            <button class="control-btn" id="playBtn">
+              <i class="fas fa-play"></i>
+            </button>
+
+            <div class="volume-group">
+              <button class="control-btn" id="volumeBtn">
+                <i class="fas fa-volume-high"></i>
+              </button>
+              <div class="volume-bar" id="volumeBar">
+                <div class="volume-filled" id="volumeFilled"></div>
+              </div>
+            </div>
+
+            <div class="time-text">
+              <span id="currentTime">0:00</span> / <span id="duration">0:00</span>
+            </div>
+
+            <div class="spacer"></div>
+
+            <div class="speed-btn">
+              <span id="speedText">1x</span>
+              <div class="speed-menu">
+                <div class="speed-option" data-speed="0.5">0.5x</div>
+                <div class="speed-option" data-speed="0.75">0.75x</div>
+                <div class="speed-option active" data-speed="1">1x</div>
+                <div class="speed-option" data-speed="1.25">1.25x</div>
+                <div class="speed-option" data-speed="1.5">1.5x</div>
+                <div class="speed-option" data-speed="2">2x</div>
+              </div>
+            </div>
+
+            <button class="control-btn" id="fullscreenBtn">
+              <i class="fas fa-expand"></i>
+            </button>
+          </div>
+        </div>
+
+      <% } else if (lesson.resourceType === 'pdf') { %>
+        <!-- PDF VIEWER -->
+        <div class="pdf-viewer">
+          <iframe
+            id="pdfViewer"
+            src="https://docs.google.com/viewer?url=<%= encodeURIComponent(lesson.resource.url) %>&embedded=true"
+          ></iframe>
+          <div class="progress-bar" style="margin: 12px 0 0">
+            <div class="progress-filled" id="pdfProgress"></div>
+          </div>
+          <p class="resource-label"><i class="fas fa-file-pdf"></i> PDF Document</p>
+        </div>
+
+      <% } else if (lesson.resourceType === 'image') { %>
+        <!-- IMAGE VIEWER -->
+        <div class="image-viewer">
+          <img id="lessonImage" src="<%= lesson.resource.url %>" alt="<%= lesson.title %>">
+          <div class="progress-bar" style="margin: 12px auto 0; max-width: 90%;">
+            <div class="progress-filled" id="imageProgress"></div>
+          </div>
+          <p class="resource-label"><i class="fas fa-image"></i> Image Resource</p>
+        </div>
+      <% } %>
+    </div>
+
+    <% if (nextLesson) { %>
+      <div class="next-banner" id="nextBanner"
+           data-next-lesson-url="/viewer/<%= course._id %>/<%= nextLesson._id %>"
+           data-course-url="/courses/<%= course.slug %>">
+        <div class="next-info">
+          <div class="next-text">
+            Next lesson in <span class="countdown" id="countdown">5</span>s
+          </div>
+          <div class="timer-bar">
+            <div class="timer-filled" id="timerFilled"></div>
+          </div>
+        </div>
+        <button class="cancel-btn" id="cancelBtn">Cancel</button>
+      </div>
+    <% } else { %>
+      <div class="next-banner completed-banner">
+        <div class="next-text">
+          <i class="fas fa-trophy"></i> Course Completed!
+        </div>
+        <p class="completed-msg">Congratulations on completing this course!</p>
+        <a href="/courses/<%= course.slug %>" class="back-course-btn">Back to Course</a>
+      </div>
+    <% } %>
+
+    <div class="nav-controls">
+      <% if (prevLesson) { %>
+        <a href="/viewer/<%= course._id %>/<%= prevLesson._id %>" class="nav-btn">
+          <i class="fas fa-arrow-left"></i> Previous
+        </a>
+      <% } else { %>
+        <button class="nav-btn" disabled>
+          <i class="fas fa-arrow-left"></i> Previous
+        </button>
+      <% } %>
+      
+      <a href="/courses/<%= course.slug %>" class="nav-btn">
+        <i class="fas fa-book"></i> Back to Course
+      </a>
+      
+      <% if (nextLesson) { %>
+        <a href="/viewer/<%= course._id %>/<%= nextLesson._id %>" class="nav-btn">
+          Next <i class="fas fa-arrow-right"></i>
+        </a>
+      <% } else { %>
+        <button class="nav-btn" disabled>
+          Next <i class="fas fa-arrow-right"></i>
+        </button>
+      <% } %>
+    </div>
+  </div>
+
+  <script>
+    const resourceType = '<%= lesson.resourceType %>';
+    const courseId = '<%= course._id %>';
+    const lessonId = '<%= lesson._id %>';
+
+    // Progress saving function
+    async function saveProgress(viewed = false, percent = null) {
+      try {
+        const response = await fetch('/progress/save', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ courseId, lessonId, viewed, percent })
+        });
+
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
+
+        if (data.success) {
+          const refreshResponse = await fetch('/progress/refresh', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ courseId })
+          });
+          
+          if (refreshResponse.ok) {
+            const refreshData = await refreshResponse.json();
+            
+            let target = null;
+            try {
+              if (window.parent && window.parent !== window) target = window.parent;
+              else if (window.opener) target = window.opener;
+            } catch (e) {}
+
+            if (target) {
+              try {
+                target.postMessage({
+                  type: "progressUpdate",
+                  lessonId: lessonId,
+                  progress: percent,
+                  overallProgress: refreshData.overallProgress
+                }, "*");
+              } catch (e) {}
+            }
+
+            try {
+              localStorage.setItem(`courseProgress_${courseId}`, String(refreshData.overallProgress));
+              localStorage.setItem(`courseProgress_${courseId}_ts`, String(Date.now()));
+            } catch (err) {}
+          }
+        }
+        
+        return data;
+      } catch (error) {
+        console.error('Error saving progress:', error);
+        return { success: false, error: error.message };
+      }
+    }
+
+    // PDF Progress
+    if (resourceType === 'pdf') {
+      const pdfViewer = document.getElementById('pdfViewer');
+      const pdfProgress = document.getElementById('pdfProgress');
+      let pdfViewed = false;
+
+      function updatePdfProgress(percent) {
+        if (pdfProgress) pdfProgress.style.width = `${percent}%`;
+        if (percent >= 95 && !pdfViewed) {
+          pdfViewed = true;
+          saveProgress(true, 100);
+        }
+      }
+
+      pdfViewer.addEventListener('load', () => {
+        updatePdfProgress(10);
+        setTimeout(() => {
+          updatePdfProgress(100);
+          pdfViewed = true;
+          saveProgress(true, 100);
+        }, 5000);
+      });
+    }
+
+    // Image Progress
+    if (resourceType === 'image') {
+      const img = document.getElementById('lessonImage');
+      const imageProgress = document.getElementById('imageProgress');
+      let imageViewed = false;
+
+      function updateImageProgress(percent) {
+        if (imageProgress) imageProgress.style.width = `${percent}%`;
+      }
+
+      img.addEventListener('load', () => {
+        updateImageProgress(30);
+        setTimeout(() => {
+          updateImageProgress(100);
+          imageViewed = true;
+          saveProgress(true, 100);
+        }, 3000);
+      });
+    }
+
+    // Video Player
+    if (resourceType === 'video') {
+      const video = document.getElementById('video');
+      const playBtn = document.getElementById('playBtn');
+      const playOverlay = document.getElementById('playOverlay');
+      const progressBar = document.getElementById('progressBar');
+      const progressFilled = document.getElementById('progressFilled');
+      const currentTime = document.getElementById('currentTime');
+      const duration = document.getElementById('duration');
+      const volumeBtn = document.getElementById('volumeBtn');
+      const volumeBar = document.getElementById('volumeBar');
+      const volumeFilled = document.getElementById('volumeFilled');
+      const fullscreenBtn = document.getElementById('fullscreenBtn');
+      const speedOptions = document.querySelectorAll('.speed-option');
+      const speedText = document.getElementById('speedText');
+      const seekBackward = document.getElementById('seekBackward');
+      const seekForward = document.getElementById('seekForward');
+
+      function formatTime(sec) {
+        if (isNaN(sec)) return '0:00';
+        const m = Math.floor(sec / 60);
+        const s = Math.floor(sec % 60);
+        return `${m}:${s < 10 ? '0' : ''}${s}`;
+      }
+
+      function togglePlay() {
+        if (video.paused) {
+          video.play();
+          playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+          playOverlay.querySelector('i').className = 'fas fa-pause';
+        } else {
+          video.pause();
+          playBtn.innerHTML = '<i class="fas fa-play"></i>';
+          playOverlay.querySelector('i').className = 'fas fa-play';
+        }
+      }
+
+      function updateProgress() {
+        if (!isNaN(video.duration)) {
+          const percent = (video.currentTime / video.duration) * 100;
+          progressFilled.style.width = `${percent}%`;
+          currentTime.textContent = formatTime(video.currentTime);
+          duration.textContent = formatTime(video.duration);
+          
+          if (!video.paused && video.currentTime % 5 < 0.1) {
+            saveProgress(false, percent);
+          }
+        }
+      }
+
+      playBtn.addEventListener('click', togglePlay);
+      playOverlay.addEventListener('click', (e) => {
+        // Only toggle play if clicking on the overlay itself or play button, not seek buttons
+        if (e.target === playOverlay || e.target.closest('.play-btn-center')) {
+          togglePlay();
+        }
+      });
+
+      // Seek buttons functionality
+      seekBackward.addEventListener('click', (e) => {
+        e.stopPropagation();
+        video.currentTime = Math.max(0, video.currentTime - 10);
+      });
+
+      seekForward.addEventListener('click', (e) => {
+        e.stopPropagation();
+        video.currentTime = Math.min(video.duration, video.currentTime + 10);
+      });
+
+      progressBar.addEventListener('click', (e) => {
+        const rect = progressBar.getBoundingClientRect();
+        const pos = (e.clientX - rect.left) / rect.width;
+        video.currentTime = pos * video.duration;
+        const percent = (video.currentTime / video.duration) * 100;
+        saveProgress(false, percent);
+      });
+
+      volumeBtn.addEventListener('click', () => {
+        video.muted = !video.muted;
+        volumeBtn.innerHTML = video.muted ? '<i class="fas fa-volume-mute"></i>' : '<i class="fas fa-volume-high"></i>';
+        volumeFilled.style.width = video.muted ? '0%' : `${video.volume * 100}%`;
+      });
+
+      volumeBar.addEventListener('click', (e) => {
+        const rect = volumeBar.getBoundingClientRect();
+        const pos = (e.clientX - rect.left) / rect.width;
+        video.volume = Math.max(0, Math.min(1, pos));
+        volumeFilled.style.width = `${video.volume * 100}%`;
+        video.muted = false;
+        volumeBtn.innerHTML = '<i class="fas fa-volume-high"></i>';
+      });
+
+      speedOptions.forEach(opt => {
+        opt.addEventListener('click', () => {
+          const speed = parseFloat(opt.dataset.speed);
+          video.playbackRate = speed;
+          speedText.textContent = `${speed}x`;
+          speedOptions.forEach(o => o.classList.remove('active'));
+          opt.classList.add('active');
+        });
+      });
+
+      fullscreenBtn.addEventListener('click', () => {
+        if (!document.fullscreenElement) {
+          document.querySelector('.player-wrapper').requestFullscreen();
+        } else {
+          document.exitFullscreen();
+        }
+      });
+
+      video.addEventListener('loadedmetadata', () => {
+        duration.textContent = formatTime(video.duration);
+      });
+
+      video.addEventListener('timeupdate', updateProgress);
+
+      video.addEventListener('ended', async () => {
+        playBtn.innerHTML = '<i class="fas fa-play"></i>';
+        playOverlay.querySelector('i').className = 'fas fa-play';
+        await saveProgress(true, 100);
+        window.location.reload();
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.code === 'Space' && e.target === document.body) {
+          e.preventDefault();
+          togglePlay();
+        }
+      });
+
+      volumeFilled.style.width = `${video.volume * 100}%`;
+    }
+
+    // Next lesson countdown
+    const nextBanner = document.getElementById('nextBanner');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const countdown = document.getElementById('countdown');
+    const timerFilled = document.getElementById('timerFilled');
+
+    if (nextBanner && nextBanner.dataset.nextLessonUrl) {
+      let timeLeft = 5;
+      let countdownInterval;
+
+      function startCountdown() {
+        nextBanner.classList.add('show');
+        countdownInterval = setInterval(() => {
+          timeLeft--;
+          countdown.textContent = timeLeft;
+          timerFilled.style.width = `${((5 - timeLeft) / 5) * 100}%`;
+          
+          if (timeLeft <= 0) {
+            clearInterval(countdownInterval);
+            window.location.href = nextBanner.dataset.nextLessonUrl;
+          }
+        }, 1000);
+      }
+
+      if (cancelBtn) {
+        cancelBtn.addEventListener('click', () => {
+          clearInterval(countdownInterval);
+          nextBanner.classList.remove('show');
+        });
+      }
+
+      // Start countdown when video ends or after viewing PDF/Image
+      if (resourceType === 'video') {
+        const video = document.getElementById('video');
+        video.addEventListener('ended', startCountdown);
+      } else {
+        setTimeout(startCountdown, 8000);
+      }
+    }
+  </script>
+</body>
+</html>

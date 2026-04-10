@@ -1,0 +1,464 @@
+/* Make auth forms look polished */
+body.bg-light {
+  background: linear-gradient(120deg, #f6f9ff 0%, #eaf2ff 100%);
+}
+
+input.form-control, select.form-select {
+  border-radius: 0.5rem;
+}
+
+/* Course Actions */
+.course-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.btn-leave {
+  width: 100%;
+  padding: 0.875rem 1.25rem;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-leave:hover {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+}
+
+/* Modal Styling */
+.modal-content {
+  border-radius: 16px;
+  background: #1e293b;
+  color: #e2e8f0;
+}
+
+.modal-footer button {
+  border-radius: 10px;
+}
+
+.btn {
+  border-radius: 0.5rem;
+  font-weight: 500;
+}
+
+.alert {
+  border-radius: 0.5rem;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  min-height: 100vh;
+  padding-bottom: 3rem;
+}
+
+/* Light Mode Background */
+body:not(.dark-theme) {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%) !important;
+}
+
+/* Dark Mode Background */
+body.dark-theme {
+  background: #0f0f0f !important;
+}
+
+/* Page Header (hero area) */
+body.dark-theme .page-header {
+  background: linear-gradient(135deg, #202020 0%, #111111 100%) !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4) !important;
+}
+
+body.dark-theme .page-header h1 {
+  color: #ffffff !important;
+}
+
+/* Cards */
+body.dark-theme .profile-card,
+body.dark-theme .card {
+  background-color: #1c1c1c !important;
+  color: #ffffff !important;
+  border-color: #333 !important;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4) !important;
+}
+
+/* Avatar section */
+body.dark-theme .avatar-section {
+  background: #181818 !important;
+  border-bottom: 1px solid #333 !important;
+}
+
+body.dark-theme .avatar-preview {
+  border: 3px solid #333 !important;
+  background: #121212 !important;
+}
+
+/* Text & inputs */
+body.dark-theme .info-label {
+  color: #9ca3af !important;
+}
+
+body.dark-theme .info-value {
+  color: #ffffff !important;
+}
+
+body.dark-theme .form-control {
+  background-color: #222 !important;
+  color: #fff !important;
+  border-color: #444 !important;
+}
+
+/* Social icons */
+body.dark-theme .social-icon {
+  background: #222 !important;
+  color: white !important;
+}
+
+/* Buttons */
+body.dark-theme .btn-light {
+  background-color: #333 !important;
+  color: #fff !important;
+  border-color: #555 !important;
+}
+
+/* Title section bottom border change */
+body.dark-theme .section-title {
+  border-bottom: 2px solid #333 !important;
+}
+
+/* Index page specific dark theme overrides */
+body.dark-theme .hero-section {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1f1f1f 100%) !important;
+}
+
+body.dark-theme .hero-section::before {
+  background: radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 50%) !important;
+}
+
+body.dark-theme .particle {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+body.dark-theme .hero-title,
+body.dark-theme .hero-subtitle,
+body.dark-theme .hero-description {
+  color: #ffffff !important;
+}
+
+body.dark-theme .feature-card {
+  background-color: #1c1c1c !important;
+  color: #ffffff !important;
+  border-color: #333 !important;
+}
+
+body.dark-theme .feature-icon {
+  background: linear-gradient(135deg, #2d2d2d 0%, #1f1f1f 100%) !important;
+  color: #ffffff !important;
+}
+
+body.dark-theme .stats-section {
+  background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%) !important;
+}
+
+body.dark-theme .stat-card {
+  background-color: #1c1c1c !important;
+  color: #ffffff !important;
+  border-color: #333 !important;
+}
+
+body.dark-theme .courses-section {
+  background: #0f0f0f !important;
+}
+
+body.dark-theme .section-title {
+  color: #ffffff !important;
+}
+
+body.dark-theme .section-subtitle {
+  color: #9ca3af !important;
+}
+
+/* Courses page specific dark theme overrides */
+body.dark-theme .course-card {
+  background: #1c1c1c !important;
+  color: #ffffff !important;
+  border-color: #333 !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+}
+
+body.dark-theme .course-card:hover {
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5) !important;
+}
+
+body.dark-theme .course-title,
+body.dark-theme .course-title a {
+  color: #ffffff !important;
+}
+
+body.dark-theme .course-title a:hover {
+  color: #9ecbff !important;
+}
+
+body.dark-theme .course-description {
+  color: #9ca3af !important;
+}
+
+body.dark-theme .course-body {
+  background: #1c1c1c !important;
+  color: #ffffff !important;
+}
+
+body.dark-theme .course-category {
+  background: #2d2d2d !important;
+  color: #ffffff !important;
+}
+
+body.dark-theme .course-info {
+  color: #9ca3af !important;
+}
+
+body.dark-theme .course-footer {
+  background: #1c1c1c !important;
+  border-top-color: #333 !important;
+}
+
+body.dark-theme .course-price {
+  color: #ffffff !important;
+}
+
+body.dark-theme .course-badge {
+  background: #333 !important;
+  color: #ffffff !important;
+}
+
+body.dark-theme .course-level-badge {
+  background: #2d2d2d !important;
+  color: #ffffff !important;
+}
+
+body.dark-theme .course-overlay {
+  background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.8) 100%) !important;
+}
+
+/* DARK THEME FIXES */
+body.dark-theme .page-header {
+  background: linear-gradient(135deg, #1c1c1c 0%, #111 100%) !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.6) !important;
+}
+
+body.dark-theme .profile-card {
+  background: #181818 !important;
+  color: #ffffff !important;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.45) !important;
+}
+
+body.dark-theme .avatar-section {
+  background: #121212 !important;
+  border-bottom-color: #333 !important;
+}
+
+body.dark-theme .profile-name,
+body.dark-theme .section-title,
+body.dark-theme .info-value,
+body.dark-theme .profile-bio {
+  color: #ffffff !important;
+}
+
+body.dark-theme .social-icon {
+  background: #222 !important;
+  color: #ffffff !important;
+}
+
+body.dark-theme .btn-light {
+  background-color: #333 !important;
+  color: #fff !important;
+  border-color: #555 !important;
+}
+
+/* ========== GLOBAL CURSOR & SELECTION FIX ========== */
+
+/* Don't allow text selection everywhere */
+* {
+  user-select: none;
+}
+
+/* Allow text typing inside form fields */
+input, textarea {
+  user-select: text !important;
+  cursor: text !important;
+}
+
+/* Default arrow cursor for most elements */
+body, p, h1, h2, h3, h4, h5, h6, div, span, section, li, ul, label {
+  cursor: default !important;
+}
+
+/* Pointer cursor for clickable elements */
+button, a, [type="button"], [type="submit"], [role="button"] {
+  cursor: pointer !important;
+}
+
+/* ===== LIGHT MODE FIXES ===== */
+body:not(.dark-theme) {
+  --bg-1: #ffffff;
+  --bg-2: #f8fafc;
+  --text: #111827;
+  --muted: #4b5563;
+  --stroke: rgba(0,0,0,0.1);
+}
+
+/* Hero title color */
+body:not(.dark-theme) .hero-title {
+  color: #111827 !important;
+}
+
+/* Description text */
+body:not(.dark-theme) .description-content {
+  color: #374151 !important;
+}
+
+/* Gradient fade fix for light mode */
+body:not(.dark-theme) .description-content::after {
+  background: linear-gradient(to bottom,
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,0.7) 50%,
+    rgba(255,255,255,1) 100%
+  ) !important;
+}
+
+body:not(.dark-theme) .read-more {
+  color: #2563eb !important; /* make blue visible */
+}
+
+/* ===================== GLOBAL BACKGROUND THEMES ===================== */
+
+/* DARK MODE */
+body.modern-body:not(.light) {
+  background: radial-gradient(circle at 20% 20%, #1e293b 0%, #0f172a 50%, #0a0f1f 100%);
+  background-attachment: fixed;
+}
+
+/* LIGHT MODE */
+body.modern-body.light {
+  background: radial-gradient(circle at 20% 20%, #e9eefc 0%, #dbe4ff 40%, #f8fafc 100%);
+  background-attachment: fixed;
+}
+
+/* Section gradient blocks */
+section.hero,
+section.materials,
+section.no-materials {
+  position: relative;
+  z-index: 1;
+  padding: 3rem 0;
+}
+
+/* Light glowing overlay */
+section.hero:before,
+section.materials:before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(600px 300px at 0% 0%, rgba(109, 140, 251, 0.25), transparent 70%),
+              radial-gradient(600px 300px at 100% 50%, rgba(155, 92, 247, 0.18), transparent 60%);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Card Background Style */
+.card {
+  background: linear-gradient(145deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* Light Mode Card */
+body.light .card {
+  background: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(245,245,255,0.7));
+  border: 1px solid rgba(0,0,0,0.07);
+}
+
+/* ========================= PREMIUM GLOBAL BACKGROUND ========================= */
+
+body.modern-body {
+  background: radial-gradient(circle at 20% 20%, #0b1120 0%, #0a0f1f 20%, #06080d 60%, #000000 100%);
+  background-attachment: fixed;
+}
+
+/* Floating gradient lights */
+.bg-light-glow {
+  position: fixed;
+  width: 420px;
+  height: 420px;
+  filter: blur(180px);
+  opacity: 0.38;
+  z-index: -10;
+  border-radius: 50%;
+  animation: floatGlow 18s infinite alternate ease-in-out;
+}
+
+.bg-light-glow.one { background: #6d8cfb; top: -120px; left: -100px; }
+.bg-light-glow.two { background: #9b5cf7; bottom: -120px; right: -50px; }
+
+@keyframes floatGlow {
+  0%   { transform: translate(0,0); }
+  100% { transform: translate(80px,60px); }
+}
+
+/* Section separation background fade */
+section.hero,
+section.materials,
+section.no-materials {
+  position: relative;
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+
+section.hero::before,
+section.materials::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(109, 140, 251, 0.18) 0%, rgba(155, 92, 247, 0.15) 20%, transparent 60%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Glow effect behind section headings */
+.sect-head h2 {
+  position: relative;
+  display: inline-block;
+}
+
+.sect-head h2::after {
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 4px;
+  background: linear-gradient(90deg, #6d8cfb, #9b5cf7);
+  filter: blur(10px);
+  border-radius: 12px;
+}
+
+/* Premium Glass Cards */
+.card {
+  background: rgba(255,255,255,0.03);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 40px rgba(109, 140, 251, 0.45);
+  border-color: rgba(109,140,251,0.35);
+  transition: all 0.35s ease;
+}

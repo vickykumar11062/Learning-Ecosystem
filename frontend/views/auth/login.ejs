@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head') %>
+  <style>
+    .password-toggle {
+      cursor: pointer;
+      user-select: none;
+    }
+
+    /* DARK MODE STYLING FOR LOGIN PAGE */
+    body.dark-theme {
+      background: #0e0e0e !important;
+      color: #e6e6e6 !important;
+    }
+
+    body.dark-theme .bg-light {
+      background: #0e0e0e !important;
+    }
+
+    body.dark-theme .bg-white {
+      background: #1a1a1a !important;
+      border: 1px solid #333 !important;
+    }
+
+    body.dark-theme h3 {
+      color: #ffffff !important;
+      font-weight: 700;
+      background: linear-gradient(135deg, #9d7dff, #ff71c8, #ffd86b);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 1px;
+      text-shadow: 0 0 30px rgba(146, 110, 255, 0.4);
+    }
+
+    body.dark-theme .form-label {
+      color: #e6e6e6 !important;
+      font-weight: 500;
+    }
+
+    body.dark-theme .form-control {
+      background: #2a2a2a !important;
+      border: 1px solid #444 !important;
+      color: #ffffff !important;
+    }
+
+    body.dark-theme .form-control:focus {
+      background: #2a2a2a !important;
+      border-color: #7c5bff !important;
+      color: #ffffff !important;
+      box-shadow: 0 0 0 0.2rem rgba(124, 91, 255, 0.25) !important;
+    }
+
+    body.dark-theme .form-control::placeholder {
+      color: #999 !important;
+    }
+
+    body.dark-theme .input-group .btn-outline-secondary {
+      background: #2a2a2a !important;
+      border: 1px solid #444 !important;
+      color: #e6e6e6 !important;
+    }
+
+    body.dark-theme .input-group .btn-outline-secondary:hover {
+      background: #3a3a3a !important;
+      border-color: #7c5bff !important;
+      color: #ffffff !important;
+    }
+
+    body.dark-theme .btn-primary {
+      background: linear-gradient(135deg, #9d7dff, #ff71c8) !important;
+      border: none !important;
+      color: #ffffff !important;
+      font-weight: 600;
+    }
+
+    body.dark-theme .btn-primary:hover {
+      background: linear-gradient(135deg, #7c5bff, #ff51c8) !important;
+      box-shadow: 0 0 20px rgba(255, 113, 200, 0.4) !important;
+      transform: translateY(-2px);
+    }
+
+    body.dark-theme .text-primary {
+      color: #9b87ff !important;
+    }
+
+    body.dark-theme .text-muted {
+      color: #bfbfbf !important;
+    }
+
+    body.dark-theme .alert-danger {
+      background: #2a1a1a !important;
+      border: 1px solid #ef4444 !important;
+      color: #fca5a5 !important;
+    }
+
+    body.dark-theme .alert-success {
+      background: #1a2a1a !important;
+      border: 1px solid #22c55e !important;
+      color: #86efac !important;
+    }
+
+    body.dark-theme .invalid-feedback {
+      color: #fca5a5 !important;
+    }
+
+    body.dark-theme .form-text {
+      color: #999 !important;
+    }
+
+    body.dark-theme .btn-close {
+      filter: invert(1);
+    }
+  </style>
+</head>
+<body class="bg-light">
+  <!-- Ensure we have a session object for the navbar -->
+  <% if (typeof session === 'undefined') { %>
+    <% session = {}; %>
+  <% } %>
+  <%- include('../partials/navbar', { session: session }) %>
+
+  <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="col-md-5 col-lg-4 bg-white p-4 rounded shadow-sm">
+      <h3 class="text-center mb-4">Welcome Back 👋</h3>
+
+      <!-- Display error messages -->
+      <% if (typeof error_msg !== 'undefined' && error_msg) { %>
+        <% if (Array.isArray(error_msg)) { %>
+          <% error_msg.forEach(function(msg) { %>
+            <% if (msg) { %>
+              <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <%= msg %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            <% } %>
+          <% }); %>
+        <% } else if (typeof error_msg === 'string' && error_msg.trim() !== '') { %>
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <%= error_msg %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        <% } %>
+      <% } %>
+
+      <!-- Display success messages -->
+      <% if (typeof success_msg !== 'undefined' && success_msg) { %>
+        <% if (Array.isArray(success_msg)) { %>
+          <% success_msg.forEach(function(msg) { %>
+            <% if (msg) { %>
+              <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <%= msg %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            <% } %>
+          <% }); %>
+        <% } else if (typeof success_msg === 'string' && success_msg.trim() !== '') { %>
+          <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <%= success_msg %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        <% } %>
+      <% } %>
+
+      <!-- Login Form -->
+      <form id="loginForm" action="/login" method="POST" class="needs-validation" novalidate>
+        <div class="mb-3">
+          <label for="email" class="form-label">Email Address</label>
+          <input 
+            type="email" 
+            class="form-control" 
+            id="email" 
+            name="email" 
+            placeholder="Enter your email"  
+            required
+          >
+          <div class="invalid-feedback">
+            Please enter a valid email address.
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="password" class="form-label">Password</label>
+          <div class="input-group has-validation">
+            <input 
+              type="password" 
+              class="form-control" 
+              id="password" 
+              name="password" 
+              placeholder="Enter your password" 
+              minlength="6"
+              required
+            >
+            <button type="button" class="btn btn-outline-secondary password-toggle" onclick="togglePassword()" title="Show/Hide Password" tabindex="-1">
+              <i class="fa fa-eye"></i>
+            </button>
+            <div class="invalid-feedback">
+              Please enter your password (minimum 6 characters).
+            </div>
+          </div>
+
+          <!-- Forgot Password link -->
+          <div class="text-end mt-1">
+            <a href="/forgot-password" class="text-decoration-none small text-primary">
+              Forgot password?
+            </a>
+          </div>
+        </div>
+
+        <button 
+          type="submit" 
+          class="btn btn-primary w-100 mt-2"
+          id="loginButton"
+        >
+          <span class="btn-text">Login</span>
+          <span class="spinner-border spinner-border-sm d-none ms-2" id="loginSpinner" role="status" aria-hidden="true"></span>
+        </button>
+      </form>
+
+      <p class="text-center mt-3 mb-0">
+        Don't have an account?
+        <a href="/register" class="text-decoration-none">Register</a>
+      </p>
+    </div>
+  </div>
+
+  <%- include('../partials/footer') %>
+
+  <script>
+    // Toggle password visibility
+    function togglePassword() {
+      const input = document.getElementById("password");
+      const icon = document.querySelector(".password-toggle i");
+      
+      if (input.type === "password") {
+        input.type = "text";
+        if (icon) {
+          icon.classList.remove('fa-eye');
+          icon.classList.add('fa-eye-slash');
+        }
+      } else {
+        input.type = "password";
+        if (icon) {
+          icon.classList.remove('fa-eye-slash');
+          icon.classList.add('fa-eye');
+        }
+      }
+    }
+
+    // Login Form Validation
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+      const loginButton = document.getElementById('loginButton');
+      const loginSpinner = document.getElementById('loginSpinner');
+      const btnText = loginButton.querySelector('.btn-text');
+
+      loginForm.addEventListener('submit', function(event) {
+        // Check form validity
+        if (!loginForm.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+          loginForm.classList.add('was-validated');
+          
+          // Scroll to first invalid field
+          const firstInvalid = loginForm.querySelector(':invalid');
+          if (firstInvalid) {
+            firstInvalid.focus();
+            firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+          return;
+        }
+
+        // If all validations pass, show loading state
+        event.preventDefault();
+        loginForm.classList.add('was-validated');
+        
+        loginButton.disabled = true;
+        btnText.textContent = 'Logging in...';
+        loginSpinner.classList.remove('d-none');
+        
+        // Submit the form after showing loading state
+        setTimeout(() => {
+          loginForm.submit();
+        }, 100);
+      });
+
+      // Remove validation styling when user starts typing
+      const inputs = loginForm.querySelectorAll('input');
+      inputs.forEach(input => {
+        input.addEventListener('input', function() {
+          if (this.value.length > 0) {
+            this.classList.remove('is-invalid');
+          }
+        });
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,184 @@
+  <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h3 class="footer-title">
+                        <i class="fa-solid fa-graduation-cap me-2"></i>EduLearn
+                    </h3>
+                    <p class="mb-4" style="color: #94a3b8;">Empowering learners worldwide with quality education and expert-led courses.</p>
+                    <div class="social-icons">
+                        <a href="#" class="social-icon"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon"><i class="fa-brands fa-twitter"></i></a>
+                        <a href="#" class="social-icon"><i class="fa-brands fa-linkedin-in"></i></a>
+                        <a href="#" class="social-icon"><i class="fa-brands fa-instagram"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h4 class="footer-title">Company</h4>
+                    <ul class="footer-links">
+                        <li><a href="/about">About Us</a></li>
+                        <li><a href="/careers">Careers</a></li>
+                        <li><a href="/blog">Blog</a></li>
+                        <li><a href="/contact">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-2 col-md-6 mb-4">
+                    <h4 class="footer-title">Support</h4>
+                    <ul class="footer-links">
+                        <li><a href="/help">Help Center</a></li>
+                        <li><a href="/faq">FAQ</a></li>
+                        <li><a href="/shipping-policy">Shipping Policy</a></li>
+                        <li><a href="/refund-policy">Refund Policy</a></li>
+                        <li><a href="/terms">Terms of Service</a></li>
+                        <li><a href="/privacy">Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <h4 class="footer-title">Newsletter</h4>
+                    <p class="mb-3" style="color: #94a3b8;">Subscribe to get updates on new courses</p>
+                    <div class="input-group">
+                        <input type="email" class="form-control bg-transparent text-white border-secondary" 
+                               placeholder="Your email" style="border-color: #334155;">
+                        <button class="btn btn-primary px-4" style="background: #4f46e5; border: none;">Subscribe</button>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="my-4" style="border-color: rgba(255,255,255,0.1)">
+            
+            <div class="text-center" style="color: #94a3b8; font-size: 0.9rem;">
+                <p class="mb-0">&copy; 2024 EduLearn. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Cookie Consent -->
+    <%- include('cookie-consent') %>
+    
+    <script>
+    // Show contact modal if URL has #contact hash or if there's a flash message about registration
+    document.addEventListener('DOMContentLoaded', function() {
+        if (window.location.hash === '#contact' || 
+            (document.querySelector('.alert.alert-info') && 
+             document.querySelector('.alert.alert-info').textContent.includes('contact the developer'))) {
+            const contactModal = new bootstrap.Modal(document.getElementById('contactModal'));
+            contactModal.show();
+        }
+    });
+    </script>
+    
+    <script>
+    // Show contact modal if URL has #contact hash or if there's a flash message about registration
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (window.location.hash === '#contact' || 
+            document.querySelector('.alert.alert-info')?.textContent.includes('contact the developer')) {
+            const contactModal = new bootstrap.Modal(document.getElementById('contactModal'));
+            contactModal.show();
+        }
+    });
+    </script>
+    
+    <script src="/js/theme.js"></script>
+
+    <style>
+        /* Footer */
+        .footer {
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 4rem 0 2rem;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .footer-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: #ffffff;
+            position: relative;
+            padding-bottom: 0.75rem;
+        }
+
+        .footer-title:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 50px;
+            height: 2px;
+            background: #667eea;
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+
+        .footer-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-block;
+            position: relative;
+        }
+
+        .footer-links a:before {
+            content: '→';
+            position: absolute;
+            left: -20px;
+            opacity: 0;
+            transition: all 0.3s ease;
+            color: #667eea;
+        }
+
+        .footer-links a:hover {
+            color: #ffffff;
+            transform: translateX(5px);
+        }
+
+        .footer-links a:hover:before {
+            opacity: 1;
+            left: -15px;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        .social-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #e2e8f0;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .social-icon:hover {
+            background: #667eea;
+            transform: translateY(-3px);
+        }
+
+        @media (max-width: 768px) {
+            .hero-title { font-size: 2.5rem; }
+            .stats-wrapper { flex-direction: column; gap: 1.5rem; }
+            .section-title { font-size: 2rem; }
+            .cta-title { font-size: 2rem; }
+        }
+    </style>

@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('partials/head') %>
+  <title><%= pageTitle || 'About Us - EduLearn' %></title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    /* Hero Section */
+    .about-hero {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 8rem 0 6rem;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .about-hero::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      animation: movePattern 20s linear infinite;
+    }
+
+    @keyframes movePattern {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(60px, 60px); }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      padding: 0.5rem 1.5rem;
+      border-radius: 50px;
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .hero-title {
+      font-size: 3.5rem;
+      font-weight: 800;
+      margin-bottom: 1.5rem;
+      line-height: 1.2;
+    }
+
+    .hero-subtitle {
+      font-size: 1.25rem;
+      opacity: 0.95;
+      max-width: 700px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* Stats Section */
+    .stats-section {
+      background: white;
+      padding: 3rem 0;
+      margin-top: -3rem;
+      position: relative;
+      z-index: 3;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-10px);
+    }
+
+    .stat-number {
+      font-size: 3rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      color: #64748b;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    /* Section Styling */
+    .content-section {
+      padding: 5rem 0;
+    }
+
+    .section-title {
+      font-size: 2.75rem;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 1rem;
+      position: relative;
+    }
+
+    .section-title::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -15px;
+      width: 80px;
+      height: 5px;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      border-radius: 3px;
+    }
+
+    .section-subtitle {
+      font-size: 1.2rem;
+      color: #64748b;
+      line-height: 1.8;
+      margin-bottom: 2rem;
+    }
+
+    /* Feature Cards */
+    .feature-card {
+      background: white;
+      border-radius: 20px;
+      padding: 2.5rem;
+      height: 100%;
+      transition: all 0.3s ease;
+      border: 2px solid #f1f5f9;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 50px rgba(102, 126, 234, 0.2);
+      border-color: #667eea;
+    }
+
+    .feature-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .feature-icon {
+      width: 80px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      font-size: 2rem;
+      border-radius: 16px;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+
+    .feature-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 1rem;
+    }
+
+    .feature-text {
+      color: #64748b;
+      line-height: 1.7;
+      font-size: 1rem;
+    }
+
+    /* Mission Section with Image */
+    .mission-image {
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .mission-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    .mission-image:hover img {
+      transform: scale(1.05);
+    }
+
+    /* Values Section */
+    .values-section {
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    }
+
+    .value-item {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 2rem;
+      padding: 1.5rem;
+      background: white;
+      border-radius: 12px;
+      transition: transform 0.3s ease;
+    }
+
+    .value-item:hover {
+      transform: translateX(10px);
+    }
+
+    .value-icon {
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #667eea15, #764ba215);
+      color: #667eea;
+      font-size: 1.5rem;
+      border-radius: 10px;
+      margin-right: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .value-content h4 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 0.5rem;
+    }
+
+    .value-content p {
+      color: #64748b;
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    /* Developer Section */
+    .developer-section {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: white;
+      padding: 6rem 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .developer-section::before {
+      content: '';
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(102, 126, 234, 0.15) 0%, transparent 70%);
+      top: -250px;
+      right: -250px;
+    }
+
+    .developer-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 24px;
+      padding: 3rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+      z-index: 2;
+    }
+
+    .developer-avatar {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      border: 5px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      margin: 0 auto 2rem;
+      object-fit: cover;
+    }
+
+    .developer-name {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+
+    .developer-role {
+      font-size: 1.25rem;
+      color: #94a3b8;
+      margin-bottom: 1.5rem;
+      font-weight: 600;
+    }
+
+    .developer-bio {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: #cbd5e1;
+      margin-bottom: 2rem;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .developer-skills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: center;
+      margin-bottom: 2rem;
+    }
+
+    .skill-badge {
+      background: rgba(102, 126, 234, 0.2);
+      color: #a5b4fc;
+      padding: 0.5rem 1.25rem;
+      border-radius: 50px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      border: 1px solid rgba(102, 126, 234, 0.3);
+    }
+
+    .social-links {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 2rem;
+    }
+
+    .social-link {
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .social-link:hover {
+      background: rgba(102, 126, 234, 0.3);
+      color: white;
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+
+    .social-link i {
+      font-size: 1.25rem;
+    }
+
+    /* CTA Section */
+    .cta-section {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 6rem 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    .cta-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .cta-title {
+      font-size: 3rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+    }
+
+    .cta-subtitle {
+      font-size: 1.25rem;
+      opacity: 0.95;
+      margin-bottom: 2rem;
+    }
+
+    .btn-cta {
+      background: white;
+      color: #667eea;
+      font-weight: 700;
+      padding: 1rem 3rem;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      border: none;
+      font-size: 1.125rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-cta:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+      color: #667eea;
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+      .hero-title {
+        font-size: 2.5rem;
+      }
+
+      .section-title {
+        font-size: 2.25rem;
+      }
+
+      .stat-number {
+        font-size: 2.5rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .about-hero {
+        padding: 5rem 0 4rem;
+      }
+
+      .hero-title {
+        font-size: 2rem;
+      }
+
+      .hero-subtitle {
+        font-size: 1.1rem;
+      }
+
+      .section-title {
+        font-size: 2rem;
+      }
+
+      .content-section {
+        padding: 3rem 0;
+      }
+
+      .stat-card {
+        margin-bottom: 1.5rem;
+      }
+
+      .developer-name {
+        font-size: 2rem;
+      }
+
+      .cta-title {
+        font-size: 2rem;
+      }
+
+      .value-item {
+        padding: 1rem;
+      }
+
+      .value-item:hover {
+        transform: translateX(5px);
+      }
+    }
+
+    /* 🌙 DARK MODE STYLING FOR ABOUT PAGE */
+    body.dark-theme {
+      background: #0e0e0e !important;
+      color: #e6e6e6 !important;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    /* Dark Hero Section */
+    body.dark-theme .about-hero {
+      background: radial-gradient(circle at top left, #141414 0%, #0d0d0d 40%, #000000 90%) !important;
+    }
+
+    body.dark-theme .hero-title {
+      color: #ffffff !important;
+      font-weight: 900;
+      background: linear-gradient(135deg, #9d7dff 0%, #ff71c8 50%, #ffd86b 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 1px;
+      text-shadow: 0 0 30px rgba(146, 110, 255, 0.4);
+    }
+
+    body.dark-theme .hero-subtitle {
+      color: #dcdcdc !important;
+      text-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+
+    body.dark-theme .hero-badge {
+      background: rgba(255, 255, 255, 0.1) !important;
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Dark Stats Section */
+    body.dark-theme .stats-section {
+      background: #111 !important;
+    }
+
+    body.dark-theme .stat-card {
+      background: #1a1a1a !important;
+      border: 1px solid #333 !important;
+      box-shadow: 0 5px 25px rgba(0,0,0,0.5) !important;
+    }
+
+    body.dark-theme .stat-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 0 30px rgba(124, 91, 255, 0.3) !important;
+    }
+
+    body.dark-theme .stat-number {
+      color: #ffffff !important;
+      background: none !important;
+      -webkit-text-fill-color: #ffffff !important;
+      text-shadow: 0 0 20px rgba(124, 91, 255, 0.5);
+    }
+
+    body.dark-theme .stat-label {
+      color: #bfbfbf !important;
+    }
+
+    /* Dark Section Titles */
+    body.dark-theme .section-title {
+      color: #ffffff !important;
+      font-weight: 800;
+      background: linear-gradient(135deg, #9d7dff, #ff71c8, #ffd86b);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 35px rgba(146, 110, 255, 0.25);
+      text-align: center;
+      width: 100%;
+      display: inline-block;
+    }
+
+    body.dark-theme .section-title::after {
+      background: linear-gradient(135deg, #9d7dff, #ff71c8) !important;
+      box-shadow: 0 0 18px rgba(255, 113, 200, 0.7);
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    body.dark-theme .section-subtitle {
+      color: #bfbfbf !important;
+      text-shadow: 0 0 20px rgba(0,0,0,0.4);
+    }
+
+    /* Dark Feature Cards */
+    body.dark-theme .feature-card {
+      background: #1c1c1c !important;
+      border-color: #333 !important;
+      box-shadow: 0 5px 25px rgba(0,0,0,0.5) !important;
+    }
+
+    body.dark-theme .feature-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 0 30px rgba(124, 91, 255, 0.3) !important;
+      border-color: #7c5bff !important;
+    }
+
+    body.dark-theme .feature-title {
+      color: #ffffff !important;
+    }
+
+    body.dark-theme .feature-text {
+      color: #c9c9c9 !important;
+    }
+
+    /* Dark Values Section */
+    body.dark-theme .values-section {
+      background: #111 !important;
+    }
+
+    body.dark-theme .value-item {
+      background: #1a1a1a !important;
+      border: 1px solid #333 !important;
+    }
+
+    body.dark-theme .value-item:hover {
+      transform: translateX(10px);
+      box-shadow: 0 0 30px rgba(124, 91, 255, 0.3) !important;
+    }
+
+    body.dark-theme .value-icon {
+      background: rgba(124, 91, 255, 0.2) !important;
+      color: #9b87ff !important;
+    }
+
+    body.dark-theme .value-content h4 {
+      color: #ffffff !important;
+    }
+
+    body.dark-theme .value-content p {
+      color: #bfbfbf !important;
+    }
+
+    /* Dark Developer Section */
+    body.dark-theme .developer-section {
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%) !important;
+    }
+
+    body.dark-theme .developer-card {
+      background: rgba(26, 26, 26, 0.8) !important;
+      border-color: rgba(124, 91, 255, 0.3) !important;
+    }
+
+    body.dark-theme .developer-name {
+      color: #ffffff !important;
+      background: linear-gradient(135deg, #9d7dff, #ff71c8, #ffd86b);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    body.dark-theme .developer-role {
+      color: #bfbfbf !important;
+    }
+
+    body.dark-theme .developer-bio {
+      color: #dcdcdc !important;
+    }
+
+    body.dark-theme .skill-badge {
+      background: rgba(124, 91, 255, 0.3) !important;
+      color: #bfbfbf !important;
+      border-color: rgba(124, 91, 255, 0.5) !important;
+    }
+
+    body.dark-theme .social-link {
+      background: rgba(255, 255, 255, 0.1) !important;
+      border-color: rgba(255, 255, 255, 0.2) !important;
+      color: #cfcfcf !important;
+    }
+
+    body.dark-theme .social-link:hover {
+      background: rgba(124, 91, 255, 0.3) !important;
+      color: #ffffff !important;
+      box-shadow: 0 0 30px rgba(124, 91, 255, 0.5) !important;
+    }
+
+    /* Dark CTA Section */
+    body.dark-theme .cta-section {
+      background: linear-gradient(135deg, #151515 0%, #000 100%) !important;
+    }
+
+    body.dark-theme .cta-title {
+      color: #ffffff !important;
+      text-shadow: 0 0 25px rgba(120, 93, 255, 0.4);
+    }
+
+    body.dark-theme .cta-subtitle {
+      color: #dcdcdc !important;
+    }
+
+    body.dark-theme .btn-cta {
+      background: linear-gradient(135deg, #9d7dff, #ff71c8) !important;
+      color: white !important;
+      box-shadow: 0 0 25px rgba(124, 91, 255, 0.3) !important;
+    }
+
+    body.dark-theme .btn-cta:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0 40px rgba(255, 113, 200, 0.65) !important;
+    }
+
+    /* Dark Text Elements */
+    body.dark-theme .text-muted {
+      color: #bfbfbf !important;
+    }
+
+    body.dark-theme .text-white {
+      color: #ffffff !important;
+    }
+
+    body.dark-theme .text-white-50 {
+      color: rgba(255, 255, 255, 0.5) !important;
+    }
+
+    /* Dark Why Choose EduLearn Section */
+    body.dark-theme .content-section[style*="f8fafc"] {
+      background: linear-gradient(135deg, #111 0%, #1a1a1a 100%) !important;
+    }
+  </style>
+</head>
+<body class="">
+  <%- include('partials/navbar') %>
+
+  <!-- Hero Section -->
+  <section class="about-hero text-center">
+    <div class="container hero-content">
+      <div class="hero-badge">
+        <i class="fas fa-graduation-cap me-2"></i>
+        Learning Platform
+      </div>
+      <h1 class="hero-title">Welcome to <span class="text-white">EduLearn</span></h1>
+      <p class="hero-subtitle">Empowering learners worldwide with accessible, high-quality online education. Connect with expert instructors and unlock your potential through engaging courses designed for real-world success.</p>
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section class="stats-section">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="stat-card">
+            <div class="stat-number">10K+</div>
+            <div class="stat-label">Active Students</div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="stat-card">
+            <div class="stat-number">500+</div>
+            <div class="stat-label">Quality Courses</div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="stat-card">
+            <div class="stat-number">100+</div>
+            <div class="stat-label">Expert Instructors</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Mission Section -->
+  <section class="content-section">
+    <div class="container">
+      <div class="row align-items-center g-5">
+        <div class="col-lg-6">
+          <h2 class="section-title">Our Mission</h2>
+          <p class="section-subtitle">At <strong>EduLearn</strong>, we're on a mission to democratize education and make quality learning accessible to everyone, everywhere.</p>
+          <p class="text-muted mb-4" style="font-size: 1.05rem; line-height: 1.8;">
+            We believe that education is the most powerful tool for personal growth and social change. Our platform bridges the gap between passionate instructors and eager learners, creating a vibrant community focused on knowledge sharing and skill development.
+          </p>
+          <p class="text-muted" style="font-size: 1.05rem; line-height: 1.8;">
+            Whether you're looking to advance your career, explore a new hobby, or transform your life through learning, EduLearn provides the tools, resources, and support you need to succeed.
+          </p>
+        </div>
+        <div class="col-lg-6">
+          <div class="mission-image">
+            <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" 
+                 alt="Students Learning Together" 
+                 class="img-fluid"
+                 onerror="this.src='https://source.unsplash.com/1000x600/?education,students';">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Choose Us -->
+  <section class="content-section" style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 class="section-title d-inline-block">Why Choose EduLearn?</h2>
+        <p class="section-subtitle mt-4">Experience the difference with our innovative and comprehensive learning platform</p>
+      </div>
+      
+      <div class="row g-4">
+        <div class="col-md-6 col-lg-4">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-rocket"></i>
+            </div>
+            <h4 class="feature-title">Modern Technology</h4>
+            <p class="feature-text">Built with cutting-edge technologies including Node.js, Express, MongoDB, and EJS to deliver a fast, reliable, and seamless learning experience.</p>
+          </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-4">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-chalkboard-teacher"></i>
+            </div>
+            <h4 class="feature-title">Expert Instructors</h4>
+            <p class="feature-text">Learn from industry professionals and experienced educators who bring real-world expertise and passion for teaching to every course.</p>
+          </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-4">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-book-open"></i>
+            </div>
+            <h4 class="feature-title">Rich Content</h4>
+            <p class="feature-text">Access high-quality video lectures, interactive exercises, downloadable resources, and comprehensive course materials designed for effective learning.</p>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-certificate"></i>
+            </div>
+            <h4 class="feature-title">Certifications</h4>
+            <p class="feature-text">Earn recognized certificates upon course completion to showcase your skills and boost your professional credibility.</p>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-mobile-alt"></i>
+            </div>
+            <h4 class="feature-title">Learn Anywhere</h4>
+            <p class="feature-text">Study at your own pace with our fully responsive platform that works seamlessly on desktop, tablet, and mobile devices.</p>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fas fa-headset"></i>
+            </div>
+            <h4 class="feature-title">24/7 Support</h4>
+            <p class="feature-text">Get help whenever you need it with our dedicated support team ready to assist you throughout your learning journey.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Values Section -->
+  <section class="content-section values-section">
+    <div class="container">
+      <div class="row align-items-center g-5">
+        <div class="col-lg-6">
+          <h2 class="section-title">Our Core Values</h2>
+          <p class="section-subtitle">The principles that guide everything we do at EduLearn</p>
+          
+          <div class="value-item">
+            <div class="value-icon">
+              <i class="fas fa-star"></i>
+            </div>
+            <div class="value-content">
+              <h4>Excellence</h4>
+              <p>We strive for excellence in every course, feature, and interaction, ensuring the highest quality learning experience.</p>
+            </div>
+          </div>
+
+          <div class="value-item">
+            <div class="value-icon">
+              <i class="fas fa-handshake"></i>
+            </div>
+            <div class="value-content">
+              <h4>Accessibility</h4>
+              <p>Education should be available to everyone. We work hard to make learning accessible and affordable for all.</p>
+            </div>
+          </div>
+
+          <div class="value-item">
+            <div class="value-icon">
+              <i class="fas fa-lightbulb"></i>
+            </div>
+            <div class="value-content">
+              <h4>Innovation</h4>
+              <p>We continuously innovate and improve our platform to provide the best possible learning environment.</p>
+            </div>
+          </div>
+
+          <div class="value-item">
+            <div class="value-icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <div class="value-content">
+              <h4>Community</h4>
+              <p>We foster a supportive learning community where students and instructors can connect, collaborate, and grow together.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-6">
+          <div class="mission-image">
+            <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" 
+                 alt="Team Collaboration" 
+                 class="img-fluid"
+                 onerror="this.src='https://source.unsplash.com/1000x600/?teamwork,collaboration';">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Developer Section -->
+  <section class="developer-section">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 class="section-title text-white d-inline-block" style="text-align: center;">Meet the Developer</h2>
+        <p class="section-subtitle text-white-50 mt-4">The passionate mind behind EduLearn</p>
+      </div>
+      
+      <div class="row justify-content-center">
+        <div class="col-lg-10">
+          <div class="developer-card text-center">
+            <img src="https://ui-avatars.com/api/?name=Sunil+Soni&size=400&background=667eea&color=fff&bold=true" 
+                 class="developer-avatar" 
+                 alt="Sunil Soni"
+                 onerror="this.src='https://ui-avatars.com/api/?name=Sunil+Soni&size=400&background=667eea&color=fff&bold=true';">
+            
+            <h3 class="developer-name">Sunil Soni</h3>
+            <p class="developer-role">Full Stack Developer (MERN)</p>
+            
+            <p class="developer-bio">
+              Passionate full-stack developer with expertise in building modern, scalable web applications. 
+              Specialized in the MERN stack with a strong focus on creating intuitive user experiences and writing clean, maintainable code. 
+              Dedicated to leveraging technology to make education more accessible and engaging for learners worldwide.
+            </p>
+
+            <div class="developer-skills">
+              <span class="skill-badge">MongoDB</span>
+              <span class="skill-badge">Express.js</span>
+              <span class="skill-badge">React</span>
+              <span class="skill-badge">Node.js</span>
+              <span class="skill-badge">JavaScript</span>
+              <span class="skill-badge">EJS</span>
+              <span class="skill-badge">REST APIs</span>
+              <span class="skill-badge">Git</span>
+            </div>
+
+            <div class="social-links">
+              <a href="https://www.linkedin.com/in/sunil-soni-a99aa324b/" target="_blank" class="social-link" title="LinkedIn">
+                <i class="fab fa-linkedin-in"></i>
+              </a>
+              <a href="https://github.com/s4sunilsoni7737" target="_blank" class="social-link" title="GitHub">
+                <i class="fab fa-github"></i>
+              </a>
+              <a href="https://mail.google.com/mail/?view=cm&fs=1&to=s4sunilsoni7737@gmail.com" target="_blank" class="social-link" title="Email">
+                <i class="fas fa-envelope"></i>
+              </a>
+              <a href="https://s4sunilsoni7737.github.io/portfolio/" target="_blank" class="social-link portfolio-link" title="Portfolio" style="background: linear-gradient(135deg, #667eea, #764ba2); transform: scale(1.1); box-shadow: 0 5px 20px rgba(102, 126, 234, 0.5);">
+                <i class="fas fa-briefcase"></i>
+              </a>
+              <a href="https://twitter.com/" target="_blank" class="social-link" title="Twitter">
+                <i class="fab fa-twitter"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section text-center">
+    <div class="container cta-content">
+      <h2 class="cta-title">Ready to Start Your Learning Journey?</h2>
+      <p class="cta-subtitle">Join thousands of students already learning and growing with EduLearn</p>
+      <a href="/courses" class="btn-cta">
+        <i class="fas fa-book-reader me-2"></i>
+        Explore Courses Now
+      </a>
+    </div>
+  </section>
+
+  <%- include('partials/footer') %>
+</body>
+</html>

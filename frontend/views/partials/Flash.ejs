@@ -1,0 +1,63 @@
+<% if (typeof success_msg !== 'undefined' && success_msg && success_msg.length > 0) { %>
+  <div class="alert alert-success alert-dismissible fade show flash-message shadow-sm" role="alert">
+    <i class="fas fa-check-circle me-2"></i>
+    <%= success_msg %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% } %>
+
+<% if (typeof error_msg !== 'undefined' && error_msg && error_msg.length > 0) { %>
+  <div class="alert alert-danger alert-dismissible fade show flash-message shadow-sm" role="alert">
+    <i class="fas fa-exclamation-triangle me-2"></i>
+    <%= error_msg %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% } %>
+
+<% if (typeof info_msg !== 'undefined' && info_msg && info_msg.length > 0) { %>
+  <div class="alert alert-info alert-dismissible fade show flash-message shadow-sm" role="alert">
+    <i class="fas fa-info-circle me-2"></i>
+    <%= info_msg %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% } %>
+
+<% if (typeof warning_msg !== 'undefined' && warning_msg && warning_msg.length > 0) { %>
+  <div class="alert alert-warning alert-dismissible fade show flash-message shadow-sm" role="alert">
+    <i class="fas fa-exclamation-circle me-2"></i>
+    <%= warning_msg %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% } %>
+
+<style>
+  .flash-message {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 600px;
+    z-index: 2000;
+    animation: fadeInDown 0.6s ease, fadeOut 0.6s ease 5s forwards;
+  }
+
+  @keyframes fadeInDown {
+    from { opacity: 0; transform: translate(-50%, -20px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+  }
+
+  @keyframes fadeOut {
+    to { opacity: 0; transform: translate(-50%, -10px); }
+  }
+</style>
+
+<script>
+  // Auto hide flash messages after 5 seconds
+  setTimeout(() => {
+    document.querySelectorAll('.flash-message').forEach(msg => {
+      msg.classList.remove('show');
+      msg.style.display = 'none';
+    });
+  }, 5000);
+</script>

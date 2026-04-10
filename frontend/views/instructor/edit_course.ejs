@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head') %>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+  <%- include('../partials/navbar') %>
+
+  <!-- Hero Section -->
+  <section class="bg-primary text-white py-5 mb-4">
+    <div class="container">
+      <div class="row justify-content-center text-center">
+        <div class="col-lg-8">
+          <h1 class="display-5 fw-bold mb-3">
+            <i class="fas fa-edit me-2"></i> Edit Course
+          </h1>
+          <p class="lead mb-0">Update course details or change the thumbnail.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Edit Course Form -->
+  <section class="pb-5">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-8 col-xl-7">
+          <div class="card shadow-sm border-0">
+            <div class="card-body p-4 p-md-5">
+              <form action="/courses/instructor/edit/<%= course._id %>?_method=PUT" 
+                    method="POST" 
+                    enctype="multipart/form-data" 
+                    class="needs-validation" 
+                    novalidate>
+
+                <!-- Title -->
+                <div class="mb-4">
+                  <label for="title" class="form-label fw-semibold">
+                    <i class="fas fa-heading me-2 text-primary"></i>Course Title
+                  </label>
+                  <input 
+                    type="text" 
+                    name="title" 
+                    id="title" 
+                    class="form-control form-control-lg"
+                    value="<%= course.title %>" 
+                    required
+                    minlength="3"
+                    maxlength="100">
+                  <div class="invalid-feedback">
+                    Please provide a course title (3-100 characters).
+                  </div>
+                </div>
+
+                <!-- Description -->
+                <div class="mb-4">
+                  <label for="description" class="form-label fw-semibold">
+                    <i class="fas fa-align-left me-2 text-primary"></i>Description
+                  </label>
+                  <textarea 
+                    name="description" 
+                    id="description" 
+                    rows="5" 
+                    class="form-control" 
+                    required
+                    minlength="10"
+                    maxlength="1000"><%= course.description %></textarea>
+                  <div class="invalid-feedback">
+                    Please provide a description (10-1000 characters).
+                  </div>
+                  <div class="form-text">
+                    <span id="charCount"><%= course.description.length %></span>/1000 characters
+                  </div>
+                </div>
+
+                <!-- Price -->
+                <div class="mb-4">
+                  <label for="price" class="form-label fw-semibold">
+                    <i class="fas fa-tags me-2 text-primary"></i>Price (₹)
+                  </label>
+                  <input 
+                    type="number" 
+                    name="price" 
+                    id="price" 
+                    class="form-control"
+                    value="<%= course.price %>" 
+                    min="0" 
+                    max="999999"
+                    step="1"
+                    required>
+                  <div class="invalid-feedback">
+                    Please enter a valid price (0 or more).
+                  </div>
+                </div>
+
+                <!-- Featured Toggle -->
+                <div class="mb-4">
+                  <div class="card bg-light border-0">
+                    <div class="card-body">
+                      <div class="form-check form-switch">
+                        <input 
+                          class="form-check-input" 
+                          type="checkbox" 
+                          role="switch" 
+                          id="featured" 
+                          name="featured" 
+                          <%= course.featured ? 'checked' : '' %>>
+                        <label class="form-check-label fw-medium" for="featured">
+                          <i class="fas fa-star me-2 text-warning"></i>Feature this course on the homepage
+                        </label>
+                      </div>
+                      <small class="text-muted d-block mt-2">
+                        Featured courses appear in the popular section on the homepage.
+                      </small>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Certificate Toggle -->
+                <div class="mb-4">
+                  <div class="card bg-light border-0">
+                    <div class="card-body">
+                      <div class="form-check form-switch">
+                        <input 
+                          class="form-check-input" 
+                          type="checkbox" 
+                          role="switch" 
+                          id="certificateAccess" 
+                          name="certificateAccess" 
+                          <%= course.certificateAccess ? 'checked' : '' %>>
+                        <label class="form-check-label fw-medium" for="certificateAccess">
+                          <i class="fas fa-certificate me-2 text-primary"></i>Enable Certificate of Completion
+                        </label>
+                      </div>
+                      <small class="text-muted d-block mt-2">
+                        Students will receive a certificate upon completing all lessons in this course.
+                      </small>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Thumbnail Section -->
+                <div class="mb-4">
+                  <label class="form-label fw-semibold d-block mb-3">
+                    <i class="fas fa-images me-2 text-primary"></i>Course Thumbnail
+                  </label>
+                  
+                  <div class="row g-4">
+                    <!-- Current Thumbnail -->
+                    <div class="col-md-6">
+                      <div class="card h-100">
+                        <div class="card-header bg-light py-2">
+                          <h6 class="mb-0">
+                            <i class="fas fa-image me-2 text-primary"></i>Current Thumbnail
+                            <% if (course.thumbnail && course.thumbnail.public_id) { %>
+                              <button type="button" 
+                                      id="removeThumbnailBtn" 
+                                      class="btn btn-sm btn-outline-danger float-end"
+                                      title="Remove thumbnail">
+                                <i class="fas fa-times me-1"></i> Remove
+                              </button>
+                            <% } %>
+                          </h6>
+                        </div>
+                        <div class="card-body text-center p-3">
+                          <% 
+                            const defaultThumbnail = '/images/course_thumbnail.png';
+                            const currentThumbnailUrl = (course.thumbnail && course.thumbnail.url) ? 
+                              (course.thumbnail.url.startsWith('http') ? course.thumbnail.url : `${course.thumbnail.url}`) : 
+                              defaultThumbnail;
+                          %>
+                          <img 
+                              id="current-thumb" 
+                              src="<%= currentThumbnailUrl %>" 
+                              class="img-fluid rounded shadow-sm"
+                              style="max-height: 200px; width: 100%; object-fit: cover;"
+                              alt="Current thumbnail"
+                              onerror="this.onerror=null; this.src='<%= defaultThumbnail %>';">
+                        </div>
+                        <div class="card-footer bg-transparent small text-muted">
+                          Current thumbnail that will be replaced
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- New Thumbnail Preview -->
+                    <div class="col-md-6">
+                      <div class="card h-100">
+                        <div class="card-header bg-light py-2">
+                          <h6 class="mb-0">
+                            <i class="fas fa-upload me-2 text-primary"></i>New Thumbnail
+                          </h6>
+                        </div>
+                        <div class="card-body text-center p-3">
+                          <div id="previewContainer" class="d-flex align-items-center justify-content-center" style="min-height: 200px;">
+                            <div class="text-muted" id="noPreviewText">
+                              <i class="fas fa-image fa-3x mb-2 d-block"></i>
+                              No new thumbnail selected
+                            </div>
+                            <img 
+                              id="preview" 
+                              src="#" 
+                              class="img-fluid rounded shadow-sm d-none"
+                              style="max-height: 200px; width: 100%; object-fit: cover;"
+                              alt="New thumbnail preview">
+                          </div>
+                        </div>
+                        <div class="card-footer bg-transparent small text-muted">
+                          Preview of the new thumbnail to be uploaded
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                  <input type="hidden" name="removeThumbnail" id="removeThumbnail" value="false">
+                </div>
+
+                <!-- Upload New Thumbnail -->
+                <div class="mb-4" style="margin-left:50px; margin-right:50px;">
+                  <label for="thumbnail" class="form-label fw-semibold">
+                    <i class="fas fa-upload me-2 text-primary"></i>Upload New Thumbnail
+                  </label>
+                  <input 
+                    type="file" 
+                    name="thumbnail" 
+                    id="thumbnail" 
+                    class="form-control" 
+                    accept="image/*">
+                  <small class="form-text text-muted d-block mt-2">
+                    <i class="fas fa-info-circle me-1"></i>Leave blank to keep the current image. (Max 5MB)
+                    <span class="d-block text-primary fw-medium mt-1">Optional - A default thumbnail will be used if none is provided.</span>
+                  </small>
+                  <div id="fileSizeWarning" class="alert alert-warning mt-2 d-none">
+                    <i class="fa fa-exclamation-triangle me-2"></i>File size exceeds 5MB limit.
+                  </div>
+                </div>
+
+                <!-- New Thumbnail Preview -->
+                <div id="previewContainer" class="mb-4 d-none">
+                  <label class="form-label fw-semibold d-block">
+                    <i class="fas fa-eye me-2 text-primary"></i>New Thumbnail Preview
+                  </label>
+                  <div class="text-center p-3 bg-light rounded">
+                    <img 
+                      id="preview" 
+                      src="" 
+                      class="img-fluid rounded shadow-sm"
+                      style="max-height: 300px; object-fit: cover;"
+                      alt="New thumbnail preview">
+                  </div>
+                </div>
+
+                <!-- Buttons -->
+                <div class="d-grid gap-2 d-md-flex justify-content-md-between mb-2" style="margin-left:50px; margin-right:50px;">
+                  <a href="/courses/instructor/dashboard" class="btn btn-outline-secondary btn-lg">
+                    <i class="fas fa-arrow-left me-2"></i> Back
+                  </a>
+                  <button type="submit" class="btn btn-success btn-lg" id="submitBtn">
+                    <i class="fas fa-save me-2"></i> Update Course
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <%- include('../partials/footer') %>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Bootstrap form validation
+    (function() {
+      'use strict';
+      const form = document.querySelector('.needs-validation');
+      
+      form.addEventListener('submit', function(event) {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        } else {
+          // Show loading state
+          const submitBtn = document.getElementById('submitBtn');
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = `
+            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            Updating Course...
+          `;
+        }
+        form.classList.add('was-validated');
+      }, false);
+    })();
+
+    // Character counter for description
+    const descriptionField = document.getElementById('description');
+    const charCount = document.getElementById('charCount');
+    
+    if (descriptionField && charCount) {
+      descriptionField.addEventListener('input', function() {
+        charCount.textContent = this.value.length;
+      });
+    }
+    
+    // Thumbnail handling elements
+    const removeThumbnailBtn = document.getElementById('removeThumbnailBtn');
+    const removeThumbnailInput = document.getElementById('removeThumbnail');
+    const thumbnailInput = document.getElementById('thumbnail');
+    const currentThumb = document.getElementById('current-thumb');
+    const previewImg = document.getElementById('preview');
+    const noPreviewText = document.getElementById('noPreviewText');
+    const defaultThumbnail = '/images/course_thumbnail.png';
+    
+    // Function to update thumbnail preview
+    function updateThumbnailPreview(file) {
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          // Show the new thumbnail preview
+          previewImg.src = e.target.result;
+          previewImg.classList.remove('d-none');
+          noPreviewText.classList.add('d-none');
+          
+          // Reset remove thumbnail flag since we're uploading a new image
+          removeThumbnailInput.value = 'false';
+          
+          // Enable remove button if it was disabled
+          if (removeThumbnailBtn) {
+            removeThumbnailBtn.disabled = false;
+            removeThumbnailBtn.innerHTML = '<i class="fas fa-times me-1"></i> Remove';
+            removeThumbnailBtn.classList.remove('btn-outline-secondary');
+            removeThumbnailBtn.classList.add('btn-outline-danger');
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+    
+    // Handle Remove Thumbnail button
+    if (removeThumbnailBtn) {
+      removeThumbnailBtn.addEventListener('click', function() {
+        // Set the hidden input to indicate thumbnail should be removed
+        removeThumbnailInput.value = 'true';
+        
+        // Update the preview to show default thumbnail
+        currentThumb.src = defaultThumbnail;
+        
+        // Disable the remove button after clicking
+        this.disabled = true;
+        this.innerHTML = '<i class="fas fa-check me-1"></i> Will be removed';
+        this.classList.remove('btn-outline-danger');
+        this.classList.add('btn-outline-secondary');
+        
+        // Clear and disable file input
+        if (thumbnailInput) {
+          thumbnailInput.value = '';
+          resetPreview();
+        }
+      });
+    }
+    
+    // Handle new thumbnail selection
+    if (thumbnailInput) {
+      thumbnailInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+          // Validate file type
+          if (!file.type.match('image.*')) {
+            alert('Please select an image file (JPEG, PNG, etc.)');
+            this.value = '';
+            return;
+          }
+          
+          // Validate file size (5MB max)
+          const maxSize = 5 * 1024 * 1024; // 5MB
+          if (file.size > maxSize) {
+            alert('Image size should be less than 5MB');
+            this.value = '';
+            return;
+          }
+          
+          updateThumbnailPreview(file);
+        } else {
+          resetPreview();
+        }
+      });
+    }
+    
+    // Reset preview to initial state
+    function resetPreview() {
+      previewImg.src = '#';
+      previewImg.classList.add('d-none');
+      noPreviewText.classList.remove('d-none');
+      
+      // If we have a remove button and the thumbnail is marked for removal, keep it that way
+      if (removeThumbnailBtn && removeThumbnailInput.value === 'true') {
+        return;
+      }
+      
+      // Otherwise, reset the remove thumbnail flag
+      if (removeThumbnailInput) {
+        removeThumbnailInput.value = 'false';
+      }
+    }
+
+    // Thumbnail preview with validation
+    const preview = document.getElementById('preview');
+    const previewContainer = document.getElementById('previewContainer');
+    const fileSizeWarning = document.getElementById('fileSizeWarning');
+    const maxSize = 5 * 1024 * 1024; // 5MB
+
+    thumbnailInput.addEventListener('change', function(event) {
+      const file = event.target.files[0];
+
+      if (file) {
+        // Validate file size
+        if (file.size > maxSize) {
+          this.setCustomValidity('File size must be less than 5MB');
+          fileSizeWarning.classList.remove('d-none');
+          previewContainer.classList.add('d-none');
+          currentThumb.style.opacity = '1';
+          return;
+        }
+        
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+          this.setCustomValidity('Please upload an image file');
+          previewContainer.classList.add('d-none');
+          currentThumb.style.opacity = '1';
+          return;
+        }
+        
+        this.setCustomValidity('');
+        fileSizeWarning.classList.add('d-none');
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          preview.src = e.target.result;
+          previewContainer.classList.remove('d-none');
+          currentThumb.style.opacity = '0.5';
+          
+          // Smooth scroll to preview
+          setTimeout(() => {
+            previewContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }, 100);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        previewContainer.classList.add('d-none');
+        currentThumb.style.opacity = '1';
+        fileSizeWarning.classList.add('d-none');
+      }
+    });
+  </script>
+
+  <style>
+    .form-control:focus,
+    .form-select:focus {
+      border-color: #0d6efd;
+      box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+    
+    .card {
+      border-radius: 1rem;
+    }
+    
+    img {
+      transition: opacity 0.3s ease;
+    }
+    
+    @media (max-width: 768px) {
+      .card-body {
+        padding: 1.5rem !important;
+      }
+    }
+  </style>
+</body>
+</html>

@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head') %>
+  <style>
+    .btn-loading {
+      position: relative;
+      pointer-events: none;
+    }
+    .btn-loading .spinner-border {
+      margin-right: 8px;
+      width: 1rem;
+      height: 1rem;
+      border-width: 0.15em;
+    }
+    .password-toggle {
+      cursor: pointer;
+      user-select: none;
+    }
+    .otp-input {
+      letter-spacing: 8px;
+      font-size: 1.5rem;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    /* 🌙 DARK MODE STYLING FOR REGISTER PAGE */
+    body.dark-theme {
+      background: #0e0e0e !important;
+      color: #e6e6e6 !important;
+    }
+
+    body.dark-theme .bg-light {
+      background: #0e0e0e !important;
+    }
+
+    body.dark-theme .bg-white {
+      background: #1a1a1a !important;
+      border: 1px solid #333 !important;
+    }
+
+    body.dark-theme h3 {
+      color: #ffffff !important;
+      font-weight: 700;
+      background: linear-gradient(135deg, #9d7dff, #ff71c8, #ffd86b);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 1px;
+      text-shadow: 0 0 30px rgba(146, 110, 255, 0.4);
+    }
+
+    body.dark-theme .form-label {
+      color: #e6e6e6 !important;
+      font-weight: 500;
+    }
+
+    body.dark-theme .form-control {
+      background: #2a2a2a !important;
+      border: 1px solid #444 !important;
+      color: #ffffff !important;
+    }
+
+    body.dark-theme .form-control:focus {
+      background: #2a2a2a !important;
+      border-color: #7c5bff !important;
+      color: #ffffff !important;
+      box-shadow: 0 0 0 0.2rem rgba(124, 91, 255, 0.25) !important;
+    }
+
+    body.dark-theme .form-control::placeholder {
+      color: #999 !important;
+    }
+
+    body.dark-theme .otp-input {
+      background: #2a2a2a !important;
+      border: 1px solid #444 !important;
+      color: #ffffff !important;
+    }
+
+    body.dark-theme .otp-input:focus {
+      border-color: #7c5bff !important;
+      box-shadow: 0 0 0 0.2rem rgba(124, 91, 255, 0.25) !important;
+    }
+
+    body.dark-theme .input-group .btn-outline-secondary {
+      background: #2a2a2a !important;
+      border: 1px solid #444 !important;
+      color: #e6e6e6 !important;
+    }
+
+    body.dark-theme .input-group .btn-outline-secondary:hover {
+      background: #3a3a3a !important;
+      border-color: #7c5bff !important;
+      color: #ffffff !important;
+    }
+
+    body.dark-theme .btn-primary {
+      background: linear-gradient(135deg, #9d7dff, #ff71c8) !important;
+      border: none !important;
+      color: #ffffff !important;
+      font-weight: 600;
+    }
+
+    body.dark-theme .btn-primary:hover {
+      background: linear-gradient(135deg, #7c5bff, #ff51c8) !important;
+      box-shadow: 0 0 20px rgba(255, 113, 200, 0.4) !important;
+      transform: translateY(-2px);
+    }
+
+    body.dark-theme .btn-secondary {
+      background: #2a2a2a !important;
+      border: 1px solid #444 !important;
+      color: #e6e6e6 !important;
+    }
+
+    body.dark-theme .btn-secondary:hover {
+      background: #3a3a3a !important;
+      border-color: #7c5bff !important;
+      color: #ffffff !important;
+    }
+
+    body.dark-theme .text-primary {
+      color: #9b87ff !important;
+    }
+
+    body.dark-theme .text-muted {
+      color: #bfbfbf !important;
+    }
+
+    body.dark-theme .text-decoration-none {
+      color: #9b87ff !important;
+    }
+
+    body.dark-theme .text-decoration-none:hover {
+      color: #7c5bff !important;
+    }
+
+    body.dark-theme .alert-danger {
+      background: #2a1a1a !important;
+      border: 1px solid #ef4444 !important;
+      color: #fca5a5 !important;
+    }
+
+    body.dark-theme .alert-success {
+      background: #1a2a1a !important;
+      border: 1px solid #22c55e !important;
+      color: #86efac !important;
+    }
+
+    body.dark-theme .invalid-feedback {
+      color: #fca5a5 !important;
+    }
+
+    body.dark-theme .form-text {
+      color: #999 !important;
+    }
+
+    body.dark-theme .btn-close {
+      filter: invert(1);
+    }
+
+    body.dark-theme .form-select {
+      background: #2a2a2a !important;
+      border: 1px solid #444 !important;
+      color: #ffffff !important;
+    }
+
+    body.dark-theme .form-select:focus {
+      background: #2a2a2a !important;
+      border-color: #7c5bff !important;
+      color: #ffffff !important;
+      box-shadow: 0 0 0 0.2rem rgba(124, 91, 255, 0.25) !important;
+    }
+  </style>
+</head>
+<body class="bg-light">
+  <% if (typeof session === 'undefined') { session = {}; } %>
+  <%- include('../partials/navbar', { session }) %>
+
+  <div class="container d-flex justify-content-center align-items-center" style="min-height: 85vh;">
+    <div class="col-md-6 col-lg-5 bg-white p-4 rounded shadow-sm">
+      <h3 class="text-center mb-4"><%= showOTP ? 'Verify Your Email' : 'Create Your Account 🧑‍💻' %></h3>
+
+      <!-- Display error messages -->
+      <% if (typeof error_msg !== 'undefined' && error_msg) { %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <%= typeof error_msg === 'string' ? error_msg : error_msg.join('<br>') %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      <% } %>
+
+      <!-- Display success messages -->
+      <% if (typeof success_msg !== 'undefined' && success_msg) { %>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          <%= success_msg %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      <% } %>
+
+      <% if (!showOTP) { %>
+        <!-- Registration Form -->
+        <form id="registerForm" action="/register" method="POST" class="needs-validation" novalidate>
+          <div class="row">
+            <div class="col-12 mb-3">
+              <label for="name" class="form-label">Full Name</label>
+              <input type="text" class="form-control" id="name" name="name" 
+                    placeholder="Enter your full name" 
+                    value="<%= (typeof formData !== 'undefined' && formData.name) || '' %>" 
+                    minlength="3"
+                    required>
+              <div class="invalid-feedback">
+                Please enter your full name (minimum 3 characters).
+              </div>
+            </div>
+
+            <div class="col-12 mb-3">
+              <label for="email" class="form-label">Email Address</label>
+              <input type="email" class="form-control" id="email" name="email" 
+                    placeholder="Enter your email" 
+                    value="<%= (typeof formData !== 'undefined' && formData.email) || '' %>" 
+                    required>
+              <div class="invalid-feedback">
+                Please enter a valid email address.
+              </div>
+            </div>
+
+            <div class="col-12 mb-3">
+              <label for="phone" class="form-label">Phone Number</label>
+              <input type="tel" class="form-control" id="phone" name="phone" 
+                    placeholder="Enter your phone number (optional)" 
+                    value="<%= (typeof formData !== 'undefined' && formData.phone) || '' %>"
+                    pattern="[0-9]{10}">
+              <div class="form-text">Optional. Format: 1234567890 (10 digits)</div>
+              <div class="invalid-feedback">
+                Please enter a valid 10-digit phone number.
+              </div>
+            </div>
+
+            <div class="col-12 mb-3">
+              <label for="password" class="form-label">Password</label>
+              <div class="input-group has-validation">
+                <input type="password" class="form-control" id="password" name="password" 
+                      placeholder="Create password" 
+                      minlength="6"
+                      required>
+                <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('password')" tabindex="-1">
+                  <i class="fa fa-eye"></i>
+                </button>
+                <div class="invalid-feedback">
+                  Password must be at least 6 characters long.
+                </div>
+              </div>
+              <div class="form-text">Minimum 6 characters</div>
+            </div>
+
+            <div class="col-12 mb-3">
+              <label for="password2" class="form-label">Confirm Password</label>
+              <div class="input-group has-validation">
+                <input type="password" class="form-control" id="password2" name="password2" 
+                      placeholder="Confirm your password" 
+                      required>
+                <button type="button" class="btn btn-outline-secondary" onclick="togglePassword('password2')" tabindex="-1">
+                  <i class="fa fa-eye"></i>
+                </button>
+                <div class="invalid-feedback" id="password2Feedback">
+                  Please confirm your password.
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12 mb-4">
+              <label for="role" class="form-label">Register as</label>
+              <select id="role" name="role" class="form-select" required>
+                <option value="student" <%= (typeof formData !== 'undefined' && formData.role === 'student') ? 'selected' : 'selected' %>>Student</option>
+                <!-- <option value="instructor" <%= (typeof formData !== 'undefined' && formData.role === 'instructor') ? 'selected' : '' %>>Instructor</option> -->
+              </select>
+              <div class="invalid-feedback">
+                Please select your role.
+              </div>
+            </div>
+          </div>
+
+          <!-- Terms and Privacy Checkbox -->
+          <div class="form-check mb-3">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="termsCheck"
+              name="termsCheck"
+              <%= (typeof formData !== 'undefined' && formData.termsCheck) ? 'checked' : '' %>
+              required
+            />
+            <label class="form-check-label" for="termsCheck">
+              I agree to the
+              <a href="/terms" target="_blank" class="text-primary">Terms & Conditions</a>
+              and
+              <a href="/privacy" target="_blank" class="text-primary">Privacy Policy</a>.
+            </label>
+            <div class="invalid-feedback">
+              You must accept the Terms & Conditions and Privacy Policy to continue.
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-success w-100 py-2" id="registerButton">
+            <span class="btn-text">Continue to Verification</span>
+            <span class="spinner-border spinner-border-sm d-none ms-2" id="submitSpinner" role="status" aria-hidden="true"></span>
+          </button>
+        </form>
+
+        <p class="text-center mt-3 mb-0">
+          Already have an account? <a href="/login" class="text-decoration-none">Login</a>
+        </p>
+      <% } else { %>
+        <!-- OTP Verification Form -->
+        <div class="text-center mb-4">
+          <p>We've sent a 6-digit verification code to:</p>
+          <h5 class="fw-bold"><%= email %></h5>
+          <p class="text-muted">Please check your inbox and enter the code below.</p>
+        </div>
+
+        <form id="verifyForm" action="/register" method="POST" class="needs-validation" novalidate>
+          <input type="hidden" name="step" value="verify">
+          <input type="hidden" name="email" value="<%= email %>">
+          <input type="hidden" name="name" value="<%= (typeof formData !== 'undefined' && formData.name) || '' %>">
+          <input type="hidden" name="role" value="<%= (typeof formData !== 'undefined' && formData.role) || 'student' %>">
+
+          <div class="mb-4">
+            <label for="otp" class="form-label d-block text-center mb-2">Verification Code</label>
+            <input type="text" 
+                  id="otp" 
+                  name="otp" 
+                  class="form-control form-control-lg text-center otp-input" 
+                  maxlength="6" 
+                  pattern="\d{6}" 
+                  required
+                  autocomplete="one-time-code"
+                  autofocus
+                  oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6)">
+            <div class="form-text text-center">Enter the 6-digit code sent to your email</div>
+            <div class="invalid-feedback text-center">
+              Please enter a valid 6-digit code.
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-success w-100 py-2" id="verifyButton">
+            <span class="btn-text">Verify & Create Account</span>
+            <span class="spinner-border spinner-border-sm d-none ms-2" id="verifySpinner" role="status" aria-hidden="true"></span>
+          </button>
+        </form>
+
+        <div class="text-center mt-3">
+          <p class="mb-1">Didn't receive the code?</p>
+          <form action="/resend-otp" method="POST" class="d-inline" id="resendForm">
+            <input type="hidden" name="email" value="<%= email %>">
+            <button type="submit" class="btn btn-link p-0 text-decoration-none text-primary" id="resendBtn">
+              Resend OTP
+            </button>
+          </form>
+          <span class="mx-2">|</span>
+          <a href="/register" class="text-decoration-none">Change Email</a>
+        </div>
+      <% } %>
+    </div>
+  </div>
+  <%- include('../partials/footer') %>
+
+  <script>
+    // Toggle password visibility
+    function togglePassword(fieldId) {
+      const field = document.getElementById(fieldId);
+      const icon = field.nextElementSibling.querySelector('i');
+      const type = field.getAttribute('type') === 'password' ? 'text' : 'password';
+      field.setAttribute('type', type);
+      
+      // Toggle icon
+      if (icon) {
+        icon.classList.toggle('fa-eye');
+        icon.classList.toggle('fa-eye-slash');
+      }
+    }
+
+    // Registration Form Validation
+    const registerForm = document.getElementById('registerForm');
+    if (registerForm) {
+      const password = document.getElementById('password');
+      const password2 = document.getElementById('password2');
+      const password2Feedback = document.getElementById('password2Feedback');
+      const submitButton = document.getElementById('registerButton');
+      const submitSpinner = document.getElementById('submitSpinner');
+      const btnText = submitButton.querySelector('.btn-text');
+
+      // Custom password match validation
+      password2.addEventListener('input', function() {
+        if (this.value !== password.value) {
+          this.setCustomValidity('Passwords do not match');
+          password2Feedback.textContent = 'Passwords do not match.';
+        } else {
+          this.setCustomValidity('');
+          password2Feedback.textContent = 'Please confirm your password.';
+        }
+      });
+
+      password.addEventListener('input', function() {
+        if (password2.value !== '' && password2.value !== this.value) {
+          password2.setCustomValidity('Passwords do not match');
+          password2Feedback.textContent = 'Passwords do not match.';
+        } else if (password2.value === this.value) {
+          password2.setCustomValidity('');
+          password2Feedback.textContent = 'Please confirm your password.';
+        }
+      });
+
+      // Form submission with Bootstrap validation
+      registerForm.addEventListener('submit', function(event) {
+        // Check password match
+        if (password.value !== password2.value) {
+          password2.setCustomValidity('Passwords do not match');
+        } else {
+          password2.setCustomValidity('');
+        }
+
+        // Check form validity
+        if (!registerForm.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+          registerForm.classList.add('was-validated');
+          
+          // Scroll to first invalid field
+          const firstInvalid = registerForm.querySelector(':invalid');
+          if (firstInvalid) {
+            firstInvalid.focus();
+            firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+          return;
+        }
+
+        // If all validations pass, show loading state
+        event.preventDefault();
+        registerForm.classList.add('was-validated');
+        
+        submitButton.disabled = true;
+        btnText.textContent = 'Sending OTP...';
+        submitSpinner.classList.remove('d-none');
+        
+        // Submit the form after showing loading state
+        setTimeout(() => {
+          registerForm.submit();
+        }, 100);
+      });
+    }
+
+    // OTP Verification Form
+    const verifyForm = document.getElementById('verifyForm');
+    if (verifyForm) {
+      const verifyButton = document.getElementById('verifyButton');
+      const verifySpinner = document.getElementById('verifySpinner');
+      const btnText = verifyButton.querySelector('.btn-text');
+      const otpInput = document.getElementById('otp');
+
+      // Auto-focus OTP input
+      if (otpInput) {
+        otpInput.focus();
+        
+        // Handle paste event
+        otpInput.addEventListener('paste', (e) => {
+          e.preventDefault();
+          const paste = (e.clipboardData || window.clipboardData).getData('text');
+          const digits = paste.replace(/\D/g, '').slice(0, 6);
+          otpInput.value = digits;
+          
+          // Auto-submit if 6 digits pasted
+          if (digits.length === 6) {
+            setTimeout(() => {
+              verifyForm.requestSubmit();
+            }, 300);
+          }
+        });
+        
+        // Auto-submit when 6 digits are entered
+        otpInput.addEventListener('input', function() {
+          if (this.value.length === 6) {
+            setTimeout(() => {
+              verifyForm.requestSubmit();
+            }, 300);
+          }
+        });
+      }
+
+      verifyForm.addEventListener('submit', function(event) {
+        if (!verifyForm.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+          verifyForm.classList.add('was-validated');
+          return;
+        }
+
+        // Show loading state
+        event.preventDefault();
+        verifyForm.classList.add('was-validated');
+        
+        verifyButton.disabled = true;
+        btnText.textContent = 'Verifying...';
+        verifySpinner.classList.remove('d-none');
+        
+        // Submit the form
+        setTimeout(() => {
+          verifyForm.submit();
+        }, 100);
+      });
+    }
+
+    // Resend OTP Form
+    const resendForm = document.getElementById('resendForm');
+    const resendBtn = document.getElementById('resendBtn');
+    
+    if (resendForm && resendBtn) {
+      resendForm.addEventListener('submit', function(e) {
+        resendBtn.disabled = true;
+        resendBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Sending...';
+        
+        // Re-enable after 30 seconds
+        setTimeout(() => {
+          resendBtn.disabled = false;
+          resendBtn.textContent = 'Resend OTP';
+        }, 30000);
+      });
+    }
+  </script>
+</body>
+</html>

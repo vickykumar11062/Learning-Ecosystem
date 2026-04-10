@@ -1,0 +1,79 @@
+<!-- 
+  Create this as: views/partials/pdf_viewer.ejs
+  Usage: <%- include('partials/pdf_viewer', { pdfUrl: lesson.resource.url }) %>
+-->
+
+<% 
+  // Get the PDF URL and prepare it for inline viewing
+  let viewUrl = pdfUrl;
+  let downloadUrl = pdfUrl;
+  
+  // If it's a Cloudinary URL, add fl_attachment flag to prevent auto-download
+  if (pdfUrl.includes('cloudinary.com') && pdfUrl.includes('/upload/')) {
+    // For inline viewing - prevent download
+    viewUrl = pdfUrl.replace('/upload/', '/upload/fl_attachment:false/');
+    // For explicit download link
+    downloadUrl = pdfUrl.replace('/upload/', '/upload/fl_attachment:true/');
+  }
+%>
+
+<div class="pdf-viewer-container">
+  <!-- Primary: Google Docs Viewer (works on most browsers) -->
+  <iframe 
+    src="https://docs.google.com/viewer?url=<%= encodeURIComponent(pdfUrl) %>&embedded=true" 
+    class="w-100 border rounded pdf-iframe" 
+    style="height: 500px; min-height: 400px;"
+    title="PDF Preview"
+    frameborder="0">
+  </iframe>
+
+  <!-- Fallback message if iframe doesn't load -->
+  <noscript>
+    <div class="alert alert-warning mt-2">
+      JavaScript is required to view PDFs inline. 
+      <a href="<%= viewUrl %>" target="_blank">Click here to open in new tab</a>
+    </div>
+  </noscript>
+
+  <!-- Action buttons -->
+  <div class="d-flex gap-2 mt-3">
+    <a href="<%= viewUrl %>" 
+       target="_blank" 
+       class="btn btn-outline-primary btn-sm flex-fill">
+      <i class="fa fa-external-link-alt me-1"></i> Open in New Tab
+    </a>
+    
+    <a href="<%= downloadUrl %>" 
+       download
+       class="btn btn-outline-secondary btn-sm flex-fill">
+      <i class="fa fa-download me-1"></i> Download PDF
+    </a>
+  </div>
+
+  <!-- Alternative viewer (uncomment if Google Docs viewer fails) -->
+  <!-- 
+  <object 
+    data="<%= viewUrl %>#toolbar=1&navpanes=0&scrollbar=1&view=FitH" 
+    type="application/pdf" 
+    class="w-100 border rounded mt-3" 
+    style="height: 500px;">
+    <p class="text-center p-4">
+      Unable to display PDF. 
+      <a href="<%= viewUrl %>" target="_blank" class="btn btn-primary btn-sm">
+        <i class="fa fa-file-pdf me-1"></i> View PDF
+      </a>
+    </p>
+  </object>
+  -->
+</div>
+
+<style>
+  .pdf-iframe {
+    background: #f8f9fa;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  
+  .pdf-viewer-container {
+    position: relative;
+  }
+</style>

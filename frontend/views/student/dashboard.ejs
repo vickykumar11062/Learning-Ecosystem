@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head') %>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <% 
+    // Calculate completed courses count at the top of the template
+    const completedCourses = Array.isArray(courses) ? 
+      courses.filter(c => c && c.progressPercent >= 90).length : 0; 
+  %>
+</head>
+<body class="modern-body">
+  <%- include('../partials/navbar') %>
+
+
+  <!-- Hero Header -->
+  <section class="hero-section">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-icon">
+          <i class="fas fa-graduation-cap"></i>
+        </div>
+        <h1 class="hero-title">My Learning Journey</h1>
+        <p class="hero-subtitle">Continue where you left off and achieve your goals</p>
+        
+        <div class="stats-row">
+          <div class="stat-card">
+            <i class="fas fa-book-open"></i>
+            <div>
+              <div class="stat-number"><%= courses.length %></div>
+              <div class="stat-label">Enrolled Courses</div>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <i class="fas fa-chart-line"></i>
+            <div>
+              <div class="stat-number"><%= averageProgress %>%</div>
+              <div class="stat-label">Avg. Progress</div>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <i class="fas fa-certificate"></i>
+            <div>
+              <div class="stat-number"><%= completedCourses %></div>
+              <div class="stat-label">Completed</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Enrolled Courses -->
+  <section class="courses-section">
+    <div class="container">
+      <% if (courses.length === 0) { %>
+        <div class="empty-state">
+          <div class="empty-icon">
+            <i class="fas fa-book-reader"></i>
+          </div>
+          <h3>Start Your Learning Journey</h3>
+          <p>You haven't enrolled in any courses yet. Explore our catalog and find something interesting!</p>
+          <a href="/courses" class="btn-modern btn-primary">
+            <i class="fas fa-compass me-2"></i>Browse Courses
+          </a>
+        </div>
+      <% } else { %>
+        <div class="section-header">
+          <h2><i class="fas fa-layer-group me-2"></i>My Courses</h2>
+          <p>Pick up where you left off</p>
+        </div>
+        <div class="courses-grid">
+          <% courses.forEach(c => { 
+            if (!c) return; // Skip if course is null/undefined
+            const thumbnailUrl = (c.thumbnail && c.thumbnail.url) ? c.thumbnail.url : '/images/default-course.jpg';
+          %>
+            <div class="course-card">
+              <div class="course-image-wrapper">
+                <img src="<%= thumbnailUrl %>" class="course-image" alt="<%= c.title || 'Course' %>" onerror="this.onerror=null; this.src='/images/default-course.jpg';">
+                <div class="course-overlay">
+                  
+                </div>
+              </div>
+
+              <div class="course-content">
+                <h3 class="course-title"><%= c.title %></h3>
+
+                <div class="instructor-info">
+                  <i class="fas fa-user-tie"></i>
+                  <span><%= c.instructor ? c.instructor.name : 'Unknown' %></span>
+                </div>
+
+                <!-- Modern Progress Display -->
+                <div class="progress-modern">
+                  <div class="progress-header">
+                    <span class="progress-label">Course Progress</span>
+                    <span class="progress-percent"><%= c.progressPercent || 0 %>%</span>
+                  </div>
+                  <div class="progress-track">
+                    <div class="progress-fill" data-progress="<%= c.progressPercent || 0 %>">
+                      <div class="progress-glow"></div>
+                    </div>
+                  </div>
+                  <div class="progress-milestones">
+                    <span class="milestone">Start</span>
+                    <span class="milestone">50%</span>
+                    <span class="milestone">Complete</span>
+                  </div>
+                </div>
+
+                <div class="course-actions">
+                  <a href="/courses/<%= c.slug %>" class="btn-continue">
+                    <span><%= c.progressPercent > 0 ? 'Continue' : 'Start' %> Learning</span>
+                    <i class="fas fa-arrow-right"></i>
+                  </a>
+                  <% if (c.allLessonsCompleted) { %>
+                    <% if (c.certificateAccess) { %>
+                      <a href="/certificate/generate/<%= c._id %>" 
+                         class="btn-certificate"
+                         title="Download your certificate">
+                        <i class="fas fa-award me-1"></i> 
+                        Get Certificate
+                      </a>
+                    <% } else { %>
+                      <span class="btn-certificate disabled"
+                         title="Certificate not available for this course">
+                        <i class="fas fa-times-circle me-1"></i> 
+                        Certificate Not Available
+                      </span>
+                    <% } %>
+                  <% } else { %>
+                    <span class="btn-certificate disabled"
+                       title="Complete all lessons to unlock certificate">
+                      <i class="fas fa-lock me-1"></i> 
+                      Certificate
+                      <small class="completion-required">
+                        <%= c.completedLessons || 0 %>/<%= c.lessons?.length || 0 %> lessons
+                      </small>
+                    </span>
+                  <% } %>
+                </div>
+              </div>
+
+            </div>
+          <% }) %>
+        </div>
+      <% } %>
+    </div>
+  </section>
+
+
+
+  <!-- Completed Courses Section -->
+  <% if (completedCourses > 0) { %>
+    <section class="completed-courses">
+      <div class="container">
+        <div class="section-header">
+          <h2><i class="fas fa-check-circle me-2"></i>Completed Courses</h2>
+          <p>Your achievements so far</p>
+        </div>
+        <div class="completed-courses-grid">
+          <% courses.filter(c => c && c.progressPercent >= 90).forEach(course => { %>
+            <div class="completed-card">
+              <img src="<%= (course.thumbnail && course.thumbnail.url) || '/images/default-course.jpg' %>" 
+                   alt="<%= course.title %>" 
+                   onerror="this.onerror=null; this.src='/images/default-course.jpg';">
+              <div class="completed-card-content">
+                <h3><%= course.title %></h3>
+                <div class="completed-actions">
+                  <a href="/courses/<%= course.slug %>" class="btn-view">
+                    <i class="fas fa-eye me-1"></i> View Course
+                  </a>
+                  <% if (course.allLessonsCompleted && course.certificateAccess) { %>
+                    <a href="/certificate/generate/<%= course._id %>" class="btn-certificate"
+                       title="Download your certificate">
+                      <i class="fas fa-award me-1"></i> Get Certificate
+                    </a>
+                  <% } else if (!course.certificateAccess) { %>
+                    <span class="btn-certificate disabled"
+                       title="Certificate not available for this course">
+                      <i class="fas fa-times-circle me-1"></i> Not Available
+                    </span>
+                  <% } else { %>
+                    <span class="btn-certificate disabled"
+                       title="Complete all lessons to unlock certificate">
+                      <i class="fas fa-lock me-1"></i> Complete Course
+                    </span>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    </section>
+  <% } %>
+  <%- include('../partials/footer') %>
+  <style>
+    /* Progress Bar Completion Glow Styles */
+    .progress-track.completed .progress-fill {
+      background: linear-gradient(90deg, #22c55e, #4ade80);
+      box-shadow: 0 0 12px rgba(34, 197, 94, 0.6);
+    }
+
+    .progress-track.completed .progress-glow {
+      display: none;
+    }
+
+    .progress-fill::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 6px;
+      background: rgba(255, 255, 255, 0.4);
+      border-radius: 3px;
+      opacity: 0;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.1; transform: scaleX(0.9); }
+      50% { opacity: 0.7; transform: scaleX(1.1); }
+      100% { opacity: 0.1; transform: scaleX(0.9); }
+    }
+
+    .stats-row {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      min-width: 180px;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .stat-card i {
+      font-size: 1.8rem;
+      color: #60a5fa;
+      background: rgba(96, 165, 250, 0.1);
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .stat-number {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.2;
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.8);
+      margin-top: 0.25rem;
+    }
+
+    /* Modern Progress Bar */
+    .progress-modern {
+      margin: 0.8rem 0;
+    }
+    
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+    
+    .progress-label {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #cbd5e1;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .progress-percent {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #e2e8f0;
+      background: rgba(99, 102, 241, 0.15);
+      padding: 0.15rem 0.5rem;
+      border-radius: 12px;
+    }
+    
+    .progress-track {
+      height: 6px;
+      background: rgba(30, 41, 59, 0.3);
+      border-radius: 3px;
+      overflow: hidden;
+      position: relative;
+      margin: 0.5rem 0;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, 
+        rgba(99, 102, 241, 0.9) 0%, 
+        rgba(168, 85, 247, 0.9) 100%);
+      border-radius: 3px;
+      position: relative;
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      width: 0;
+    }
+    
+    .progress-glow {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      background: linear-gradient(90deg, 
+        rgba(255, 255, 255, 0.4) 0%, 
+        rgba(255, 255, 255, 0) 100%);
+      border-radius: 3px;
+      opacity: 0.7;
+    }
+    
+    .progress-milestones {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.7rem;
+      color: #64748b;
+      margin-top: 0.25rem;
+    }
+    
+    .milestone {
+      position: relative;
+      padding-top: 0.5rem;
+    }
+    
+    .milestone:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 1px;
+      height: 4px;
+      background: #334155;
+      transform: translateX(-50%);
+    }
+    
+    /* Completed Courses Section */
+    .completed-courses {
+      padding: 2rem 0;
+      background-color: #1e293b;
+      margin-top: 0;
+    }
+    
+    .completed-courses-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+    
+    .completed-card {
+      background: #1e293b;
+      border-radius: 12px;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .completed-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+    
+    .completed-card img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+    }
+    
+    .completed-card-content {
+      padding: 1.25rem;
+    }
+    
+    .completed-card h3 {
+      font-size: 1.1rem;
+      margin: 0 0 1rem 0;
+      color: white;
+      font-weight: 600;
+    }
+    
+    .btn-certificate {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.5rem 1rem;
+      background: #6c63ff;
+      color: white;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+      font-size: 0.9rem;
+      box-shadow: 0 2px 5px rgba(108, 99, 255, 0.2);
+      margin-top: 0.5rem;
+      justify-content: center;
+      position: relative;
+    }
+    
+    .btn-certificate.disabled {
+      background: #e9ecef;
+      color: #6c757d;
+      cursor: not-allowed;
+      box-shadow: none;
+      opacity: 0.8;
+    }
+    
+    .btn-certificate:not(.disabled):hover {
+      background: #5a52d3;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(108, 99, 255, 0.3);
+    }
+    
+    .btn-certificate i {
+      margin-right: 6px;
+    }
+    
+    .completion-required {
+      font-size: 0.75rem;
+      margin-left: 4px;
+      opacity: 0.8;
+    }
+    
+    .btn-certificate:hover {
+      background: #5a52d4;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .btn-certificate.disabled {
+      background: #e2e8f0;
+      color: #94a3b8;
+      cursor: not-allowed;
+      opacity: 0.8;
+    }
+
+    .completion-required {
+      font-size: 0.7rem;
+      margin-left: 4px;
+      opacity: 0.9;
+    }
+
+    .btn-certificate i {
+      margin-right: 6px;
+    }
+
+    .course-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .completed-actions {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-view {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.5rem 1rem;
+      background: var(--brand-1);
+      color: white;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+    
+    .btn-view:hover {
+      background: var(--brand-2);
+      transform: translateY(-2px);
+    }
+    
+    @media (max-width: 768px) {
+      .progress-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .progress-line {
+        width: 100%;
+      }
+      
+      .completed-courses-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    /* Learning Summary Styles */
+    .learning-summary {
+      padding: 2rem 0;
+      background-color: #0f172a;
+      margin-bottom: 2rem;
+    }
+    
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .summary-box {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .summary-box:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      background: rgba(255, 255, 255, 0.08);
+    }
+    
+    .summary-box .icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--brand-1), var(--brand-2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: white;
+      flex-shrink: 0;
+    }
+    
+    .summary-box .content h3 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin: 0;
+      color: white;
+      line-height: 1.2;
+    }
+    
+    .summary-box .content p {
+      margin: 0.25rem 0 0;
+      color: #94a3b8;
+      font-size: 0.9rem;
+    }
+    
+    @media (max-width: 768px) {
+      .summary-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      
+      .summary-box {
+        padding: 1.25rem;
+      }
+    }
+    
+    /* End Learning Summary Styles */
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    .modern-body {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      color: #f8fafc;
+    }
+
+    /* Hero Section */
+    .hero-section {
+      background: radial-gradient(ellipse at top left, #6366f1 0%, #8b5cf6 25%, #d946ef 50%, #a855f7 100%);
+      padding: 4rem 0 5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                  radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
+                  url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      opacity: 0.6;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+
+    .hero-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 1.5rem;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      color: #fff;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .hero-title {
+      font-size: 3rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.02em;
+    }
+
+    .hero-subtitle {
+      font-size: 1.25rem;
+      color: rgba(255, 255, 255, 0.9);
+      margin-bottom: 2rem;
+    }
+
+    .stats-row {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 1.5rem 2rem;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .stat-card i {
+      font-size: 2rem;
+      color: #fff;
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .stat-label {
+      font-size: 0.875rem;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    /* Courses Section */
+    .courses-section {
+      padding: 4rem 0;
+      position: relative;
+      background: #1e293b;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .section-header h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #f8fafc;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-header p {
+      color: #94a3b8;
+      font-size: 1.1rem;
+    }
+
+    .courses-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 2rem;
+    }
+
+    .course-card {
+      background: #1e293b;
+      border-radius: 12px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      border: 1px solid #2d3748;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .course-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .course-image-wrapper {
+      position: relative;
+      overflow: hidden;
+      height: 220px;
+    }
+
+    .course-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+
+    .course-card:hover .course-image {
+      transform: scale(1.1);
+    }
+
+    .course-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.1), rgba(0,0,0,0.6));
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-end;
+      padding: 1rem;
+    }
+
+    .enrolled-badge {
+      background: rgba(16, 185, 129, 0.95);
+      backdrop-filter: blur(8px);
+      padding: 0.5rem 1rem;
+      border-radius: 50px;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: #fff;
+    }
+
+    .course-content {
+      padding: 1.25rem;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .course-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #f8fafc;
+      margin-bottom: 1rem;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .instructor-info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #94a3b8;
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .instructor-info i {
+      color: #6366f1;
+    }
+
+    .btn-continue {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 0.875rem 1.25rem;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 12px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .btn-continue:hover {
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      transform: translateX(4px);
+      box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: #1e293b;
+      border-radius: 20px;
+      border: 2px dashed rgba(255, 255, 255, 0.1);
+    }
+
+    .empty-icon {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 1.5rem;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      color: #fff;
+    }
+
+    .empty-state h3 {
+      font-size: 1.75rem;
+      color: #f8fafc;
+      margin-bottom: 0.75rem;
+    }
+
+    .empty-state p {
+      color: #94a3b8;
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .btn-modern {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.875rem 2rem;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 50px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      border: none;
+    }
+
+    .btn-modern:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero-title {
+        font-size: 2rem;
+      }
+
+      .hero-subtitle {
+        font-size: 1rem;
+      }
+
+      .courses-grid {
+        grid-template-columns: 1fr;
+      }
+
+      /* Mobile Stats Layout - 2+1 */
+      .stats-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-top: 2rem;
+      }
+
+      .stats-row .stat-card:nth-child(3) {
+        grid-column: 1 / -1; /* Span full width */
+        max-width: none;
+        min-width: auto;
+      }
+
+      .stat-card {
+        flex-direction: column;
+        text-align: center;
+        min-width: auto;
+      }
+    }
+
+    /* 🌙 DARK MODE STYLING FOR STUDENT DASHBOARD */
+    body.dark-theme {
+      background: #0e0e0e !important;
+      color: #e6e6e6 !important;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    /* Dark Hero Section */
+    body.dark-theme .hero-section {
+      background: radial-gradient(ellipse at top left, #1e1e3e 0%, #2d1b69 25%, #0f3460 50%, #000000 100%) !important;
+      position: relative;
+    }
+
+    body.dark-theme .hero-section::before {
+      background: radial-gradient(circle at 80% 80%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                  radial-gradient(circle at 20% 20%, rgba(217, 70, 239, 0.1) 0%, transparent 50%),
+                  url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    body.dark-theme .hero-title {
+      color: #ffffff !important;
+      font-weight: 900;
+      background: linear-gradient(135deg, #9d7dff 0%, #ff71c8 50%, #ffd86b 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 1px;
+      text-shadow: 0 0 30px rgba(146, 110, 255, 0.4);
+    }
+
+    body.dark-theme .hero-subtitle {
+      color: #dcdcdc !important;
+      text-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+
+    body.dark-theme .hero-icon {
+      background: rgba(255, 255, 255, 0.1) !important;
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Dark Stats */
+    body.dark-theme .stat-card {
+      background: rgba(255, 255, 255, 0.1) !important;
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    body.dark-theme .stat-number {
+      color: #ffffff !important;
+      background: none !important;
+      -webkit-text-fill-color: #ffffff !important;
+      text-shadow: 0 0 20px rgba(124, 91, 255, 0.5);
+    }
+
+    body.dark-theme .stat-label {
+      color: #bfbfbf !important;
+    }
+
+    /* Dark Courses Section */
+    body.dark-theme .courses-section {
+      background: #111 !important;
+    }
+
+    body.dark-theme .section-header h2 {
+      color: #ffffff !important;
+      font-weight: 800;
+      background: linear-gradient(135deg, #9d7dff, #ff71c8, #ffd86b);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 35px rgba(146, 110, 255, 0.25);
+    }
+
+    body.dark-theme .section-header p {
+      color: #bfbfbf !important;
+      text-shadow: 0 0 20px rgba(0,0,0,0.4);
+    }
+
+    /* Dark Course Cards */
+    body.dark-theme .course-card {
+      background: #1c1c1c !important;
+      border-color: #333 !important;
+      box-shadow: 0 5px 25px rgba(0,0,0,0.5) !important;
+    }
+
+    body.dark-theme .course-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 0 30px rgba(124, 91, 255, 0.3) !important;
+    }
+
+    body.dark-theme .course-title {
+      color: #ffffff !important;
+    }
+
+    body.dark-theme .instructor-info {
+      color: #bfbfbf !important;
+    }
+
+    body.dark-theme .instructor-info i {
+      color: #9b87ff !important;
+    }
+
+    body.dark-theme .btn-continue {
+      background: linear-gradient(135deg, #9d7dff, #ff71c8) !important;
+      box-shadow: 0 0 20px rgba(255, 113, 200, 0.4) !important;
+    }
+
+    body.dark-theme .btn-continue:hover {
+      background: linear-gradient(135deg, #7c5bff, #ff51c8) !important;
+      box-shadow: 0 0 40px rgba(255, 113, 200, 0.65) !important;
+    }
+
+    /* Dark Progress Elements */
+    body.dark-theme .progress-modern {
+      background: #0f0f0f !important;
+      border-color: #333 !important;
+    }
+
+    body.dark-theme .progress-track {
+      background: rgba(28, 28, 28, 0.3) !important;
+    }
+
+    body.dark-theme .progress-fill {
+      background: linear-gradient(135deg, #9d7dff, #ff71c8) !important;
+    }
+
+    body.dark-theme .progress-label,
+    body.dark-theme .progress-percent {
+      color: #e6e6e6 !important;
+    }
+
+    /* Dark Empty State */
+    body.dark-theme .empty-state {
+      background: #1a1a1a !important;
+      border-color: #333 !important;
+    }
+
+    body.dark-theme .empty-icon {
+      background: linear-gradient(135deg, #9d7dff, #ff71c8) !important;
+    }
+
+    body.dark-theme .empty-state h3 {
+      color: #ffffff !important;
+    }
+
+    body.dark-theme .empty-state p {
+      color: #bfbfbf !important;
+    }
+
+    body.dark-theme .btn-modern {
+      background: linear-gradient(135deg, #9d7dff, #ff71c8) !important;
+      box-shadow: 0 0 20px rgba(255, 113, 200, 0.4) !important;
+    }
+
+    body.dark-theme .btn-modern:hover {
+      box-shadow: 0 0 40px rgba(255, 113, 200, 0.65) !important;
+    }
+
+    /* Dark Summary Boxes */
+    body.dark-theme .summary-box {
+      background: rgba(255, 255, 255, 0.1) !important;
+      border-color: rgba(255, 255, 255, 0.2) !important;
+    }
+
+    body.dark-theme .summary-box .icon {
+      background: linear-gradient(135deg, #9d7dff, #ff71c8) !important;
+    }
+
+    body.dark-theme .summary-box .content h3 {
+      color: #ffffff !important;
+    }
+
+    body.dark-theme .summary-box .content p {
+      color: #bfbfbf !important;
+    }
+  </style>
+  
+  <!-- Add SVG gradient definition -->
+  <svg width="0" height="0" style="position: absolute;">
+    <defs>
+      <linearGradient id="progress-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="var(--brand-1)" />
+        <stop offset="100%" stop-color="var(--brand-2)" />
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <!-- Progress Bar Animation Script -->
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    // Animate progress bars smoothly
+    document.querySelectorAll(".progress-fill").forEach(fill => {
+      const progressValue = fill.getAttribute('data-progress');
+      const targetWidth = progressValue + '%';
+      fill.style.width = "0";
+      setTimeout(() => {
+        fill.style.width = targetWidth;
+      }, 100);
+
+      // Add glow pulse when completed
+      const progress = parseInt(progressValue);
+      if (progress >= 100) {
+        fill.parentElement.classList.add("completed");
+      }
+    });
+
+    // Handle completed course glow
+    const completedCards = document.querySelectorAll(".completed-card");
+    completedCards.forEach(card => {
+      card.addEventListener("mouseenter", () => {
+        card.style.boxShadow = "0 0 20px rgba(34, 197, 94, 0.4)";
+      });
+      card.addEventListener("mouseleave", () => {
+        card.style.boxShadow = "0 10px 25px rgba(0,0,0,0.2)";
+      });
+    });
+  });
+  </script>
+</body>
+</html>

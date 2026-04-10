@@ -1,0 +1,37 @@
+<!-- ✅ Cookie Consent Banner (Bootstrap Version) -->
+<div id="cookieConsent" class="fixed-bottom bg-dark text-white p-3 text-center shadow-lg" style="display: none; z-index: 9999;">
+  <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center">
+    <p class="mb-2 mb-md-0">
+      🍪 We use cookies to improve your experience and to analyze website traffic.
+      By continuing to use our site, you accept our <a href="/privacy" class="text-warning text-decoration-underline">cookie policy</a>.
+    </p>
+    <div>
+      <button id="acceptCookies" class="btn btn-success btn-sm mx-1">Accept</button>
+      <button id="declineCookies" class="btn btn-outline-light btn-sm mx-1">Decline</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    const banner = document.getElementById('cookieConsent');
+    const accepted = localStorage.getItem('cookieConsent');
+
+    // Show banner only if no decision made yet
+    if (!accepted) {
+      banner.style.display = 'block';
+    }
+
+    document.getElementById('acceptCookies').addEventListener('click', function() {
+      localStorage.setItem('cookieConsent', 'accepted');
+      banner.style.display = 'none';
+      // ✅ You can enable analytics or tracking here (if needed)
+    });
+
+    document.getElementById('declineCookies').addEventListener('click', function() {
+      localStorage.setItem('cookieConsent', 'declined');
+      banner.style.display = 'none';
+      // ❌ Disable analytics or tracking here (if any)
+    });
+  })();
+</script>

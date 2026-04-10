@@ -1,0 +1,2211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('partials/head', { title: `EduLearn - ${course.title}` }) %>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="/js/button_loader.js"></script>
+</head>
+<body class="modern-body">
+<div class="bg-light-glow one"></div>
+<div class="bg-light-glow two"></div>
+  <%- include('partials/navbar') %>
+  <%- include('partials/delete_modal') %>
+  
+  <!-- Flash Messages -->
+  <div id="flash-container" class="flash-container" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1100; width: 100%; max-width: 600px; padding: 0 15px; display: none;">
+    <div id="flash-message" class="alert alert-dismissible fade show" role="alert" style="margin-bottom: 0.5rem; display: none;">
+      <div class="d-flex justify-content-between align-items-center">
+        <span id="flash-text"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" onclick="hideFlash()"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= HERO ================= -->
+  <section class="hero">
+    <div class="container container--wide">
+      <div class="hero-grid">
+
+        <!-- Left: Thumbnail -->
+        <div class="hero-media">
+          <div class="thumb">
+            <img src="<%= course.thumbnail.url %>" alt="<%= course.title %>">
+            <div class="badge">
+              <i class="fas fa-graduation-cap"></i> <span>Premium Course</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Info -->
+        <div class="hero-info">
+          <h1 class="hero-title"><%= course.title %></h1>
+          
+          <div class="description-container my-2">
+            <div class="description-content" id="courseDescription">
+              <%= course.description %>
+            </div>
+            <div class="read-more" id="readMoreBtn">Read more</div>
+          </div>
+          
+          <script>
+            // Initialize circular progress
+            document.addEventListener('DOMContentLoaded', function() {
+              const progressCircles = document.querySelectorAll('.progress-circle');
+              progressCircles.forEach(circle => {
+                const progress = circle.getAttribute('data-progress');
+                const circleBar = circle.querySelector('.circle-bar');
+                const radius = circleBar.r.baseVal.value;
+                const circumference = radius * 2 * Math.PI;
+                const offset = circumference - (progress / 100) * circumference;
+                circleBar.style.strokeDashoffset = offset;
+              });
+            });
+
+            // Only show 'Read more' if content is truncated
+            document.addEventListener('DOMContentLoaded', function() {
+              const description = document.getElementById('courseDescription');
+              const readMoreBtn = document.getElementById('readMoreBtn');
+              let isExpanded = false;
+              
+              // Check if content is truncated
+              function checkTruncation() {
+                // Temporarily remove max-height to get full height
+                description.style.maxHeight = 'none';
+                const isTruncated = description.scrollHeight > description.clientHeight + 5; // Small buffer
+                description.style.maxHeight = ''; // Reset max-height
+                
+                if (isTruncated) {
+                  readMoreBtn.style.display = 'inline-block';
+                  // Ensure gradient is visible for truncated text
+                  description.style.setProperty('--gradient-opacity', '1');
+                } else {
+                  readMoreBtn.style.display = 'none';
+                  // Hide gradient for short descriptions
+                  description.style.setProperty('--gradient-opacity', '0');
+                }
+              }
+              
+              // Initial check
+              checkTruncation();
+              
+              // Re-check on window resize
+              let resizeTimer;
+              window.addEventListener('resize', function() {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(checkTruncation, 250);
+              });
+              
+              // Toggle expanded state with smooth animation
+              readMoreBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Toggle state
+                isExpanded = !isExpanded;
+                
+                if (isExpanded) {
+                  // Expand
+                  description.style.maxHeight = description.scrollHeight + 'px';
+                  description.classList.add('expanded');
+                  this.textContent = 'Show less';
+                  
+                  // After animation completes
+                  setTimeout(() => {
+                    description.style.maxHeight = ''; // Reset to allow content to grow
+                  }, 500);
+                } else {
+                  // Collapse
+                  description.style.maxHeight = description.scrollHeight + 'px';
+                  // Force repaint
+                  description.offsetHeight; // eslint-disable-line no-unused-expressions
+                  
+                  // Start collapse animation
+                  description.style.maxHeight = '4.5em';
+                  this.textContent = 'Read more';
+                  
+                  // Remove expanded class after animation
+                  setTimeout(() => {
+                    description.classList.remove('expanded');
+                  }, 300);
+                }
+              });
+              
+              // Add a small delay to ensure all styles are applied
+              setTimeout(checkTruncation, 100);
+            });
+          </script>
+
+          <div class="meta">
+            <div class="meta-chip">
+              <i class="fas fa-chalkboard-teacher"></i>
+              <span><%= course.instructor ? course.instructor.name : "Unknown" %></span>
+            </div>
+            <div class="meta-chip">
+              <i class="fas fa-book-open"></i>
+              <span><%= course.lessons ? course.lessons.length : 0 %> Lessons</span>
+            </div>
+            <div class="meta-chip price">
+              <i class="fas fa-tag"></i>
+              <span>₹<%= course.price.toLocaleString('en-IN') %></span>
+            </div>
+          </div>
+
+          <!-- CTA / Instructor actions -->
+          <div class="cta-row">
+            <% if (session && session.user) { %>
+  <% if (session.user.role === 'student') { %>
+    <% if (enrolled) { %>
+      <!-- ✅ Show if student already enrolled -->
+      <div class="btn-group" role="group">
+        <a href="/courses/student/view/<%= course.slug %>" 
+           class="btn btn-primary progress-btn" 
+           data-progress="<%= progressPercent %>">
+          <% 
+  // Handle EJS variable for clean HTML output
+  const initialWidth = (typeof progressPercent !== 'undefined' && progressPercent != null) ? progressPercent : 0;
+%>
+          <div class="wave-layer">
+            <div class="wave-fill" data-initial-width="<%= initialWidth %>"></div>
+          </div>
+          <div class="progress-content">
+            <i class="fas fa-play-circle"></i>
+            <span id="main-progress-value">Continue Learning — <%= progressPercent %>%</span>
+          </div>
+        </a>
+        <button type="button" 
+                class="btn btn-outline-danger ms-2" 
+                data-bs-toggle="modal" 
+                data-bs-target="#leaveCourseModal">
+          <i class="fas fa-sign-out-alt"></i><span>Leave Course</span>
+        </button>
+      </div>
+
+      <!-- Leave Course Modal -->
+      <div class="modal fade" id="leaveCourseModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Leave Course</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="leaveCourseForm" action="/courses/leave/<%= course._id %>?_method=DELETE" method="POST" class="needs-validation" novalidate>
+              <div class="modal-body">
+                <div class="alert alert-warning">
+                  <i class="fas fa-exclamation-triangle me-2"></i>
+                  <strong>Important:</strong> 
+                  <p class="mb-2">By leaving this course, you will lose access to all lessons and course materials.</p>
+                  <p class="mb-0">
+                    <strong>Note:</strong> Course fees are non-refundable. 
+                    <a href="/refund-policy" target="_blank" class="alert-link">View our refund policy</a> for more information.
+                  </p>
+                </div>
+                
+                <div class="form-check mt-3">
+                  <input class="form-check-input" type="checkbox" id="confirmLeave" required>
+                  <label class="form-check-label" for="confirmLeave">
+                    I understand that I will lose access to this course and that no refund will be provided.
+                  </label>
+                  <div class="invalid-feedback">
+                    You must agree to the terms before leaving the course.
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                  <i class="fas fa-times me-1"></i> Cancel
+                </button>
+                <button type="submit" class="btn btn-danger" id="confirmLeaveBtn" disabled>
+                  <i class="fas fa-sign-out-alt me-1"></i> Yes, Leave Course
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        // Enable/disable leave button based on checkbox
+        document.addEventListener('DOMContentLoaded', function() {
+          const form = document.getElementById('leaveCourseForm');
+          const confirmCheckbox = document.getElementById('confirmLeave');
+          const confirmBtn = document.getElementById('confirmLeaveBtn');
+          
+          // Toggle button state based on checkbox
+          confirmCheckbox.addEventListener('change', function() {
+            confirmBtn.disabled = !this.checked;
+          });
+          
+          // Form validation
+          form.addEventListener('submit', function(event) {
+            if (!confirmCheckbox.checked) {
+              event.preventDefault();
+              event.stopPropagation();
+              confirmCheckbox.classList.add('is-invalid');
+            } else {
+              // Show loading state
+              confirmBtn.disabled = true;
+              confirmBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Leaving...';
+            }
+          }, false);
+          
+          // Clear validation on modal close
+          const modal = document.getElementById('leaveCourseModal');
+          modal.addEventListener('hidden.bs.modal', function () {
+            confirmCheckbox.checked = false;
+            confirmCheckbox.classList.remove('is-invalid');
+            confirmBtn.disabled = true;
+            confirmBtn.innerHTML = '<i class="fas fa-sign-out-alt me-1"></i> Yes, Leave Course';
+          });
+        });
+      </script>
+      
+      <style>
+        /* Style for the warning alert */
+        .alert-warning {
+          border-left: 4px solid #ffc107;
+          background-color: #fff8e1;
+        }
+        
+        /* Custom checkbox styling */
+        .form-check-input:checked {
+          background-color: #dc3545;
+          border-color: #dc3545;
+        }
+        
+        .form-check-input:focus {
+          box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
+        }
+        
+        /* Disabled button styling */
+        .btn-danger:disabled {
+          opacity: 0.65;
+          cursor: not-allowed;
+        }
+      </style>
+
+    <% } else { %>
+      <!-- ✅ Show if student is NOT enrolled -->
+      <button class="btn btn-primary" 
+              onclick="buyCourse(this, '<%= course._id %>', '<%= course.title %>')" 
+              data-loading-text="Processing Payment...">
+        <i class="fas fa-credit-card"></i>
+        <span>Enroll Now (₹<%= course.price.toLocaleString('en-IN') %>)</span>
+      </button>
+    <% } %>
+  <% } else if (session.user.role === 'instructor' && course.instructor && session.user.id === String(course.instructor._id)) { %>
+    <!-- ✅ Instructor Options -->
+    <div class="actions">
+      <a href="/upload/<%= course._id %>" class="btn btn-success">
+        <i class="fas fa-cloud-upload-alt"></i><span>Upload</span>
+      </a>
+      <a href="/courses/instructor/edit/<%= course._id %>" class="btn btn-warning">
+        <i class="fas fa-edit"></i><span>Edit</span>
+      </a>
+      <button type="button" class="btn btn-danger" 
+              onclick="deleteCourse('<%= course._id %>', this)">
+        <i class="fas fa-trash-alt"></i><span>Delete</span>
+      </button>
+    </div>
+  <% } else { %>
+    <div class="note">
+      <i class="fas fa-info-circle"></i>
+      <span>Instructors cannot enroll in other instructors' courses.</span>
+    </div>
+  <% } %>
+<% } else { %>
+  <!-- ✅ Not logged in -->
+  <a href="/login" class="btn btn-primary">
+    <i class="fas fa-sign-in-alt"></i><span>Login to Enroll</span>
+  </a>
+<% } %>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= MATERIALS ================= -->
+  <% if (course.lessons && course.lessons.length > 0) { %>
+    <% if (session && session.user && (enrolled || (session.user.role === 'instructor' && course.instructor && session.user.id === String(course.instructor._id)))) { %>
+      <section class="materials">
+        <div class="container container--wide">
+          <header class="sect-head">
+            <h2><i class="fas fa-layer-group"></i> Course Materials</h2>
+            <p>All uploaded videos, PDFs, and resources</p>
+          </header>
+
+          <div class="grid">
+            <% course.lessons.forEach((lesson, index) => { %>
+              <article class="card lesson-card">
+                <div class="badge-num"><%= index + 1 %></div>
+
+                <!-- Media Section -->
+                <div class="media">
+                  <% if (lesson.resourceType === 'video') { %>
+                    <video controls class="media-el" src="<%= lesson.resource.url %>" preload="metadata"></video>
+                  <% } else if (lesson.resourceType === 'pdf') { %>
+                    <div class="pdf-preview" data-pdf-url="<%= lesson.resource.url %>">
+                      <div class="pdf-icon">
+                        <i class="far fa-file-pdf"></i>
+                        <span>Hover to Preview</span>
+                      </div>
+                      <div class="pdf-preview-overlay">
+                        <div class="pdf-close">&times;</div>
+                        <div class="pdf-preview-container">
+                          <canvas class="pdf-canvas"></canvas>
+                        </div>
+                      </div>
+                    </div>
+                    <style>
+                      .pdf-preview {
+                        position: relative;
+                        width: 100%;
+                        height: 100%;
+                        background: #f8f9fa;
+                        border-radius: 8px;
+                        border: 1px solid #dee2e6;
+                        overflow: hidden;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                      }
+                      .pdf-icon {
+                        width: 100%;
+                        height: 100%;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        transition: all 0.3s ease;
+                        padding: 20px;
+                        box-sizing: border-box;
+                      }
+                      .pdf-icon i {
+                        font-size: 48px;
+                        color: #dc3545;
+                        margin-bottom: 10px;
+                        transition: all 0.3s ease;
+                      }
+                      .pdf-icon span {
+                        color: #495057;
+                        font-size: 14px;
+                        font-weight: 500;
+                        transition: all 0.3s ease;
+                      }
+                      .pdf-preview-overlay {
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background: white;
+                        opacity: 0;
+                        visibility: hidden;
+                        transition: all 0.3s ease;
+                        z-index: 10;
+                        padding: 15px;
+                        box-sizing: border-box;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                      }
+                      .pdf-close {
+                        position: absolute;
+                        top: 10px;
+                        right: 15px;
+                        font-size: 24px;
+                        cursor: pointer;
+                        color: #6c757d;
+                        z-index: 11;
+                      }
+                      .pdf-preview-container {
+                        width: 100%;
+                        height: 100%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        overflow: auto;
+                      }
+                      .pdf-canvas {
+                        max-width: 100%;
+                        max-height: 100%;
+                        object-fit: contain;
+                        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                        opacity: 0;
+                        transform: scale(0.9);
+                        transition: all 0.3s ease 0.1s;
+                      }
+                      .pdf-preview:hover .pdf-icon {
+                        opacity: 0;
+                        visibility: hidden;
+                      }
+                      .pdf-preview:hover .pdf-preview-overlay {
+                        opacity: 1;
+                        visibility: visible;
+                      }
+                      .pdf-preview:hover .pdf-canvas {
+                        opacity: 1;
+                        transform: scale(1);
+                      }
+                    </style>
+                  <% } else if (lesson.resourceType === 'image') { %>
+                    <img class="media-el" src="<%= lesson.resource.url %>" alt="<%= lesson.title %>">
+                  <% } %>
+
+                </div>
+
+                <!-- Content -->
+                <div class="content">
+                  <h3 class="title"><%= lesson.title %></h3>
+                  <p class="desc"><%= lesson.description || 'No description available' %></p>
+                  <div class="foot">
+                    <span class="rtype">
+                      <i class="fas fa-<%= lesson.resourceType === 'video' ? 'video' : lesson.resourceType === 'pdf' ? 'file-pdf' : 'image' %>"></i>
+                      <%= lesson.resourceType.charAt(0).toUpperCase() + lesson.resourceType.slice(1) %>
+                    </span>
+                  </div>
+                  <div class="button-container">
+                    <div class="action-buttons">
+                    
+                      
+                      <!-- <button class="chip chip-primary" 
+                              onclick="viewFile('<%= lesson.resource.url %>', '<%= lesson.resourceType %>')">
+                        <i class="fas fa-eye"></i><span>View</span>
+                      </button> -->
+                      
+                      
+                      <!-- New viewer link -->
+                      <a href="/viewer/<%= course._id %>/<%= lesson._id %>" class="chip chip-primary">
+                        <i class="fas fa-play"></i><span>Open in Viewer</span>
+                      </a>
+                      <button class="chip chip-light" 
+                              onclick="downloadFile('<%= lesson.resource.url %>', '<%= lesson.title %>', '<%= lesson.resourceType %>')">
+                        <i class="fas fa-download"></i><span>Download</span>
+                      </button>
+                      <% if (session.user.role === 'instructor' && course.instructor && session.user.id === String(course.instructor._id)) { %>
+                        <button type="button" class="chip chip-danger" 
+                                onclick="deleteLesson('<%= course._id %>', '<%= lesson._id %>', this)">
+                          <i class="fas fa-trash-alt"></i><span>Delete</span>
+                        </button>
+                      <% } %>
+                    </div>
+                  </div>
+                  
+                  <!-- ✅ Lesson Progress Bar (visible only to enrolled students) -->
+                  <% if (session && session.user && session.user.role === 'student' && enrolled) { 
+                      // ✅ Correct: Get progress data from lessonProgress object
+                      const lp = (lessonProgress && lessonProgress[lesson._id])
+                        ? lessonProgress[lesson._id]
+                        : { progress: 0, completed: false };
+
+                      const progress = lp.progress;
+                      const isCompleted = lp.completed;
+                      
+                      // Lesson progress data processed
+                  %>
+                    <!-- Debug: Lesson ID: <%= lesson._id %>, Progress: <%= progress %>% -->
+                    <div class="lesson-progress-bar <%= isCompleted ? 'completed' : '' %>"
+                         data-lesson-id="<%= lesson._id %>"
+                         data-progress="<%= progress %>">
+                      <div class="progress-track">
+                        <div class="progress-fill" style="width:<%= progress %>%;"></div>
+                      </div>
+                    </div>
+                    <style>
+                      /* === Lesson Progress Bar === */
+                      .lesson-card {
+                        position: relative; /* Add this to contain the absolute progress bar */
+                        padding-bottom: 10px; /* Add some space at the bottom */
+                        overflow: hidden; /* Ensure the progress bar stays within the card */
+                        min-height: 150px; /* Ensure there's enough space for content */
+                      }
+                      .lesson-progress-bar {
+                        position: absolute;
+                        bottom: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 6px;
+                        background: rgba(255, 255, 255, 0.08);
+                        border-radius: 0 0 8px 8px;
+                        overflow: hidden;
+                        opacity: 1 !important; /* Ensure it's always visible */
+                        z-index: 10; /* Ensure it appears above other elements */
+                        /* Debug styles - can be removed later */
+                        border: 1px solid rgba(255, 0, 0, 0.3);
+                      }
+                      .lesson-progress-bar .progress-track {
+                        position: relative;
+                        width: 100%;
+                        height: 100%;
+                      }
+                      .lesson-progress-bar .progress-fill {
+                        height: 100%;
+                        background: linear-gradient(90deg, #6d8cfb, #9b5cf7);
+                        transition: width 0.5s ease-in-out;
+                      }
+                      .lesson-progress-bar.completed .progress-fill {
+                        background: linear-gradient(90deg, #22c55e, #4ade80);
+                      }
+                      .lesson-progress-bar .progress-text {
+                        position: absolute;
+                        bottom: 10px;
+                        right: 10px;
+                        font-size: 0.7rem;
+                        color: #94a3b8;
+                        font-weight: 500;
+                      }
+                    </style>
+                    <script>
+                      // Apply progress width after the element is rendered
+                      document.addEventListener('DOMContentLoaded', function() {
+                        const progressBars = document.querySelectorAll('.lesson-progress-bar');
+                        progressBars.forEach(bar => {
+                          const progress = bar.getAttribute('data-progress');
+                          const fill = bar.querySelector('.progress-fill');
+                          if (fill && progress) {
+                            fill.style.width = progress + '%';
+                          }
+                        });
+                      });
+                    </script>
+                  <% } %>
+                </div>
+              </article>
+            <% }) %>
+          </div>
+        </div>
+      </section>
+    <% } else { %>
+      <!-- ================= LOCKED MATERIALS (BLURRED PREVIEW) ================= -->
+      <section class="materials locked-preview">
+        <div class="container container--wide">
+          <header class="sect-head">
+            <h2><i class="fas fa-lock"></i> Preview Course Materials</h2>
+            <p>Preview blurred content before enrolling — unlock full access after purchase.</p>
+          </header>
+
+          <div class="grid locked-grid">
+            <% course.lessons.forEach((lesson, index) => { %>
+              <article class="card locked-card">
+                <div class="badge-num"><%= index + 1 %></div>
+                <div class="media">
+                  <% if (lesson.resourceType === 'video') { %>
+                    <div class="blur-overlay">
+                      <video muted src="<%= lesson.resource.url %>" preload="metadata" class="media-el"></video>
+                      <div class="lock-icon">
+                        <i class="fas fa-lock"></i>
+                      </div>
+                    </div>
+                  <% } else if (lesson.resourceType === 'pdf') { %>
+                    <div class="blur-overlay pdf">
+                      <i class="far fa-file-pdf"></i>
+                      <div class="lock-icon">
+                        <i class="fas fa-lock"></i>
+                      </div>
+                    </div>
+                  <% } else if (lesson.resourceType === 'image') { %>
+                    <div class="blur-overlay">
+                      <img src="<%= lesson.resource.url %>" alt="<%= lesson.title %>" class="media-el" />
+                      <div class="lock-icon">
+                        <i class="fas fa-lock"></i>
+                      </div>
+                    </div>
+                  <% } %>
+                </div>
+
+                <div class="content locked-content">
+                  <h3 class="title"><%= lesson.title %></h3>
+                  <p class="desc"><%= lesson.description || 'Lesson preview is locked.' %></p>
+                  <div class="foot">
+                    <span class="rtype">
+                      <i class="fas fa-<%= lesson.resourceType === 'video' ? 'video' : lesson.resourceType === 'pdf' ? 'file-pdf' : 'image' %>"></i>
+                      <%= lesson.resourceType.charAt(0).toUpperCase() + lesson.resourceType.slice(1) %>
+                    </span>
+                  </div>
+                </div>
+              </article>
+            <% }) %>
+          </div>
+
+          <!-- LOCK CTA -->
+          <div class="lock-overlay">
+            <div class="lock-info">
+              <i class="fas fa-lock fa-3x"></i>
+              <h3>Unlock Full Course Access</h3>
+              <p>Enroll now to get access to all videos, PDFs, and downloadable materials.</p>
+              <div class="price-row">
+                <span class="now">₹<%= course.price.toLocaleString('en-IN') %></span>
+                <% if (course.originalPrice) { %>
+                  <span class="mrp">₹<%= course.originalPrice.toLocaleString('en-IN') %></span>
+                <% } %>
+              </div>
+              <button class="btn btn-primary" onclick="buyCourse(this, '<%= course._id %>', '<%= course.title %>')">
+                <i class="fas fa-credit-card"></i><span>Enroll Now for ₹<%= course.price.toLocaleString('en-IN') %></span>
+              </button>
+              <div class="perks">
+                <div class="perk"><i class="fas fa-check-circle"></i> Full lifetime access</div>
+                <div class="perk"><i class="fas fa-check-circle"></i> Certificate of completion</div>
+                <div class="perk"><i class="fas fa-check-circle"></i> 30-day money-back guarantee</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <style>
+        .locked-preview {
+          position: relative;
+          padding: 4rem 0;
+        }
+
+        .locked-grid {
+          filter: blur(5px);
+          pointer-events: none;
+          user-select: none;
+          opacity: 0.7;
+          transition: all 0.4s ease;
+        }
+
+        .locked-card {
+          position: relative;
+          overflow: hidden;
+          cursor: not-allowed;
+        }
+
+        .blur-overlay {
+          position: relative;
+          width: 100%;
+          height: 180px;
+          border-radius: 12px 12px 0 0;
+          overflow: hidden;
+          background: #0f172a;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          filter: blur(3px) brightness(0.6);
+        }
+
+        .blur-overlay img,
+        .blur-overlay video {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          opacity: 0.7;
+        }
+
+        .blur-overlay.pdf {
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #ef4444;
+          font-size: 3rem;
+          filter: blur(2px) brightness(0.8);
+        }
+
+        .lock-icon {
+          position: absolute;
+          color: #fff;
+          background: rgba(15, 23, 42, 0.8);
+          border: 2px solid rgba(255, 255, 255, 0.2);
+          width: 50px;
+          height: 50px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+          backdrop-filter: blur(8px);
+        }
+
+        .locked-content {
+          opacity: 0.6;
+          filter: blur(1px);
+          pointer-events: none;
+        }
+
+        .lock-overlay {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          text-align: center;
+          color: #fff;
+          background: rgba(15, 23, 42, 0.85);
+          padding: 3rem 2rem;
+          border-radius: 20px;
+          backdrop-filter: blur(12px);
+          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+          width: 90%;
+          max-width: 600px;
+        }
+
+        .lock-info h3 {
+          font-size: 1.6rem;
+          font-weight: 800;
+          margin-top: 1rem;
+        }
+
+        .lock-info p {
+          color: #cbd5e1;
+          margin: 1rem 0 1.5rem;
+          font-size: 1rem;
+        }
+
+        .lock-info .btn-primary {
+          background: linear-gradient(135deg, #6d8cfb, #9b5cf7);
+          color: white;
+          font-weight: 700;
+          border-radius: 14px;
+          padding: 0.9rem 1.6rem;
+          box-shadow: 0 10px 20px rgba(109, 140, 251, 0.4);
+          border: none;
+        }
+
+        .lock-info .btn-primary:hover {
+          transform: scale(1.05);
+          transition: transform 0.2s ease;
+        }
+
+        .price-row {
+          margin: 1rem 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 1rem;
+        }
+
+        .now {
+          font-size: 2rem;
+          font-weight: 700;
+          color: #fff;
+        }
+
+        .mrp {
+          font-size: 1.2rem;
+          text-decoration: line-through;
+          color: #94a3b8;
+        }
+
+        .perks {
+          margin-top: 1.5rem;
+          text-align: left;
+          max-width: 80%;
+          margin-left: auto;
+          margin-right: auto;
+        }
+
+        .perk {
+          margin: 0.5rem 0;
+          font-size: 0.9rem;
+          color: #cbd5e1;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .perk i {
+          color: #4ade80;
+        }
+
+        @media (max-width: 768px) {
+          .lock-overlay {
+            width: 95%;
+            padding: 2rem 1.5rem;
+          }
+
+          .lock-info h3 {
+            font-size: 1.3rem;
+          }
+
+          .lock-info p {
+            font-size: 0.9rem;
+          }
+
+          .now {
+            font-size: 1.8rem;
+          }
+
+          .mrp {
+            font-size: 1rem;
+          }
+
+          .perks {
+            max-width: 100%;
+          }
+        }
+      </style>
+    <% } %>
+  <% } else { %>
+    <!-- ================= NO MATERIALS AVAILABLE ================= -->
+    <section class="no-materials">
+      <div class="container container--wide">
+        <div class="no-materials-content">
+          <div class="no-materials-icon">
+            <i class="fas fa-folder-open"></i>
+          </div>
+          <h2>No Course Materials Available Yet</h2>
+          <p>This course doesn't have any materials uploaded yet. Enroll now to get access when materials become available.</p>
+          
+          <% if (session && session.user) { %>
+            <% if (session.user.role === 'student') { %>
+              <% if (!enrolled) { %>
+                <button class="btn btn-primary" onclick="buyCourse(this, '<%= course._id %>', '<%= course.title %>')">
+                  <i class="fas fa-credit-card"></i> Enroll Now for ₹<%= course.price %>
+                </button>
+              <% } else { %>
+                <div class="alert alert-info">
+                  <i class="fas fa-info-circle"></i> You're enrolled! Course materials will be available here once the instructor adds them.
+                </div>
+              <% } %>
+            <% } else { %>
+              <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle"></i> You're the instructor of this course. Add materials from the course management panel.
+              </div>
+            <% } %>
+          <% } else { %>
+            <a href="/login" class="btn btn-primary">
+              <i class="fas fa-sign-in-alt"></i> Login to Enroll
+            </a>
+          <% } %>
+        </div>
+      </div>
+    </section>
+
+    <style>
+      .no-materials {
+        padding: 4rem 0;
+        text-align: center;
+      }
+      .no-materials-content {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 2rem;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .no-materials-icon {
+        font-size: 4rem;
+        color: #6366f1;
+        margin-bottom: 1.5rem;
+      }
+      .no-materials h2 {
+        color: #fff;
+        margin-bottom: 1rem;
+      }
+      .no-materials p {
+        color: #9ca3af;
+        margin-bottom: 2rem;
+        font-size: 1.1rem;
+        line-height: 1.6;
+      }
+      .no-materials .btn {
+        padding: 0.8rem 2rem;
+        font-size: 1.1rem;
+        border-radius: 8px;
+      }
+      .no-materials .alert {
+        max-width: 500px;
+        margin: 0 auto;
+        text-align: left;
+      }
+    </style>
+  <% } %>
+
+  <%- include('partials/footer') %>
+
+  <!-- ================= SCRIPTS ================= -->
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script>
+    // Flash message functions
+    let flashTimeout;
+    
+    function showFlash(message, type = 'info') {
+      // Clear any existing timeout
+      if (flashTimeout) {
+        clearTimeout(flashTimeout);
+        flashTimeout = null;
+      }
+      
+      const container = document.getElementById('flash-container');
+      const flashText = document.getElementById('flash-text');
+      const flashMsg = document.getElementById('flash-message');
+      
+      // Set message and type
+      flashText.textContent = message;
+      
+      // Update alert class based on type
+      flashMsg.className = `alert alert-${type} alert-dismissible fade show`;
+      
+      // Show the container and message
+      container.style.display = 'block';
+      flashMsg.style.display = 'block';
+      
+      // Force reflow to enable animation
+      void flashMsg.offsetWidth;
+      
+      // Add show class for animation
+      flashMsg.classList.add('show');
+      
+      // Auto-hide after 5 seconds
+      flashTimeout = setTimeout(hideFlash, 5000);
+    }
+    
+    function hideFlash() {
+      const container = document.getElementById('flash-container');
+      const flashMsg = document.getElementById('flash-message');
+      
+      if (flashMsg && container) {
+        // Start fade out animation
+        flashMsg.classList.remove('show');
+        
+        // After animation completes, hide elements
+        setTimeout(() => {
+          flashMsg.style.display = 'none';
+          container.style.display = 'none';
+          flashMsg.className = 'alert alert-dismissible fade';
+        }, 150); // Match this with CSS transition duration
+      }
+    }
+    
+ // ✅ Show flash messages from server if they exist
+<% if (typeof error_msg !== 'undefined' && error_msg) { %>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      showFlash('<%- error_msg %>', 'danger');
+    });
+  </script>
+<% } else if (typeof success_msg !== 'undefined' && success_msg) { %>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      showFlash('<%- success_msg %>', 'success');
+    });
+  </script>
+<% } %>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  // Hide any existing flash messages first
+  hideFlash();
+});
+
+    
+    // View file function - handles different resource types
+    function viewFile(url, resourceType) {
+      if (resourceType === 'image') {
+        // Open images in new tab
+        window.open(url, '_blank');
+      } else if (resourceType === 'pdf') {
+        // Open PDF in Google Docs viewer in new tab for proper viewing
+        const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=false`;
+        window.open(viewerUrl, '_blank');
+      } else if (resourceType === 'video') {
+        // Create a temporary page to view video without downloading
+        const videoWindow = window.open('', '_blank');
+        videoWindow.document.write(`
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>Video Player</title>
+            <style>
+              body {
+                margin: 0;
+                background: #000;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+              }
+              video {
+                max-width: 100%;
+                max-height: 100vh;
+                width: auto;
+                height: auto;
+              }
+            </style>
+          </head>
+          <body class="">
+            <video controls autoplay>
+              <source src="${url}" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+          </body>
+          </html>
+        `);
+        videoWindow.document.close();
+      }
+    }
+
+    // Download file function - properly handles all file types
+    async function downloadFile(url, title, resourceType) {
+      try {
+        // Fetch the file as blob
+        const response = await fetch(url);
+        const blob = await response.blob();
+        
+        // Determine file extension
+        let extension = '';
+        if (resourceType === 'video') {
+          extension = '.mp4'; // Default video extension
+          // Try to extract from URL or content-type
+          const contentType = response.headers.get('content-type');
+          if (contentType) {
+            if (contentType.includes('webm')) extension = '.webm';
+            else if (contentType.includes('ogg')) extension = '.ogg';
+            else if (contentType.includes('mov')) extension = '.mov';
+          }
+        } else if (resourceType === 'pdf') {
+          extension = '.pdf';
+        } else if (resourceType === 'image') {
+          extension = '.jpg'; // Default image extension
+          const contentType = response.headers.get('content-type');
+          if (contentType) {
+            if (contentType.includes('png')) extension = '.png';
+            else if (contentType.includes('gif')) extension = '.gif';
+            else if (contentType.includes('webp')) extension = '.webp';
+            else if (contentType.includes('svg')) extension = '.svg';
+          }
+        }
+        
+        // Create blob URL
+        const blobUrl = window.URL.createObjectURL(blob);
+        
+        // Create download link
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = (title || 'download') + extension;
+        document.body.appendChild(a);
+        a.click();
+        
+        // Cleanup
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(blobUrl);
+      } catch (error) {
+        console.error('Download failed:', error);
+        // Fallback to simple download
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = title || 'download';
+        a.setAttribute('target', '_blank');
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
+    }
+
+    async function buyCourse(button, courseId, courseTitle) {
+  ButtonLoader.show(button, button.dataset.loadingText || "Starting payment...");
+
+  try {
+    const res = await fetch("/payment/create-order", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ courseId }),
+    });
+
+    const data = await res.json();
+
+    if (!data.success || !data.orderId) {
+      ButtonLoader.reset(button);
+      showFlash(data.message || "Unable to create payment order.", "danger");
+      return;
+    }
+
+    const options = {
+      key: data.key || data.keyId || "<%= process.env.RAZORPAY_KEY_ID %>",
+      amount: data.amount,
+      currency: data.currency || "INR",
+      name: "EduLearn",
+      description: courseTitle,
+      order_id: data.orderId,
+      prefill: {
+        name: data.studentName || "",
+        email: data.studentEmail || "",
+      },
+      handler: async function (response) {
+        try {
+          const verifyRes = await fetch("/payment/verify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ...response, courseId }),
+          });
+
+          const verifyData = await verifyRes.json();
+          if (verifyData.success) {
+            showFlash("✅ Payment successful! Redirecting...", "success");
+            setTimeout(() => {
+              window.location.href =
+                verifyData.redirectUrl || "/courses/student/dashboard";
+            }, 1200);
+          } else {
+            ButtonLoader.reset(button);
+            showFlash(verifyData.message || "Payment verification failed.", "danger");
+          }
+        } catch (err) {
+          console.error("Verification error:", err);
+          ButtonLoader.reset(button);
+          showFlash("Error verifying payment.", "danger");
+        }
+      },
+      modal: {
+        ondismiss: function () {
+          ButtonLoader.reset(button);
+          showFlash("Payment window closed.", "warning");
+        },
+      },
+      theme: { color: "#6d8cfb" },
+    };
+
+    const rzp = new Razorpay(options);
+    rzp.open();
+  } catch (e) {
+    console.error("Error in buyCourse:", e);
+    ButtonLoader.reset(button);
+    showFlash("Error starting payment. Please try again.", "danger");
+  }
+}
+
+
+    // Delete course function
+    function deleteCourse(courseId, button) {
+      const modal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+      const confirmBtn = document.getElementById('confirmDeleteBtn');
+      const originalHandler = confirmBtn.onclick;
+      
+      confirmBtn.onclick = async function() {
+        try {
+          const response = await fetch(`/courses/instructor/delete/${courseId}`, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'X-Requested-With': 'XMLHttpRequest'
+            },
+            credentials: 'same-origin'
+          });
+          
+          const contentType = response.headers.get('content-type');
+          
+          if (contentType && contentType.includes('application/json')) {
+            const data = await response.json();
+            
+            if (!response.ok) {
+              throw new Error(data.message || `Server responded with status ${response.status}`);
+            }
+            
+            // Show success message and redirect
+            showFlash('✅ Course deleted successfully!', 'success');
+            setTimeout(() => {
+              window.location.href = '/courses/instructor/dashboard';
+            }, 1500);
+            
+          } else if (response.redirected) {
+            window.location.href = response.url;
+            return;
+          } else {
+            const text = await response.text();
+            throw new Error(`Unexpected response format: ${text.substring(0, 100)}...`);
+          }
+          
+        } catch (error) {
+          showFlash(`❌ Error: ${error.message || 'Failed to delete course'}`, 'danger');
+          
+          // If we get a 401 or 403, redirect to login
+          if (error.message.includes('401') || error.message.includes('403')) {
+            window.location.href = '/users/login';
+            return;
+          }
+        } finally {
+          // Clean up the handler
+          confirmBtn.onclick = originalHandler;
+          modal.hide();
+        }
+      };
+      
+      // Show the modal
+      modal.show();
+    }
+
+    // Delete lesson function
+    function deleteLesson(courseId, lessonId, button) {
+      const card = button.closest('.card');
+      const modal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+      
+      // Set up the confirm button handler
+      const confirmBtn = document.getElementById('confirmDeleteBtn');
+      const originalHandler = confirmBtn.onclick;
+      
+      confirmBtn.onclick = async function() {
+        try {
+          const response = await fetch(`/courses/instructor/delete-lesson/${courseId}/${lessonId}`, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            }
+          });
+          
+          if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || 'Failed to delete lesson');
+          }
+          
+          // Remove the card with a fade out effect
+          card.style.transition = 'opacity 0.3s ease';
+          card.style.opacity = '0';
+          setTimeout(() => {
+            card.remove();
+            showFlash('✅ Lesson deleted successfully!', 'success');
+          }, 300);
+          
+        } catch (error) {
+          showFlash(`❌ Error: ${error.message || 'Failed to delete lesson'}`, 'danger');
+        } finally {
+          // Clean up the handler
+          confirmBtn.onclick = originalHandler;
+          modal.hide();
+        }
+      };
+      
+      // Show the modal
+      modal.show();
+    }
+
+    // Soft reveal for cards
+    document.addEventListener('DOMContentLoaded', () => {
+      const cards = document.querySelectorAll('.card');
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) e.target.classList.add('in');
+        });
+      }, { threshold: 0.12 });
+      cards.forEach(c => io.observe(c));
+    });
+  </script>
+
+<style>
+  /* Text truncation for descriptions */
+  .description-container {
+    max-width: 100%;
+    position: relative;
+  }
+  
+  .description-content {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 0;
+    max-height: 4.5em; /* 3 lines of text (1.5em line height * 3) */
+    transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: max-height;
+    position: relative;
+  }
+  
+  .description-content.expanded {
+    -webkit-line-clamp: unset;
+    max-height: 1000px; /* Adjust based on your content */
+    transition: max-height 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  /* Add a subtle fade effect */
+  .description-content::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1.5em;
+    background: linear-gradient(to bottom, 
+      rgba(15, 23, 42, 0) 0%, 
+      rgba(15, 23, 42, 0.8) 50%,
+      rgba(15, 23, 42, 1) 100%);
+    opacity: var(--gradient-opacity, 1);
+    transition: opacity 0.3s ease;
+    pointer-events: none; /* Allow clicking through the gradient */
+  }
+  
+  .description-content.expanded::after {
+    opacity: 0;
+    pointer-events: none;
+  }
+  
+  
+  .read-more {
+    color: #4a6bdf;
+    cursor: pointer;
+    font-weight: 500;
+    margin-top: 4px;
+    display: inline-block;
+  }
+  
+  .read-more:hover {
+    text-decoration: underline;
+  }
+  
+  /* === PROGRESS BUTTON WITH WAVE FILL === */
+  .progress-btn {
+    position: relative;
+    overflow: hidden;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    padding: 1rem 1.5rem;
+    font-weight: 700;
+    color: #fff;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    background: #0f172a; /* Darker background for better contrast */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+  }
+
+  .progress-btn:hover {
+    transform: translateY(-2px);
+  }
+
+  /* Wave layer container */
+  .wave-layer {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border-radius: 14px;
+    z-index: 1;
+  }
+
+  /* Gradient fill that animates horizontally */
+  .wave-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0; /* Will be set by JavaScript */
+    height: 100%;
+    background: linear-gradient(90deg, 
+      #5a7df4 0%, 
+      #8a4ff6 50%,
+      #b84ff6 100%);
+    clip-path: none; /* Remove wave clip for left-to-right fill */
+    transition: width 1s cubic-bezier(0.25, 0.1, 0.15, 1);
+    background-size: 200% 100%;
+    animation: waveMotion 6s linear infinite;
+    box-shadow: 0 0 10px rgba(138, 79, 246, 0.5);
+  }
+
+  /* Animated wave motion */
+  @keyframes waveMotion {
+    0% { 
+      background-position-x: 0;
+      opacity: 0.9;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% { 
+      background-position-x: 500px;
+      opacity: 0.9;
+    }
+  }
+
+  .progress-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  /* Full glow when completed using brand color */
+  .progress-btn[data-progress="100"] {
+    box-shadow: 0 0 25px rgba(109, 140, 251, 0.6);
+  }
+  
+  /* Hover effect for wave progress button */
+  .progress-btn:hover .wave-fill {
+    background: linear-gradient(90deg, 
+      var(--brand-2) 0%, 
+      var(--brand-1) 100%);
+    opacity: 0.95;
+  }
+
+  /* === Global Vars (same theme as dashboard) === */
+  :root {
+    --bg-1:#0f172a; --bg-2:#111827;
+    --text:#e5e7eb; --muted:#94a3b8;
+    --brand-1:#6d8cfb; --brand-2:#9b5cf7;
+    --accent:#22c55e; --danger:#ef4444;
+    --warn:#f59e0b; --card:#0b1222dd;
+    --glass:rgba(255,255,255,0.08);
+    --stroke:rgba(255,255,255,0.12);
+    --shadow:0 18px 48px rgba(0,0,0,.45);
+    --shadow-soft:0 10px 28px rgba(0,0,0,.35);
+    --radius:18px;
+  }
+
+  * {box-sizing:border-box;}
+  body.modern-body {
+    background: linear-gradient(135deg, var(--bg-1), var(--bg-2));
+    font-family:'Inter',system-ui,Roboto,Arial,sans-serif;
+    color:var(--text);
+    min-height:100vh;
+  }
+
+  .container {max-width:1200px; margin:0 auto; padding:0 1rem;}
+  .container--wide {max-width:1280px;}
+
+  /* === HERO === */
+  .hero {
+    padding:3rem 0 4rem;
+    position:relative;
+  }
+  .hero:before {
+    content:''; position:absolute; inset:0;
+    background:radial-gradient(600px 300px at -10% 10%, rgba(109,140,251,.18), transparent 60%),
+               radial-gradient(600px 300px at 110% 0%, rgba(155,92,247,.14), transparent 60%);
+    pointer-events:none;
+  }
+  .hero-grid {
+    display:grid;
+    grid-template-columns:1.2fr 1fr;
+    gap:2rem;
+    align-items:center;
+  }
+  @media(max-width:992px){
+    .hero-grid {grid-template-columns:1fr;}
+  }
+  .hero-media .thumb {
+    border-radius:24px;
+    overflow:hidden;
+    position:relative;
+    border:1px solid var(--stroke);
+    background:#1b2750;
+    box-shadow:var(--shadow);
+  }
+  .hero-media img {width:100%; display:block; aspect-ratio:16/9; object-fit:cover;}
+  .badge {
+    position:absolute; top:14px; left:14px;
+    display:flex; align-items:center; gap:.5rem;
+    padding:.5rem .9rem; border-radius:999px;
+    background:linear-gradient(135deg, #22c55e, #16a34a);
+    color:white; font-weight:700; font-size:.85rem;
+    box-shadow:0 6px 12px rgba(34,197,94,.4);
+  }
+
+  .hero-info .hero-title {
+    font-size:2.6rem;
+    font-weight:800;
+    margin-bottom: 1.5rem;
+    line-height:1.2;
+  }
+  .hero-sub {
+    color:var(--muted);
+    font-size:1.05rem;
+    line-height:1.6;
+    margin-bottom:1.3rem;
+  }
+  .meta {
+    display:flex;
+    flex-wrap:wrap;
+    gap:.8rem;
+    margin-bottom:1.7rem;
+  }
+  .meta-chip {
+    display:flex; align-items:center;
+    gap:.6rem; font-size:.95rem;
+    padding:.65rem 1rem;
+    background:var(--glass);
+    border:1px solid var(--stroke);
+    border-radius:999px;
+    font-weight:600;
+    backdrop-filter:blur(8px);
+  }
+  .meta-chip i {font-size:1.1rem;}
+  .meta-chip.price {
+    background:linear-gradient(135deg, rgba(109,140,251,.25), rgba(155,92,247,.25));
+    border-color:transparent;
+  }
+
+  .cta-row {display:flex; flex-wrap:wrap; gap:.7rem;}
+  .actions {display:flex; flex-wrap:wrap; gap:.6rem;}
+  .inline {display:inline;}
+
+  .btn {
+    display:flex; align-items:center; gap:.6rem;
+    padding:.85rem 1.15rem;
+    border-radius:14px; border:1px solid transparent;
+    font-weight:700; text-decoration:none;
+    cursor:pointer; transition:all .25s;
+    backdrop-filter:blur(8px);
+    color:#eaeaf6;
+  }
+  .btn-primary {
+    background:linear-gradient(135deg, var(--brand-1), var(--brand-2));
+    box-shadow:0 10px 26px rgba(109,140,251,.35);
+  }
+  .btn-primary:hover {transform:translateY(-2px);}
+
+  .note {
+    padding:.8rem 1.1rem;
+    background:var(--glass);
+    border:1px solid var(--stroke);
+    border-radius:12px;
+    color:var(--muted);
+    display:flex; align-items:center; gap:.5rem;
+  }
+
+  /* === MATERIALS === */
+  .materials {padding:3rem 0;}
+  .sect-head {text-align:center; margin-bottom:1.75rem;}
+  .sect-head h2 {font-size:1.7rem; font-weight:800;}
+  .sect-head h2 i {color:var(--brand-1); margin-right:.4rem;}
+  .sect-head p {font-size:1rem; color:var(--muted);}
+
+  .grid {
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:1.1rem;
+  }
+  @media(max-width:992px) {
+    .grid {grid-template-columns:repeat(2, 1fr);}
+  }
+  @media(max-width:600px) {
+    .grid {grid-template-columns:1fr;}
+  }
+
+  .card {
+    background: #1e293b;
+    border-radius: 12px;
+    overflow: visible;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 0;
+  }
+  .card.in {transform:translateY(0); opacity:1;}
+
+  .badge-num {
+    position:absolute;
+    width:36px; height:36px;
+    top:10px; left:10px;
+    background:linear-gradient(135deg, #3b82f6, #22c55e);
+    color:white; font-size:.9rem; font-weight:700;
+    display:flex; align-items:center; justify-content:center;
+    border-radius:50%; z-index:2;
+  }
+
+  .media {
+    position: relative;
+    height: 180px;
+    background: #0b1222;
+    overflow: hidden;
+    border-radius: 12px 12px 0 0;
+  }
+  .media-el {width:100%; height:100%; object-fit:cover; display:block;}
+
+  /* Desktop overlay (hidden by default, shows on hover) */
+  .overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.25s ease;
+    z-index: 10;
+    padding: 1.2rem 0.6rem 0.8rem;
+    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 70%, transparent 100%);
+    border-radius: 0 0 12px 12px;
+    min-height: 70px;
+  }
+
+  .overlay .button-group {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.6rem 1.4rem;
+    border-radius: 30px;
+    background: rgba(15, 23, 42, 0.98);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    margin-bottom: 0.5rem;
+  }
+
+  .media:hover .overlay {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Button container */
+  .button-container {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .action-buttons {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+  
+  .action-buttons .chip {
+    flex: 1;
+    min-width: 90px;
+    justify-content: center;
+  }
+  
+  /* Only show on hover for desktop */
+  @media (min-width: 601px) {
+    .overlay {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    .card:hover .overlay {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .chip {
+    width: 100%;
+    min-width: 100px;
+    padding: 0.5rem 0.8rem;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    font-weight: 600;
+    font-size: 0.85rem;
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+  .chip:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+  }
+  .chip-primary {background:linear-gradient(to right, var(--brand-1), var(--brand-2)); color:#fff;}
+  .chip-light {background:rgba(255,255,255,.9); color:#111827;}
+  .chip-danger {background:linear-gradient(to right, var(--danger), #dc2626); color:#fff;}
+
+  .content {
+    padding: 1.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    z-index: 5;
+  }
+  .title {margin:0 0 .5rem; font-size:1rem; font-weight:700; color:#fff;}
+  .desc {font-size:.85rem; color:var(--muted); margin:0 0 .8rem; line-height:1.45;}
+
+  .foot {
+    display:flex; justify-content:space-between; align-items:center;
+    border-top:1px solid var(--stroke);
+    padding-top:.6rem;
+  }
+  .rtype {
+    display:flex; align-items:center; gap:.35rem;
+    background:rgba(109,140,251,.15);
+    padding:.3rem .55rem;
+    border-radius:999px;
+    color:#c7d2fe;
+    font-size:.8rem; font-weight:600;
+  }
+
+  /* === Mobile: Horizontal Card Layout (Forced) === */
+  /* Adjust chip styles for desktop */
+  .overlay .chip {
+    min-width: auto;
+    padding: 0.4rem 1rem;
+    font-size: 0.8rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+  }
+  
+  .overlay .chip-primary {
+    background: linear-gradient(to right, var(--brand-1), var(--brand-2));
+    color: #fff;
+  }
+  
+  .overlay .chip-light {
+    background: rgba(255, 255, 255, 0.9);
+    color: #111827;
+  }
+  
+  .overlay .chip-danger {
+    background: linear-gradient(to right, var(--danger), #dc2626);
+    color: #fff;
+  }
+  
+  .overlay .chip:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+  }
+
+  @media (max-width: 768px) {
+    .media {
+      height: 200px;
+    }
+    
+    /* Hide desktop overlay on mobile */
+    .overlay {
+      display: none !important;
+    }
+    
+    /* Show mobile buttons */
+    .mobile-buttons {
+      display: flex;
+      gap: 0.8rem;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .mobile-buttons .chip {
+      flex: 1;
+      justify-content: center;
+    }
+    
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    
+    .card {
+      display: flex !important;
+      flex-direction: row !important;
+      height: 200px !important;
+      width: 100% !important;
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+      background: #0f172a;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    .card .media {
+      width: 42% !important;
+      height: 100% !important;
+      min-height: 100%;
+      flex-shrink: 0;
+    }
+
+    .card .media-el {
+      height: 100% !important;
+      width: 100%;
+      object-fit: cover !important;
+      border-radius: 8px 0 0 8px !important;
+    }
+    
+    .card .content {
+      width: 58% !important;
+      padding: 0.8rem !important;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    
+    .card .title {
+      font-size: 0.95rem !important;
+      margin-bottom: 0.3rem !important;
+    }
+    
+    .card .desc {
+      font-size: 0.75rem !important;
+      margin-bottom: 0.5rem !important;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      line-height: 1.4;
+      color: #94a3b8;
+      text-overflow: ellipsis;
+      max-height: 2.8em;
+      word-break: break-word;
+    }
+    
+    .card .foot {
+      margin-top: auto;
+      padding-top: 0.5rem !important;
+    }
+
+    .card .content {
+      width: 58% !important;
+      padding: 0.8rem !important;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .card .title {
+      font-size: 0.9rem !important;
+      margin-bottom: 0.3rem !important;
+      line-height: 1.3;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-height: 2.6em;
+      word-break: break-word;
+    }
+
+    /* Show buttons always on mobile */
+    .card .overlay {
+      position: absolute !important;
+      top: 0.6rem !important;
+      right: 0.6rem !important;
+      left: auto !important;
+      bottom: auto !important;
+      flex-direction: column !important;
+      opacity: 1 !important;
+      transform: translateY(0) !important;
+      display: flex !important;
+      visibility: visible !important;
+      pointer-events: auto !important;
+      z-index: 10 !important;
+      background: rgba(15, 23, 42, 0.95) !important;
+      padding: 0.5rem !important;
+      border-radius: 8px !important;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.3) !important;
+      gap: 0.4rem !important;
+    }
+    
+    .content {
+      padding: 1rem !important;
+    }
+
+    .card .chip {
+      font-size: 0.7rem !important;
+      padding: 0.4rem 0.5rem !important;
+      gap: 0.3rem !important;
+    }
+
+    .card .chip i {
+      font-size: 0.75rem !important;
+    }
+
+    .card .rtype {
+      font-size: 0.7rem !important;
+      padding: 3px 6px !important;
+    }
+
+    /* fix number badge position for horizontal */
+    .badge-num {
+      top: 6px !important;
+      left: 6px !important;
+      width: 28px !important;
+      height: 28px !important;
+      font-size: 0.7rem !important;
+    }
+
+    .foot {
+      display: none !important;
+    }
+  }
+
+  /* Hide mobile buttons on desktop */
+  /* Reset styles for desktop */
+  @media (min-width: 769px) {
+    .card {
+      flex-direction: column !important;
+      height: auto !important;
+    }
+    
+    .card .media {
+      width: 100% !important;
+      height: 180px !important;
+    }
+    
+    .card .content {
+      width: 100% !important;
+      padding: 1.25rem !important;
+    }
+    
+    .card .media-el {
+      border-radius: 12px 12px 0 0 !important;
+    }
+    .button-container {
+      position: absolute;
+      bottom: 0;
+      top:30px;
+      left: 0;
+      right: 0;
+      margin: 0;
+      padding: 0.8rem;
+      background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.6) 60%, transparent 100%);
+      border: none;
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+    
+    .card:hover .button-container {
+      opacity: 1;
+    }
+    
+    .action-buttons {
+      justify-content: center;
+    }
+    
+    .action-buttons .chip {
+      flex: 0 0 auto;
+    }
+  }
+
+  /* ---- MOBILE: Hero side-by-side layout ---- */
+  @media (max-width: 600px) {
+    .hero-grid {
+      display: grid !important;
+      grid-template-columns: 45% 55% !important;
+      align-items: center;
+      gap: 0.8rem !important;
+    }
+
+    .hero-media .thumb {
+      height: 140px !important;
+      border-radius: 12px !important;
+    }
+
+    .hero-media img {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover !important;
+    }
+
+    .hero-info {
+      padding-left: 0.3rem !important;
+    }
+
+    .hero-title {
+      font-size: 1.1rem !important;
+      margin-bottom: 0.3rem !important;
+    }
+
+    .hero-sub {
+      font-size: 0.75rem !important;
+      margin-bottom: 0.4rem !important;
+      line-height: 1.2 !important;
+    }
+
+    .meta-chip {
+      font-size: 0.65rem !important;
+      padding: 0.35rem 0.55rem !important;
+    }
+
+    .btn {
+      font-size: 0.75rem !important;
+      padding: 0.5rem 0.7rem !important;
+      width: 100%;
+    }
+  }
+</style>
+  <!-- PDF.js Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+  <script>
+    // Initialize PDF.js
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+    
+    // Handle PDF preview
+    document.addEventListener('DOMContentLoaded', function() {
+      const pdfPreviews = document.querySelectorAll('.pdf-preview');
+      
+      pdfPreviews.forEach(preview => {
+        const pdfUrl = preview.getAttribute('data-pdf-url');
+        const canvas = preview.querySelector('.pdf-canvas');
+        const ctx = canvas.getContext('2d');
+        let pdf = null;
+        let isRendered = false;
+        
+        // Function to render PDF preview
+        const renderPdfPreview = () => {
+          if (isRendered) return;
+          
+          pdfjsLib.getDocument(pdfUrl).promise.then(pdfDoc => {
+            return pdfDoc.getPage(1);
+          }).then(page => {
+            const viewport = page.getViewport({ scale: 1.0 });
+            const container = preview.getBoundingClientRect();
+            const padding = 20;
+            const availableWidth = container.width - (padding * 2);
+            const availableHeight = container.height - (padding * 2);
+            const scale = Math.min(
+              availableWidth / viewport.width,
+              availableHeight / viewport.height
+            );
+            
+            const scaledViewport = page.getViewport({ scale });
+            
+            canvas.width = scaledViewport.width;
+            canvas.height = scaledViewport.height;
+            
+            const renderContext = {
+              canvasContext: ctx,
+              viewport: scaledViewport
+            };
+            
+            return page.render(renderContext).promise.then(() => {
+              isRendered = true;
+              canvas.style.opacity = '1';
+              canvas.style.transform = 'scale(1)';
+            });
+          }).catch(error => {
+            throw new Error('Error rendering PDF preview:', error);
+          });
+        };
+        
+        // Handle hover events
+        preview.addEventListener('mouseenter', () => {
+          if (!isRendered) {
+            renderPdfPreview();
+          } else {
+            const canvas = preview.querySelector('.pdf-canvas');
+            canvas.style.opacity = '1';
+            canvas.style.transform = 'scale(1)';
+          }
+        });
+        
+        // Close button
+        const closeBtn = preview.querySelector('.pdf-close');
+        closeBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const overlay = preview.querySelector('.pdf-preview-overlay');
+          overlay.style.opacity = '0';
+          overlay.style.visibility = 'hidden';
+          
+          // Reset icon
+          const icon = preview.querySelector('.pdf-icon');
+          icon.style.opacity = '1';
+          icon.style.visibility = 'visible';
+        });
+      });
+    });
+  </script>
+
+
+
+  <!-- Progress Bar Animation (REMOVED - Duplicate) -->
+  <!-- This functionality is now handled in the main progress script below -->
+
+  <!-- === Hidden SVG Clip Path for Wave Effect === -->
+  <svg width="0" height="0" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <clipPath id="waveClip" clipPathUnits="objectBoundingBox">
+        <!-- Smooth wave curve -->
+        <path d="M0,0.7 
+                 C0.25,0.6, 0.5,0.8, 0.75,0.7 
+                 C0.9,0.65, 1,0.75, 1,0.75 
+                 L1,1 L0,1 Z" />
+      </clipPath>
+    </defs>
+  </svg>
+
+  <!-- Progress handling and auto-refresh -->
+  <!-- Duplicate Progress Script Removed -->
+  <!-- This functionality is now handled in the main progress script below -->
+
+  <!-- Hero Progress Management -->
+  <!-- Now using applyOverallProgress function below -->
+  
+  <script>
+  // Declare all variables from EJS at the top
+  const courseId = "<%= course._id %>";
+  const serverProgress = <%- JSON.stringify((typeof progressPercent !== 'undefined' && progressPercent != null) ? progressPercent : 0) %>;
+  
+  function applyOverallProgress(overallProgress) {
+    overallProgress = Math.min(100, Math.max(0, parseInt(overallProgress, 10) || 0));
+    document.querySelectorAll('.wave-fill').forEach(w => {
+      w.style.width = overallProgress + '%';
+    });
+    const label = document.querySelector('#main-progress-value');
+    if (label) {
+      label.textContent = overallProgress >= 100 ? 'Course Completed' : `Continue Learning — ${overallProgress}%`;
+    }
+    // update data-progress attribute on main button so CSS rules apply
+    const mainBtn = document.querySelector('.progress-btn');
+    if (mainBtn) mainBtn.setAttribute('data-progress', overallProgress);
+  }
+
+  async function fetchOverallProgress() {
+    try {
+      const res = await fetch("/progress/overall/<%= course._id %>");
+      const data = await res.json();
+      if (data.success) {
+        applyOverallProgress(data.overallProgress);
+        
+        // update localStorage fallback
+        localStorage.setItem(`courseProgress_<%= course._id %>`, data.overallProgress);
+        localStorage.setItem(`courseProgress_<%= course._id %>_ts`, Date.now());
+      }
+    } catch (err) {
+      console.warn("Failed to refresh overall progress:", err);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    // Always sync fresh progress with server
+    fetchOverallProgress();
+
+    // Sync overall progress if viewer updated in another tab/window
+window.addEventListener('storage', (ev) => {
+  if (ev.key === `courseProgress_<%= course._id %>` ||
+      ev.key === `courseProgress_<%= course._id %>_ts`) {
+    const updated = localStorage.getItem(`courseProgress_<%= course._id %>`);
+    if (updated !== null) applyOverallProgress(updated);
+  }
+});
+
+// Also sync when user returns to the page
+window.addEventListener('focus', () => {
+  const saved = localStorage.getItem(`courseProgress_<%= course._id %>`);
+  if (saved !== null) applyOverallProgress(saved);
+});
+
+// Also sync when page becomes visible again
+document.addEventListener('visibilitychange', () => { 
+  if (document.visibilityState === 'visible') {
+    const saved = localStorage.getItem(`courseProgress_<%= course._id %>`);
+    if (saved !== null) applyOverallProgress(saved);
+  }
+});
+
+    // Handle progress updates from viewer (iframe or new-tab)
+window.addEventListener("message", (event) => {
+    if (!event.data || event.data.type !== "progressUpdate") return;
+
+    const { lessonId, progress, overallProgress } = event.data;
+
+    // Update lesson bar
+    const bar = document.querySelector(`.lesson-progress-bar[data-lesson-id="${lessonId}"]`);
+    if (bar) {
+        const fill = bar.querySelector(".progress-fill");
+        if (fill) fill.style.width = `${progress}%`;
+    }
+
+    // Force fresh server progress (also updates localStorage)
+    fetchOverallProgress();
+});
+
+    // Initial apply (keep server value as priority)
+    const saved = localStorage.getItem(`courseProgress_${courseId}`);
+    const final = (serverProgress > 0) ? serverProgress : (saved ? parseInt(saved, 10) : 0);
+    applyOverallProgress(final);
+  });
+  </script>
+
+</body>
+</html>

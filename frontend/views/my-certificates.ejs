@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Certificates - EduLearn</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .certificate-card {
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+      overflow: hidden;
+    }
+    .certificate-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+      border-color: #6366f1;
+    }
+    .certificate-img {
+      height: 200px;
+      object-fit: cover;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .certificate-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #6366f1;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+    }
+    .certificate-title {
+      color: #1e293b;
+      font-weight: 600;
+    }
+    .certificate-date {
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+
+    /* 🌙 DARK MODE STYLING FOR CERTIFICATES PAGE */
+    body.dark-theme {
+      background: #0e0e0e !important;
+      color: #e6e6e6 !important;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    /* Dark Page Header */
+    body.dark-theme .h3 {
+      color: #ffffff !important;
+      font-weight: 800;
+      background: linear-gradient(135deg, #9d7dff, #ff71c8, #ffd86b);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 1px;
+      text-shadow: 0 0 30px rgba(146, 110, 255, 0.4);
+    }
+
+    body.dark-theme .text-primary {
+      color: #9b87ff !important;
+    }
+
+    body.dark-theme .text-muted {
+      color: #bfbfbf !important;
+      text-shadow: 0 0 20px rgba(0,0,0,0.4);
+    }
+
+    /* Dark Certificate Cards */
+    body.dark-theme .certificate-card {
+      background: #1a1a1a !important;
+      border-color: #333 !important;
+      box-shadow: 0 5px 25px rgba(0,0,0,0.5) !important;
+    }
+
+    body.dark-theme .certificate-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0 30px rgba(124, 91, 255, 0.3) !important;
+      border-color: #7c5bff !important;
+    }
+
+    body.dark-theme .certificate-img {
+      border-bottom-color: #333 !important;
+    }
+
+    body.dark-theme .certificate-badge {
+      background: linear-gradient(135deg, #9d7dff, #ff71c8) !important;
+      box-shadow: 0 0 15px rgba(255, 113, 200, 0.4) !important;
+    }
+
+    body.dark-theme .certificate-title {
+      color: #ffffff !important;
+    }
+
+    body.dark-theme .certificate-date {
+      color: #bfbfbf !important;
+    }
+
+    /* Dark Buttons */
+    body.dark-theme .btn-outline-primary {
+      border-color: #7c5bff !important;
+      color: #9b87ff !important;
+    }
+
+    body.dark-theme .btn-outline-primary:hover {
+      background: linear-gradient(135deg, #9d7dff, #ff71c8) !important;
+      border-color: #7c5bff !important;
+      color: #ffffff !important;
+      box-shadow: 0 0 20px rgba(255, 113, 200, 0.4) !important;
+    }
+
+    body.dark-theme .btn-outline-secondary {
+      border-color: #666 !important;
+      color: #bfbfbf !important;
+    }
+
+    body.dark-theme .btn-outline-secondary:hover {
+      background: #333 !important;
+      border-color: #666 !important;
+      color: #ffffff !important;
+    }
+
+    /* Dark Container */
+    body.dark-theme .container {
+      color: #e6e6e6 !important;
+    }
+
+    /* Dark Empty State */
+    body.dark-theme .text-center h5 {
+      color: #ffffff !important;
+    }
+
+    body.dark-theme .text-center p {
+      color: #bfbfbf !important;
+    }
+  </style>
+</head>
+<body class="">
+  <%- include('./partials/navbar') %>
+  
+  <!-- Spacer for fixed navbar -->
+  <div style="height: 30px;"></div>
+
+  <!-- Main Content -->
+  <div class="container py-5">
+    <div class="row mb-4">
+      <div class="col-12">
+        <h1 class="h3 font-weight-bold">
+          <i class="fas fa-certificate text-primary me-2"></i>My Certificates
+        </h1>
+        <p class="text-muted">View and download your course completion certificates</p>
+      </div>
+    </div>
+
+    <!-- Certificates Grid -->
+    <div class="row g-4">
+      <% if (certificates && certificates.length > 0) { %>
+        <% certificates.forEach(cert => { %>
+          <div class="col-md-6 col-lg-4">
+            <div class="certificate-card h-100 d-flex flex-column">
+              <div class="position-relative">
+                <% 
+                  // Handle both direct URL and thumbnail object
+                  let imageUrl = '/images/certificate-preview.jpg';
+                  if (cert.courseImage) {
+                    // If courseImage is an object with url property (thumbnail)
+                    if (typeof cert.courseImage === 'object' && cert.courseImage.url) {
+                      imageUrl = cert.courseImage.url;
+                    } 
+                    // If it's a direct URL string
+                    else if (typeof cert.courseImage === 'string') {
+                      imageUrl = cert.courseImage;
+                    }
+                  }
+                  
+                  // Format the date
+                  const issueDate = cert.issueDate ? new Date(cert.issueDate) : new Date();
+                  const formattedDate = issueDate.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  });
+                %>
+                <img 
+                  src="<%= imageUrl %>" 
+                  class="w-100 certificate-img" 
+                  alt="<%= cert.courseName || 'Course Certificate' %>"
+                  onerror="this.onerror=null; this.src='/images/certificate-preview.jpg'"
+                >
+                <span class="certificate-badge"><i class="fas fa-award me-1"></i> Certificate</span>
+              </div>
+              <div class="p-4 d-flex flex-column flex-grow-1">
+                <h5 class="certificate-title mb-2"><%= cert.courseName || 'Course Certificate' %></h5>
+                <p class="text-muted small mb-3">
+                  <i class="far fa-calendar-alt me-1"></i> 
+                  <span class="certificate-date"><%= formattedDate %></span>
+                </p>
+                <div class="mt-auto d-flex justify-content-between align-items-center">
+                  <a href="/certificate/generate/<%= cert.courseId %>" class="btn btn-outline-primary btn-sm">
+                    <i class="fas fa-eye me-1"></i> View
+                  </a>
+                  <a href="/certificate/<%= cert.id %>/download" class="btn btn-link text-decoration-none download-btn" download>
+                    <i class="fas fa-download me-1"></i> Download
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+      <% } else { %>
+        <div class="col-12 text-center py-5">
+          <div class="py-5">
+            <i class="fas fa-certificate fa-4x text-muted mb-4" style="opacity: 0.3;"></i>
+            <h4 class="mb-3">No Certificates Yet</h4>
+            <p class="text-muted mb-4">Complete courses to earn certificates that you can share with your network.</p>
+            <a href="/courses" class="btn btn-primary">
+              <i class="fas fa-book me-2"></i>Browse Courses
+            </a>
+          </div>
+        </div>
+      <% } %>
+    </div>
+  </div>
+
+  <%- include('./partials/footer') %>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Removed client-side PDF generation scripts -->
+</body>
+</html>

@@ -1,0 +1,1434 @@
+<!-- Navbar Styling - Centralized -->
+<style>
+/* Consistent Navbar Sizing - All Pages */
+#mainNavbar {
+  min-height: 70px !important;
+  max-height: 70px !important;
+  height: 70px !important;
+  transition: all 0.3s ease !important;
+}
+
+/* Navbar container sizing */
+#mainNavbar .container {
+  min-height: 70px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* Navbar brand sizing */
+#mainNavbar .navbar-brand {
+  min-height: 50px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Navbar nav sizing */
+#mainNavbar .navbar-nav {
+  min-height: 50px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* Navbar links sizing */
+#mainNavbar .nav-link {
+  min-height: 40px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Navbar buttons sizing */
+#mainNavbar .btn {
+  min-height: 38px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Spacer for fixed-top - Consistent across all pages */
+.navbar-spacer {
+  height: 70px !important;
+  width: 100% !important;
+  display: block !important;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  #mainNavbar {
+    min-height: 60px !important;
+    max-height: 60px !important;
+    height: 60px !important;
+  }
+  
+  .navbar-spacer {
+    height: 60px !important;
+  }
+}
+
+/* Light Mode Navbar */
+.navbar.bg-blur {
+  background: rgba(255, 255, 255, 0.85) !important;
+  backdrop-filter: blur(15px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Dark Mode Navbar */
+body.dark-theme nav.navbar,
+body.dark-theme .bg-blur {
+  background: rgba(15, 15, 15, 0.85) !important;
+  backdrop-filter: blur(15px);
+  border-bottom: 1px solid #222;
+  color: #fff !important;
+}
+
+/* Dark Mode Navbar Text Colors */
+body.dark-theme .nav-link {
+  color: #cfcfcf !important;
+  font-weight: 500 !important;
+  font-size: 0.95rem !important;
+}
+
+body.dark-theme .nav-link:hover {
+  color: #7c5bff !important;
+}
+
+/* Light Mode Navbar Text Colors */
+.navbar.bg-blur .nav-link {
+  font-weight: 500 !important;
+  font-size: 0.95rem !important;
+  color: #333 !important;
+}
+
+.navbar.bg-blur .nav-link:hover {
+  color: #667eea !important;
+}
+
+/* Active State Styling */
+.navbar.bg-blur .nav-link.active {
+  color: #667eea !important;
+  font-weight: 600 !important;
+  position: relative;
+}
+
+.navbar.bg-blur .nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 3px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 2px;
+}
+
+/* Dark Mode Active State */
+body.dark-theme .nav-link.active {
+  color: #9d7dff !important;
+  font-weight: 600 !important;
+}
+
+body.dark-theme .nav-link.active::after {
+  background: linear-gradient(135deg, #9d7dff 0%, #ff71c8 100%);
+}
+
+/* Brand Styling */
+.navbar-brand {
+  color: #333 !important;
+  font-weight: 700 !important;
+  transition: all 0.3s ease;
+}
+
+body.dark-theme .navbar-brand {
+  color: #ffffff !important;
+}
+
+.navbar-brand:hover {
+  transform: translateY(-2px);
+}
+
+/* Mobile Menu Toggler */
+.navbar-toggler {
+  border: none !important;
+  padding: 0.25rem 0.5rem;
+}
+
+.navbar-toggler:focus {
+  box-shadow: none !important;
+}
+
+body.dark-theme .navbar-toggler {
+  border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+body.dark-theme .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.8%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+}
+</style>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-blur fixed-top" id="mainNavbar">
+  <div class="container p-0">
+    <!-- Brand -->
+    <a class="navbar-brand fw-bold d-flex align-items-center" href="/">
+      <div class="brand-icon-wrapper me-2">
+        <i class="fa-solid fa-graduation-cap"></i>
+      </div>
+      <span class="brand-text">EduLearn</span>
+    </a>
+
+    <!-- Mobile Toggle Button -->
+    <button class="navbar-toggler border-0 shadow-none" type="button" id="mobileMenuToggler">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Navbar Links -->
+    <div class="collapse navbar-collapse m-0 p-0" id="mainNav">
+      <ul class="navbar-nav mx-auto align-items-center">
+        <!-- Desktop Only Links -->
+        <li class="nav-item d-none d-lg-block">
+          <a class="nav-link fw-medium px-3" href="/">
+            <i class="fa-solid fa-house me-1"></i> Home
+          </a>
+        </li>
+
+        <li class="nav-item d-none d-lg-block">
+          <a class="nav-link fw-medium px-3 py-2" href="/courses">
+            <i class="fa-solid fa-book-open me-2"></i> Courses
+          </a>
+        </li>
+
+        <li class="nav-item d-none d-lg-block">
+          <a class="nav-link fw-medium px-3" href="/about">
+            <i class="fa-solid fa-circle-info me-1"></i> About
+          </a>
+        </li>
+
+        <li class="nav-item d-none d-lg-block">
+          <a class="nav-link fw-medium px-3" href="/contact">
+            <i class="fa-solid fa-envelope me-1"></i> Contact
+          </a>
+        </li>
+
+          
+      </ul>
+
+      <!-- Right Side Navigation -->
+      <ul class="navbar-nav align-items-center">
+        <% if (session && session.user) { %>
+          <!-- Desktop Search -->
+          <li class="nav-item me-2 d-none d-lg-block">
+            <a class="nav-link nav-icon" href="/courses/search" title="Search Courses" style="background: linear-gradient(135deg, #667eea, #764ba2); transform: scale(0.95); box-shadow: 0 5px 20px rgba(102, 126, 234, 0.5);">
+              <i class="fa-solid fa-search"></i>
+            </a>
+          </li>
+
+          <% if (session.user.role === 'instructor') { %>
+            <!-- Instructor Links -->
+            <li class="nav-item me-2 d-none d-lg-block">
+              <a class="nav-link fw-medium" href="/courses/instructor/dashboard">
+                <i class="fa-solid fa-chalkboard-user me-1"></i> My Courses
+              </a>
+            </li>
+
+            <li class="nav-item me-2 d-none d-lg-block">
+              <a class="btn btn-primary btn-sm" href="/courses/instructor/create" style="background: linear-gradient(135deg, #667eea, #764ba2); transform: scale(0.95); box-shadow: 0 5px 20px rgba(102, 126, 234, 0.5); border: none;">
+                <i class="fa fa-plus me-1"></i> Create Course
+              </a>
+            </li>
+
+            <li class="nav-item dropdown d-none d-lg-block">
+              <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="instructorDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <div class="avatar-circle me-2">
+                  <% if (session.user.avatar) { %>
+                    <img src="<%= session.user.avatar %>" alt="Avatar">
+                  <% } else { %>
+                    <i class="fa-solid fa-user"></i>
+                  <% } %>
+                </div>
+                <span class="d-none d-lg-inline"><%= session.user.name || 'Instructor' %></span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end dropdown-menu-modern" aria-labelledby="instructorDropdown">
+                <li><a class="dropdown-item" href="/profile"><i class="fa-solid fa-user me-2"></i> View Profile</a></li>
+                <li><a class="dropdown-item" href="/profile/edit"><i class="fa-solid fa-pen-to-square me-2"></i> Edit Profile</a></li>
+                <li><a class="dropdown-item" href="/courses/instructor/earnings"><i class="fa-solid fa-dollar-sign me-2"></i> Earnings</a></li>
+                <li><a class="dropdown-item" href="/profile/settings"><i class="fa-solid fa-gear me-2"></i> Account Settings</a></li>
+                <li>
+                    <button class="dropdown-item" id="themeToggle">
+                        <i class="fa-solid fa-moon me-2"></i> Dark Mode
+                    </button>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item text-danger" href="/logout"><i class="fa-solid fa-right-from-bracket me-2"></i> Logout</a></li>
+              </ul>
+            </li>
+
+          <% } else if (session.user.role === 'student') { %>
+            <!-- Desktop: Student Links -->
+            <li class="nav-item me-2 d-none d-lg-block">
+              <a class="nav-link fw-medium" href="/courses/student/dashboard">
+                <i class="fa-solid fa-book-bookmark me-1"></i> My Learning
+              </a>
+            </li>
+            <li class="nav-item me-2 d-none d-lg-block">
+              <a class="nav-link nav-icon position-relative" href="/wishlist" title="Wishlist">
+                <i class="fa-solid fa-heart"></i>
+                <% if (session.wishlistCount && session.wishlistCount > 0) { %>
+                  <span class="badge-notification"><%= session.wishlistCount %></span>
+                <% } %>
+              </a>
+            </li>
+            <li class="nav-item me-2 d-none d-lg-block">
+              <a class="nav-link nav-icon position-relative" href="/cart" title="Cart">
+                <i class="fa-solid fa-shopping-cart"></i>
+                <% if (session.cartCount && session.cartCount > 0) { %>
+                  <span class="badge-notification"><%= session.cartCount %></span>
+                <% } %>
+              </a>
+            </li>
+
+            <li class="nav-item dropdown d-none d-lg-block">
+              <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="studentDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <div class="avatar-circle me-2">
+                  <% if (session.user.avatar) { %>
+                    <img src="<%= session.user.avatar %>" alt="Avatar">
+                  <% } else { %>
+                    <i class="fa-solid fa-user"></i>
+                  <% } %>
+                </div>
+                <span class="d-none d-lg-inline"><%= session.user.name || 'Student' %></span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end dropdown-menu-modern" aria-labelledby="studentDropdown">
+                <li><a class="dropdown-item" href="/profile"><i class="fa-solid fa-user me-2"></i> View Profile</a></li>
+                <li><a class="dropdown-item" href="/profile/edit"><i class="fa-solid fa-pen-to-square me-2"></i> Edit Profile</a></li>
+                <li><a class="dropdown-item" href="/wishlist"><i class="fa-solid fa-heart me-2"></i> Wishlist</a></li>
+                <li><a class="dropdown-item" href="/certificate/my-certificates"><i class="fa-solid fa-certificate me-2"></i> My Certificates</a></li>
+                <li><a class="dropdown-item" href="/profile/settings"><i class="fa-solid fa-gear me-2"></i> Account Settings</a></li>
+                <li>
+                    <button class="dropdown-item" id="themeToggle">
+                        <i class="fa-solid fa-moon me-2"></i> Dark Mode
+                    </button>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item text-danger" href="/logout"><i class="fa-solid fa-right-from-bracket me-2"></i> Logout</a></li>
+              </ul>
+            </li>
+
+          <% } %>
+
+        <% } else { %>
+          <!-- Guest Links - Desktop -->
+          <li class="nav-item me-2 d-none d-lg-block">
+            <a class="btn btn-outline-primary btn-sm px-4" href="/login">
+              <i class="fa fa-right-to-bracket me-1"></i> Login
+            </a>
+          </li>
+          <li class="nav-item d-none d-lg-block">
+            <a class="btn btn-primary btn-sm px-4" href="/register">
+              <i class="fa fa-user-plus me-1"></i> Register
+            </a>
+          </li>
+        <% } %>
+      </ul>
+    </div>
+
+    <!-- Mobile Menu Sidebar (Separate from navbar-collapse) -->
+    <div class="mobile-menu-sidebar" id="mobileSidebar">
+      <div class="mobile-menu-header">
+        <h5>Menu</h5>
+        <button class="close-menu-btn" type="button" id="closeMobileMenu">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <div class="mobile-menu-content">
+        <% if (session && session.user) { %>
+          <!-- Mobile User Profile Section -->
+          <div class="mobile-user-profile">
+            <div class="avatar-circle">
+              <% if (session.user.avatar) { %>
+                <img src="<%= session.user.avatar %>" alt="Avatar">
+              <% } else { %>
+                <i class="fa-solid fa-user"></i>
+              <% } %>
+            </div>
+            <div class="user-info">
+              <h6><%= session.user.name || (session.user.role === 'instructor' ? 'Instructor' : 'Student') %></h6>
+              <span class="user-role"><%= session.user.role === 'instructor' ? 'Instructor' : 'Student' %></span>
+            </div>
+          </div>
+
+          <% if (session.user.role === 'instructor') { %>
+            <!-- Instructor Mobile Menu -->
+            <ul class="mobile-nav-list">
+              <li><a class="mobile-nav-link" href="/"><i class="fa-solid fa-house"></i> Home</a></li>
+              
+              <!-- Combined All Courses/Create Course Button -->
+              <li style="padding: 0; margin: 0.5rem 1rem 0.5rem 1rem;">
+                <div class="row g-0" style="border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                  <div class="col-6" style="border-right: 1px solid rgba(0,0,0,0.1);">
+                    <a href="/courses" class="mobile-nav-link" style="justify-content: center; border-radius: 0; background: #fff; margin: 0; border: none; border-right: 1px solid rgba(0,0,0,0.1);">
+                      <i class="fa-solid fa-book-open"></i> <span style="margin-left: 8px;">Courses</span>
+                    </a>
+                  </div>
+                  <div class="col-6">
+                    <a href="/courses/instructor/create" class="mobile-nav-link" style="justify-content: center; border-radius: 0; background: #fff; margin: 0; border: none;">
+                      <i class="fa-solid fa-plus-circle"></i> <span style="margin-left: 8px;">Create</span>
+                    </a>
+                  </div>
+                </div>
+              </li>
+
+              <!-- Combined Dashboard/Earnings Button -->
+              <li style="padding: 0; margin: 0.5rem 1rem 0.5rem 1rem;">
+                <div class="row g-0" style="border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                  <div class="col-6" style="border-right: 1px solid rgba(0,0,0,0.1);">
+                    <a href="/courses/instructor/dashboard" class="mobile-nav-link" style="justify-content: center; border-radius: 0; background: #fff; margin: 0; border: none; border-right: 1px solid rgba(0,0,0,0.1);">
+                      <i class="fa-solid fa-gauge"></i> <span style="margin-left: 8px;">Dashboard</span>
+                    </a>
+                  </div>
+                  <div class="col-6">
+                    <a href="/courses/instructor/earnings" class="mobile-nav-link" style="justify-content: center; border-radius: 0; background: #fff; margin: 0; border: none;">
+                      <i class="fa-solid fa-money-bill-wave"></i> <span style="margin-left: 8px;">Earnings</span>
+                    </a>
+                  </div>
+                </div>
+              </li>
+            </ul>
+
+            <div class="mobile-menu-divider"></div>
+
+            <!-- Combined About/Contact Button -->
+            <ul class="mobile-nav-list">
+              <li style="padding: 0; margin: 0.5rem 1rem;">
+                <div class="row g-0" style="border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                  <div class="col-6" style="border-right: 1px solid rgba(0,0,0,0.1);">
+                    <a href="/about" class="mobile-nav-link" style="justify-content: center; border-radius: 0; background: #fff; margin: 0; border: none; border-right: 1px solid rgba(0,0,0,0.1);">
+                      <i class="fa-solid fa-circle-info"></i> <span style="margin-left: 8px;">About</span>
+                    </a>
+                  </div>
+                  <div class="col-6">
+                    <a href="/contact" class="mobile-nav-link" style="justify-content: center; border-radius: 0; background: #fff; margin: 0; border: none;">
+                      <i class="fa-solid fa-envelope"></i> <span style="margin-left: 8px;">Contact</span>
+                    </a>
+                  </div>
+                </div>
+              </li>
+            </ul>
+
+            <div class="mobile-menu-divider"></div>
+
+            <!-- Combined Profile/Edit Button -->
+            <ul class="mobile-nav-list">
+              <li style="padding: 0; margin: 0.5rem 1rem 0.75rem;">
+                <div class="row g-0" style="border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                  <div class="col-6" style="border-right: 1px solid rgba(0,0,0,0.1);">
+                    <a href="/profile" class="mobile-nav-link" style="justify-content: center; border-radius: 0; background: #fff; margin: 0; border: none; border-right: 1px solid rgba(0,0,0,0.1);">
+                      <i class="fa-solid fa-user"></i> <span style="margin-left: 8px;">Profile</span>
+                    </a>
+                  </div>
+                  <div class="col-6">
+                    <a href="/profile/edit" class="mobile-nav-link" style="justify-content: center; border-radius: 0; background: #fff; margin: 0; border: none;">
+                      <i class="fa-solid fa-pen-to-square"></i> <span style="margin-left: 8px;">Edit</span>
+                    </a>
+                  </div>
+                </div>
+              </li>
+              
+              <!-- Settings and Logout Buttons -->
+              <li><a class="mobile-nav-link" href="/profile/settings"><i class="fa-solid fa-gear"></i> Account Settings</a></li>
+              <li><button class="mobile-nav-link" id="mobileThemeToggle" style="background: none; border: none; width: 100%; text-align: left; cursor: pointer;"><i class="fa-solid fa-moon"></i> Dark Mode</button></li>
+              <li><a class="mobile-nav-link text-danger" href="/logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+            </ul>
+
+          <% } else if (session.user.role === 'student') { %>
+            <!-- Student Mobile Menu -->
+            <ul class="mobile-nav-list">
+              <li><a class="mobile-nav-link" href="/"><i class="fa-solid fa-house"></i> Home</a></li>
+              <!-- Combined Courses/Learning Button -->
+              <li style="padding: 0; margin: 0.5rem 1rem 0.5rem 1rem;">
+                <div class="row g-0" style="border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                  <div class="col-6" style="border-right: 1px solid rgba(0,0,0,0.1);">
+                    <a href="/courses" class="mobile-nav-link" style="justify-content: center; border-radius: 0; background: #fff; margin: 0; border: none; border-right: 1px solid rgba(0,0,0,0.1);">
+                      <i class="fa-solid fa-book-open"></i> <span style="margin-left: 8px;">Courses</span>
+                    </a>
+                  </div>
+                  <div class="col-6">
+                    <a href="/courses/student/dashboard" class="mobile-nav-link" style="justify-content: center; border-radius: 0; background: #fff; margin: 0; border: none;">
+                      <i class="fa-solid fa-user-graduate"></i> <span style="margin-left: 8px;">Learning</span>
+                    </a>
+                  </div>
+                </div>
+              </li>
+              <!-- Combined Wishlist/Cart Button -->
+              <li style="padding: 0; margin: 0.5rem 1rem 0.5rem 1rem;">
+                <div class="row g-0" style="border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.1);">
+                  <div class="col-6" style="border-right: 1px solid rgba(0,0,0,0.1);">
+                    <a href="/wishlist" class="mobile-nav-link" style="justify-content: center; border-radius: 0; background: #fff; margin: 0; border: none; position: relative;">
+                      <i class="fa-solid fa-heart"></i> <span style="margin-left: 8px;">Wishlist</span>
+                      <% if (session.wishlistCount && session.wishlistCount > 0) { %>
+                        <span class="mobile-badge" style="position: absolute; top: 5px; right: 10px;"><%= session.wishlistCount %></span>
+                      <% } %>
+                    </a>
+                  </div>
+                  <div class="col-6">
+                    <a href="/cart" class="mobile-nav-link" style="justify-content: center; border-radius: 0; background: #fff; margin: 0; border: none; position: relative;">
+                      <i class="fa-solid fa-shopping-cart"></i> <span style="margin-left: 8px;">Cart</span>
+                      <% if (session.cartCount && session.cartCount > 0) { %>
+                        <span class="mobile-badge" style="position: absolute; top: 5px; right: 10px;"><%= session.cartCount %></span>
+                      <% } %>
+                    </a>
+                  </div>
+                </div>
+              </li>
+              <!-- Combined About/Contact Button -->
+              <li class="combined-links-container" style="padding: 0; margin: 0.5rem 1rem 0.5rem 1rem;">
+                <div class="row g-0" style="border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                  <div class="col-6" style="border-right: 1px solid rgba(0,0,0,0.1);">
+                    <a href="/about" class="mobile-nav-link" style="justify-content: center; border-radius: 0; background: #fff; margin: 0; border: none; border-right: 1px solid rgba(0,0,0,0.1);">
+                      <i class="fa-solid fa-circle-info"></i> <span style="margin-left: 8px;">About</span>
+                    </a>
+                  </div>
+                  <div class="col-6">
+                    <a href="/contact" class="mobile-nav-link" style="justify-content: center; border-radius: 0; background: #fff; margin: 0; border: none;">
+                      <i class="fa-solid fa-envelope"></i> <span style="margin-left: 8px;">Contact</span>
+                    </a>
+                  </div>
+                </div>
+              </li>
+            </ul>
+
+            <div class="mobile-menu-divider"></div>
+
+            <ul class="mobile-nav-list">
+              <!-- Combined Profile/Edit Button -->
+              <li style="padding: 0; margin: 0.5rem 1rem 0.75rem;">
+                <div class="row g-0" style="border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                  <div class="col-6" style="border-right: 1px solid rgba(0,0,0,0.1);">
+                    <a href="/profile" class="mobile-nav-link" style="justify-content: center; border-radius: 0; background: #fff; margin: 0; border: none; border-right: 1px solid rgba(0,0,0,0.1);">
+                      <i class="fa-solid fa-user"></i> <span style="margin-left: 8px;">Profile</span>
+                    </a>
+                  </div>
+                  <div class="col-6">
+                    <a href="/profile/edit" class="mobile-nav-link" style="justify-content: center; border-radius: 0; background: #fff; margin: 0; border: none;">
+                      <i class="fa-solid fa-pen-to-square"></i> <span style="margin-left: 8px;">Edit</span>
+                    </a>
+                  </div>
+                </div>
+              </li>
+              <li><a class="mobile-nav-link" href="/my-certificates"><i class="fa-solid fa-certificate"></i> Certificates</a></li>
+              <li><a class="mobile-nav-link" href="/profile/settings"><i class="fa-solid fa-gear"></i> Account Settings</a></li>
+              <li><button class="mobile-nav-link" id="mobileThemeToggle" style="background: none; border: none; width: 100%; text-align: left; cursor: pointer;"><i class="fa-solid fa-moon"></i> Dark Mode</button></li>
+              <li><a class="mobile-nav-link text-danger" href="/logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+            </ul>
+          <% } %>
+
+        <% } else { %>
+          <!-- Guest Mobile Menu -->
+          <ul class="mobile-nav-list">
+            <li><a class="mobile-nav-link" href="/"><i class="fa-solid fa-house"></i> Home</a></li>
+            <li><a class="mobile-nav-link" href="/courses"><i class="fa-solid fa-book-open"></i> All Courses</a></li>
+            <li><a class="mobile-nav-link" href="/about"><i class="fa-solid fa-circle-info"></i> About Us</a></li>
+            <li><a class="mobile-nav-link" href="/contact"><i class="fa-solid fa-envelope"></i> Contact</a></li>
+            <li><button class="mobile-nav-link" id="mobileThemeToggle" style="background: none; border: none; width: 100%; text-align: left; cursor: pointer;"><i class="fa-solid fa-moon"></i> Dark Mode</button></li>
+          </ul>
+
+          <div class="mobile-menu-divider"></div>
+
+          <div class="mobile-auth-buttons">
+            <a class="btn btn-outline-primary w-100 mb-2" href="/login">
+              <i class="fa fa-right-to-bracket me-2"></i> Login
+            </a>
+            <a class="btn btn-primary w-100" href="/register">
+              <i class="fa fa-user-plus me-2"></i> Register
+            </a>
+          </div>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay" id="mobileOverlay"></div>
+  </div>
+</nav>
+
+<!-- Spacer for fixed-top - Consistent across all pages -->
+<div class="navbar-spacer"></div>
+
+<style>
+
+.navbar-brand {
+  margin-left: 1rem;
+}
+
+  /* ========== DESKTOP STYLES (No Changes) ========== */
+  .bg-blur {
+    background-color: rgba(255, 255, 255, 0.8) !important;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  }
+  
+  .navbar-scrolled {
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .brand-icon-wrapper {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+  }
+
+  .brand-text {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-size: 1.5rem;
+  }
+
+  .nav-link {
+    color: #64748b;
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .nav-link:hover {
+    color: #667eea;
+  }
+
+  .nav-link.fw-medium::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 2px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    transition: width 0.3s ease;
+  }
+
+  .nav-link.fw-medium:hover::after {
+    width: 80%;
+  }
+
+  .nav-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: #f8fafc;
+    color: #64748b;
+    transition: all 0.3s ease;
+  }
+
+  .nav-icon:hover {
+    background: #667eea;
+    color: white;
+  }
+
+  .badge-notification {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ef4444;
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 10px;
+    min-width: 18px;
+    text-align: center;
+  }
+
+  .dropdown-menu-modern {
+    border: none;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .dropdown-menu-modern .dropdown-item {
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    transition: all 0.2s ease;
+    color: #64748b;
+  }
+
+  .dropdown-menu-modern .dropdown-item:hover {
+    background: #f8fafc;
+    color: #667eea;
+    padding-left: 1.2rem;
+  }
+
+  .dropdown-menu-modern .dropdown-item i {
+    width: 20px;
+    text-align: center;
+  }
+
+  .dropdown-menu-modern .dropdown-item.text-danger:hover {
+    background: #fef2f2;
+    color: #ef4444;
+  }
+
+  /* Dark Mode Dropdown Menu */
+  body.dark-theme .dropdown-menu-modern {
+    background: #1a1a1a !important;
+    border: 1px solid #333 !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5) !important;
+  }
+
+  body.dark-theme .dropdown-menu-modern .dropdown-item {
+    background: transparent !important;
+    color: #e4e4e4 !important;
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    transition: all 0.2s ease;
+  }
+
+  body.dark-theme .dropdown-menu-modern .dropdown-item:hover {
+    background: #2a2a2a !important;
+    color: #9d7dff !important;
+    padding-left: 1.2rem;
+  }
+
+  body.dark-theme .dropdown-menu-modern .dropdown-item i {
+    color: #9d7dff !important;
+  }
+
+  body.dark-theme .dropdown-menu-modern .dropdown-item.text-danger {
+    color: #ff6b7d !important;
+  }
+
+  body.dark-theme .dropdown-menu-modern .dropdown-item.text-danger:hover {
+    background: rgba(255, 0, 40, 0.15) !important;
+    color: #ff6b7d !important;
+  }
+
+  body.dark-theme .dropdown-menu-modern .dropdown-divider {
+    border-color: #333 !important;
+  }
+
+  /* Dark Mode Dropdown Toggle */
+  body.dark-theme .dropdown-toggle {
+    color: #ffffff !important;
+  }
+
+  body.dark-theme .dropdown-toggle:hover {
+    color: #9d7dff !important;
+  }
+
+  /* Dropdown Positioning Fix */
+  .dropdown-menu-modern {
+    border: none;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+    min-width: 200px;
+    transform: translateY(0);
+    animation: dropdownSlide 0.2s ease-out;
+  }
+
+  @keyframes dropdownSlide {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Dropdown Toggle Button Styling */
+  .nav-link.dropdown-toggle {
+    padding: 0.5rem !important;
+    margin: 0 !important;
+    border-radius: 50px !important;
+    transition: all 0.3s ease !important;
+    position: relative !important;
+  }
+
+  /* Dropdown Arrow Styling */
+  .nav-link.dropdown-toggle::after {
+    content: '' !important;
+    position: absolute !important;
+    right: auto !important;
+    left: 100% !important;
+    margin-left: 2px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    width: 0 !important;
+    height: 0 !important;
+    border-left: 6px solid transparent !important;
+    border-right: 6px solid transparent !important;
+    border-top: 6px solid currentColor !important;
+  }
+
+  .nav-link.dropdown-toggle:hover::after {
+    border-top-color: #667eea !important;
+  }
+
+  body.dark-theme .nav-link.dropdown-toggle:hover::after {
+    border-top-color: #9d7dff !important;
+  }
+
+  .nav-link.dropdown-toggle:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    transform: translateY(-1px) !important;
+  }
+
+  body.dark-theme .nav-link.dropdown-toggle:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+  }
+
+  /* Avatar Circle in Dropdown */
+  .avatar-circle {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    overflow: hidden;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+  }
+
+  .avatar-circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .nav-link.dropdown-toggle:hover .avatar-circle {
+    border-color: rgba(102, 126, 234, 0.3);
+    transform: scale(1.05);
+  }
+
+  body.dark-theme .nav-link.dropdown-toggle:hover .avatar-circle {
+    border-color: rgba(157, 125, 255, 0.3);
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    transition: all 0.3s ease;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+  }
+
+  .btn-outline-primary {
+    color: #667eea;
+    border-color: #667eea;
+    transition: all 0.3s ease;
+  }
+
+  .btn-outline-primary:hover {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: transparent;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+  }
+
+  /* Hide mobile elements on desktop */
+  .mobile-menu-sidebar,
+  .mobile-menu-overlay {
+    display: none;
+  }
+
+  /* ========== MOBILE STYLES (Redesigned & Fixed) ========== */
+  @media (max-width: 991px) {
+    /* Mobile sidebar */
+    .mobile-menu-sidebar {
+      display: block;
+      position: fixed;
+      top: 0;
+      right: -100%;
+      width: 85%;
+      max-width: 340px;
+      height: 100vh;
+      background: #ffffff;
+      box-shadow: -5px 0 30px rgba(0, 0, 0, 0.2);
+      transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 1200;
+      overflow-y: auto;
+    }
+
+    .mobile-menu-sidebar.active {
+      right: 0;
+    }
+
+    /* Overlay */
+    .mobile-menu-overlay {
+      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1100;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .mobile-menu-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Prevent body scroll when menu open */
+    body.menu-open {
+      overflow: hidden;
+    }
+
+    /* Mobile menu header */
+    .mobile-menu-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 1.5rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .mobile-menu-header h5 {
+      margin: 0;
+      font-size: 1.15rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+
+    .close-menu-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: white;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1.1rem;
+    }
+
+    .close-menu-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: rotate(90deg);
+    }
+
+    /* Mobile menu content */
+    .mobile-menu-content {
+      padding: 1.5rem;
+    }
+
+    /* User profile section */
+    .mobile-user-profile {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+    }
+
+    .mobile-user-profile .avatar-circle {
+      width: 50px;
+      height: 50px;
+      flex-shrink: 0;
+    }
+
+    .mobile-user-profile .user-info h6 {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .mobile-user-profile .user-role {
+      font-size: 0.85rem;
+      color: #64748b;
+      text-transform: capitalize;
+    }
+
+    /* Mobile nav list */
+    .mobile-nav-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      width: 100%;
+    }
+
+    .mobile-nav-list li {
+      margin-bottom: 0.25rem;
+    }
+
+    .mobile-nav-link {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem 1.5rem;
+      color: #1a202c;
+      text-decoration: none;
+      transition: all 0.2s;
+      position: relative;
+      border: 1px solid rgba(0,0,0,0.1);
+      border-radius: 8px;
+      margin: 4px 0;
+      background: #fff;
+    }
+
+    .mobile-nav-link.active {
+      color: #4f46e5;
+      background-color: #eef2ff;
+      font-weight: 500;
+      border-color: #c7d2fe;
+      box-shadow: 0 1px 3px rgba(79, 70, 229, 0.2);
+    }
+
+    .mobile-nav-link.active:before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background-color: #4f46e5;
+      border-radius: 0 4px 4px 0;
+    }
+
+    .mobile-nav-link:hover {
+      background: #f1f5f9;
+      color: #667eea;
+      padding-left: 1.2rem;
+      border-color: #cbd5e0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .mobile-nav-link i {
+      width: 22px;
+      text-align: center;
+      font-size: 1.05rem;
+      color: #667eea;
+    }
+
+    .mobile-nav-link.text-danger {
+      color: #ef4444;
+    }
+
+    .mobile-nav-link.text-danger:hover {
+      background: #fee2e2;
+    }
+
+    .mobile-nav-link.text-danger i {
+      color: #ef4444;
+    }
+
+    /* Mobile badge */
+    .mobile-badge {
+      background: #ef4444;
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 10px;
+      margin-left: auto;
+      min-width: 22px;
+      text-align: center;
+    }
+
+    /* Menu divider */
+    .mobile-menu-divider {
+      height: 1px;
+      background: #e2e8f0;
+      margin: 1.25rem 0;
+    }
+
+    /* Mobile auth buttons */
+    .mobile-auth-buttons {
+      padding-top: 0.5rem;
+    }
+
+    .mobile-auth-buttons .btn {
+      padding: 0.75rem 1rem;
+      font-size: 0.95rem;
+      font-weight: 500;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .mobile-auth-buttons .navbar-nav .nav-link {
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Scrollbar styling */
+    .mobile-menu-sidebar::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .mobile-menu-sidebar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .mobile-menu-sidebar::-webkit-scrollbar-thumb {
+      background: rgba(102, 126, 234, 0.3);
+      border-radius: 10px;
+    }
+
+    .mobile-menu-sidebar::-webkit-scrollbar-thumb:hover {
+      background: rgba(102, 126, 234, 0.5);
+    }
+
+    /* Dark Mode Mobile Sidebar */
+    body.dark-theme .mobile-menu-sidebar {
+      background: #1a1a1a !important;
+      box-shadow: -5px 0 30px rgba(0, 0, 0, 0.8) !important;
+    }
+
+    body.dark-theme .mobile-menu-header {
+      background: #0f0f0f !important;
+      border-bottom: 1px solid #333 !important;
+    }
+
+    body.dark-theme .mobile-menu-header h5 {
+      color: #ffffff !important;
+    }
+
+    body.dark-theme .close-menu-btn {
+      background: rgba(255, 255, 255, 0.1) !important;
+      color: #ffffff !important;
+      border-color: rgba(255, 255, 255, 0.2) !important;
+    }
+
+    body.dark-theme .close-menu-btn:hover {
+      background: rgba(255, 255, 255, 0.2) !important;
+      color: #ffffff !important;
+    }
+
+    body.dark-theme .mobile-user-profile {
+      background: #1f1f1f !important;
+      border: 1px solid #333 !important;
+    }
+
+    body.dark-theme .avatar-circle {
+      background: #2d2d2d !important;
+      border-color: #444 !important;
+    }
+
+    body.dark-theme .user-info h6 {
+      color: #ffffff !important;
+    }
+
+    body.dark-theme .user-role {
+      color: #bfbfbf !important;
+    }
+
+    body.dark-theme .mobile-nav-list {
+      background: #1a1a1a !important;
+    }
+
+    body.dark-theme .mobile-nav-link {
+      background: #1f1f1f !important;
+      color: #e4e4e4 !important;
+      border: 1px solid #333 !important;
+    }
+
+    body.dark-theme .mobile-nav-link:hover {
+      background: #2a2a2a !important;
+      color: #ffffff !important;
+      border-color: #444 !important;
+    }
+
+    /* Mobile Theme Toggle Button Styling */
+    #mobileThemeToggle.mobile-nav-link {
+      background: #ffffff !important;
+      border: 1px solid #e5e7eb !important;
+      color: #374151 !important;
+      margin: 0.5rem 1rem 0.5rem 0 !important;
+      border-radius: 8px !important;
+      transition: all 0.3s ease !important;
+    }
+
+    #mobileThemeToggle.mobile-nav-link:hover {
+      background: #f8fafc !important;
+      border-color: #d1d5db !important;
+      color: #111827 !important;
+      transform: translateY(-1px) !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    body.dark-theme #mobileThemeToggle.mobile-nav-link {
+      background: #1f1f1f !important;
+      border: 1px solid #333 !important;
+      color: #e4e4e4 !important;
+    }
+
+    body.dark-theme #mobileThemeToggle.mobile-nav-link:hover {
+      background: #2a2a2a !important;
+      border-color: #444 !important;
+      color: #ffffff !important;
+      transform: translateY(-1px) !important;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    body.dark-theme .mobile-menu-divider {
+      background: #333 !important;
+    }
+
+    body.dark-theme .mobile-auth-buttons .btn {
+      background: #1f1f1f !important;
+      border-color: #444 !important;
+      color: #e4e4e4 !important;
+    }
+
+    body.dark-theme .mobile-auth-buttons .btn:hover {
+      background: #2a2a2a !important;
+      color: #ffffff !important;
+    }
+
+    body.dark-theme .mobile-menu-sidebar::-webkit-scrollbar-track {
+      background: #1a1a1a !important;
+    }
+
+    body.dark-theme .mobile-menu-sidebar::-webkit-scrollbar-thumb {
+      background: rgba(124, 91, 255, 0.3) !important;
+    }
+
+    body.dark-theme .mobile-menu-sidebar::-webkit-scrollbar-thumb:hover {
+      background: rgba(124, 91, 255, 0.5) !important;
+    }
+  }
+
+  /* Smaller phones */
+  @media (max-width: 575px) {
+    .mobile-menu-sidebar {
+      width: 90%;
+    }
+
+    .mobile-menu-header {
+      padding: 1rem 1.25rem;
+    }
+
+    .mobile-menu-content {
+      padding: 1.25rem;
+    }
+
+    .mobile-nav-link {
+      font-size: 0.9rem;
+      padding: 0.8rem 0.9rem;
+    }
+  }
+</style>
+  
+<!-- Navbar JavaScript -->
+<script>
+  // Add active class to current nav link
+  document.addEventListener('DOMContentLoaded', function() {
+    // Get current URL path
+    const currentPath = window.location.pathname;
+    
+    // Find all nav links
+    const navLinks = document.querySelectorAll('.nav-link');
+    
+    // Add active class to matching link
+    navLinks.forEach(link => {
+      const linkPath = new URL(link.href).pathname;
+      
+      // Exact match for root path
+      if (currentPath === linkPath) {
+        link.classList.add('active');
+        link.closest('.nav-item')?.classList.add('active');
+      }
+      // Special handling for course-related paths
+      else if (linkPath === '/courses') {
+        // Activate "Courses" link for all course pages except instructor/student dashboards
+        if (currentPath.startsWith('/courses') && 
+            !currentPath.startsWith('/courses/instructor/dashboard') && 
+            !currentPath.startsWith('/courses/student/dashboard')) {
+          link.classList.add('active');
+          link.closest('.nav-item')?.classList.add('active');
+        }
+      }
+      // Instructor dashboard paths
+      else if (linkPath === '/courses/instructor/dashboard' && currentPath.startsWith('/courses/instructor/dashboard')) {
+        link.classList.add('active');
+        link.closest('.nav-item')?.classList.add('active');
+      }
+      // Student dashboard paths
+      else if (linkPath === '/courses/student/dashboard' && currentPath.startsWith('/courses/student/dashboard')) {
+        link.classList.add('active');
+        link.closest('.nav-item')?.classList.add('active');
+      }
+      // Other nested routes (but not course-related)
+      else if (linkPath !== '/' && linkPath !== '/courses' && currentPath.startsWith(linkPath)) {
+        link.classList.add('active');
+        link.closest('.nav-item')?.classList.add('active');
+      }
+    });
+    const mobileToggler = document.getElementById('mobileMenuToggler');
+    const mobileSidebar = document.getElementById('mobileSidebar');
+    const mobileOverlay = document.getElementById('mobileOverlay');
+    const closeBtn = document.getElementById('closeMobileMenu');
+    const body = document.body;
+    
+    function openMobileMenu() {
+      mobileSidebar.classList.add('active');
+      mobileOverlay.classList.add('active');
+      body.classList.add('menu-open');
+    }
+
+    function closeMobileMenu() {
+      mobileSidebar.classList.remove('active');
+      mobileOverlay.classList.remove('active');
+      body.classList.remove('menu-open');
+    }
+
+    // Open menu
+    if (mobileToggler) {
+      mobileToggler.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        openMobileMenu();
+      });
+    }
+
+    // Close menu with close button
+    if (closeBtn) {
+      closeBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        closeMobileMenu();
+      });
+    }
+
+    // Close menu when clicking overlay
+    if (mobileOverlay) {
+      mobileOverlay.addEventListener('click', function() {
+        closeMobileMenu();
+      });
+    }
+
+    // Close menu when clicking nav links
+    document.querySelectorAll('.mobile-nav-link').forEach(link => {
+      link.addEventListener('click', function() {
+        // Small delay to allow navigation
+        setTimeout(closeMobileMenu, 100);
+      });
+    });
+
+    // Close menu when clicking auth buttons
+    document.querySelectorAll('.mobile-auth-buttons .btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        setTimeout(closeMobileMenu, 100);
+      });
+    });
+
+    // Handle window resize
+    window.addEventListener('resize', function() {
+      if (window.innerWidth >= 992 && body.classList.contains('menu-open')) {
+        closeMobileMenu();
+      }
+    });
+
+    // Navbar scroll effect
+    const navbar = document.getElementById('mainNavbar');
+    if (navbar) {
+      function updateNavbar() {
+        if (window.scrollY > 50) {
+          navbar.classList.add('navbar-scrolled');
+        } else {
+          navbar.classList.remove('navbar-scrolled');
+        }
+      }
+      
+      updateNavbar();
+      window.addEventListener('scroll', updateNavbar);
+    }
+
+    // Theme Toggle Functionality (Dropdown + Mobile)
+    const themeToggles = document.querySelectorAll('#themeToggle, #mobileThemeToggle');
+    
+    themeToggles.forEach(themeToggle => {
+      if (themeToggle) {
+        themeToggle.addEventListener('click', () => {
+          document.body.classList.toggle('dark-theme');
+          
+          // Update all theme toggle icons
+          const allThemeIcons = document.querySelectorAll('#themeToggle i, #mobileThemeToggle i');
+          
+          if (document.body.classList.contains('dark-theme')) {
+            // Switch to dark mode
+            localStorage.setItem('theme', 'dark');
+            allThemeIcons.forEach(icon => {
+              icon.classList.replace('fa-moon', 'fa-sun');
+            });
+            // Update button text
+            document.querySelectorAll('#themeToggle').forEach(btn => {
+              btn.innerHTML = '<i class="fa-solid fa-sun me-2"></i> Light Mode';
+            });
+            document.querySelectorAll('#mobileThemeToggle').forEach(btn => {
+              btn.innerHTML = '<i class="fa-solid fa-sun"></i> Light Mode';
+            });
+          } else {
+            // Switch to light mode
+            localStorage.setItem('theme', 'light');
+            allThemeIcons.forEach(icon => {
+              icon.classList.replace('fa-sun', 'fa-moon');
+            });
+            // Update button text
+            document.querySelectorAll('#themeToggle').forEach(btn => {
+              btn.innerHTML = '<i class="fa-solid fa-moon me-2"></i> Dark Mode';
+            });
+            document.querySelectorAll('#mobileThemeToggle').forEach(btn => {
+              btn.innerHTML = '<i class="fa-solid fa-moon"></i> Dark Mode';
+            });
+          }
+        });
+      }
+    });
+    
+    // Initialize theme on page load
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      document.body.classList.add('dark-theme');
+      // Update all theme toggle icons and text for dark mode
+      document.querySelectorAll('#themeToggle i, #mobileThemeToggle i').forEach(icon => {
+        icon.classList.replace('fa-moon', 'fa-sun');
+      });
+      document.querySelectorAll('#themeToggle').forEach(btn => {
+        btn.innerHTML = '<i class="fa-solid fa-sun me-2"></i> Light Mode';
+      });
+      document.querySelectorAll('#mobileThemeToggle').forEach(btn => {
+        btn.innerHTML = '<i class="fa-solid fa-sun"></i> Light Mode';
+      });
+    }
+  });
+</script>

@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head') %>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="modern-body">
+  <%- include('../partials/navbar') %>
+
+
+  <!-- Hero Header -->
+  <!-- Flash Messages -->
+  <div class="flash-messages" style="position: fixed; top: 100px; left: 50%; transform: translateX(-50%); z-index: 9999; width: auto; max-width: 500px; min-width: 300px; padding: 0 15px;">
+    <% if (success_msg && success_msg.length > 0) { %>
+      <% (Array.isArray(success_msg) ? success_msg : [success_msg]).forEach(function(msg) { %>
+        <% if (msg && typeof msg === 'string' && msg.trim() !== '') { %>
+          <div class="alert alert-success alert-dismissible fade show m-0 rounded-0" role="alert" style="border-radius: 0 !important;">
+            <div class="container d-flex justify-content-between align-items-center">
+              <div>
+                <i class="fas fa-check-circle me-2"></i>
+                <%= msg %>
+              </div>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          </div>
+        <% } %>
+      <% }); %>
+    <% } %>
+    
+    <% if (error_msg && error_msg.length > 0) { %>
+      <% (Array.isArray(error_msg) ? error_msg : [error_msg]).forEach(function(msg) { %>
+        <% if (msg && typeof msg === 'string' && msg.trim() !== '') { %>
+          <div class="alert alert-danger alert-dismissible fade show m-0 rounded-0" role="alert" style="border-radius: 0 !important;">
+            <div class="container d-flex justify-content-between align-items-center">
+              <div>
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <%= msg %>
+              </div>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          </div>
+        <% } %>
+      <% }); %>
+    <% } %>
+  </div>
+
+  <section class="hero-section">
+    <div class="container">
+      <div class="hero-content" style="padding-top: 20px;">
+        <div class="hero-icon">
+          <i class="fas fa-chalkboard-teacher"></i>
+        </div>
+        <h1 class="hero-title">Instructor Studio</h1>
+        <p class="hero-subtitle">Create, manage, and inspire the next generation of learners</p>
+        
+        <a href="/courses/instructor/create" class="btn-create">
+          <i class="fas fa-plus-circle"></i>
+          <span>Create New Course</span>
+        </a>
+
+        <div class="stats-row">
+          <div class="stat-card">
+            <i class="fas fa-layer-group"></i>
+            <div>
+              <div class="stat-number"><%= courses.length %></div>
+              <div class="stat-label">Total Courses</div>
+            </div>
+          </div>
+          <a href="/courses/instructor/earnings" class="stat-card" style="text-decoration: none; color: inherit;">
+            <i class="fas fa-chart-line"></i>
+            <div>
+              <div class="stat-number">Earnings</div>
+              <div class="stat-label">View Analytics <i class="fas fa-arrow-right"></i></div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- My Courses -->
+  <section class="courses-section">
+    <div class="container">
+      <% if (courses.length === 0) { %>
+        <div class="empty-state">
+          <div class="empty-icon">
+            <i class="fas fa-video"></i>
+          </div>
+          <h3>Start Teaching Today</h3>
+          <p>You haven't created any courses yet. Share your knowledge with the world!</p>
+          <a href="/courses/instructor/create" class="btn-modern">
+            <i class="fas fa-plus-circle me-2"></i>Create Your First Course
+          </a>
+        </div>
+      <% } else { %>
+        <div class="section-header">
+          <h2><i class="fas fa-layer-group me-2"></i>My Courses</h2>
+          <p>Manage and update your course content</p>
+        </div>
+
+        <div class="courses-grid">
+          <% courses.forEach(course => { %>
+            <div class="course-card">
+              <div class="course-image-wrapper">
+                <img src="<%= course.thumbnail.url %>" class="course-image" alt="<%= course.title %>">
+                <div class="course-overlay">
+                  <div class="instructor-badge">
+                    <i class="fas fa-crown"></i>
+                    <span>Your Course</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="course-content">
+                <h3 class="course-title"><%= course.title %></h3>
+                
+                <div class="course-meta">
+                  <div class="meta-item">
+                    <i class="fas fa-calendar"></i>
+                    <span><%= course.createdAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %></span>
+                  </div>
+                  <div class="meta-item price">
+                    <i class="fas fa-tag"></i>
+                    <span>₹<%= course.price %></span>
+                  </div>
+                </div>
+
+                <div class="actions-grid">
+                  <div class="d-flex flex-wrap gap-2">
+                    <a href="/upload/<%= course._id %>" class="action-btn upload flex-grow-1">
+                      <i class="fas fa-cloud-upload-alt"></i>
+                      <span data-loading-text="Uploading...">Upload</span>
+                    </a>
+                    
+                    <a href="/courses/instructor/edit/<%= course._id %>" class="action-btn edit flex-grow-1">
+                      <i class="fas fa-edit"></i>
+                      <span data-loading-text="Editing...">Edit</span>
+                    </a>
+                  </div>
+                  
+                  <a href="/courses/<%= course.slug %>" class="action-btn view w-100 mt-2">
+                    <i class="fas fa-eye"></i>
+                    <span>View Course</span>
+                  </a>
+                  <!-- <button type="button" class="action-btn delete" 
+                          onclick="deleteCourse('<%= course._id %>', this)">
+                    <i class="fas fa-trash-alt"></i>
+                    <span>Delete</span>
+                  </button> -->
+                </div>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      <% } %>
+    </div>
+  </section>
+
+  <%- include('../partials/footer') %>
+  
+  <!-- Include the delete modal -->
+  <%- include('../partials/delete_modal') %>
+
+  <script>
+    // Helper function to show alerts
+    function showAlert(type, message) {
+      const alertDiv = document.createElement('div');
+      alertDiv.className = `alert alert-${type} mt-3 mb-0`;
+      alertDiv.role = 'alert';
+      alertDiv.innerHTML = message;
+      
+      const container = document.querySelector('.courses-section .container') || document.body;
+      container.prepend(alertDiv);
+      
+      // Auto-remove after 5 seconds
+      setTimeout(() => {
+        alertDiv.style.transition = 'opacity 0.5s';
+        alertDiv.style.opacity = '0';
+        setTimeout(() => alertDiv.remove(), 500);
+      }, 5000);
+      
+      return alertDiv;
+    }
+    
+    // Delete course function
+    function deleteCourse(courseId, button) {
+      const modal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+      const confirmBtn = document.getElementById('confirmDeleteBtn');
+      const originalHandler = confirmBtn.onclick;
+      
+      confirmBtn.onclick = async function() {
+        try {
+          const response = await fetch(`/courses/instructor/delete/${courseId}`, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Requested-With': 'XMLHttpRequest' // Add this header
+            },
+            credentials: 'same-origin' // Ensure cookies are sent with the request
+          });
+          
+          const contentType = response.headers.get('content-type');
+          
+          if (contentType && contentType.includes('application/json')) {
+            const data = await response.json();
+            
+            if (!response.ok) {
+              throw new Error(data.message || `Server responded with status ${response.status}`);
+            }
+            
+            // Success - remove the course card with animation
+            const card = button.closest('.course-card');
+            if (card) {
+              card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+              card.style.opacity = '0';
+              card.style.transform = 'scale(0.95)';
+              
+              setTimeout(() => {
+                card.remove();
+                showAlert('success', '✅ Course deleted successfully!');
+              }, 300);
+            } else {
+              showAlert('success', '✅ Course deleted successfully!');
+              // If card wasn't found, just reload the page to be safe
+              setTimeout(() => window.location.reload(), 1000);
+            }
+            
+          } else if (response.redirected) {
+            window.location.href = response.url;
+            return;
+          } else {
+            throw new Error('Invalid response from server');
+          }
+          
+        } catch (error) {
+          // If we get a 401 or 403, redirect to login
+          if (error.message.includes('401') || error.message.includes('403')) {
+            window.location.href = '/users/login';
+            return;
+          }
+          showAlert('danger', `❌ Error: ${error.message || 'Failed to delete course'}`);
+        } finally {
+          // Clean up the handler
+          confirmBtn.onclick = originalHandler;
+          modal.hide();
+        }
+      };
+      
+      // Show the modal
+      modal.show();
+    }
+  </script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    .modern-body {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      color: #f8fafc;
+    }
+
+    /* Hero Section */
+    .hero-section {
+      background: radial-gradient(ellipse at top right, #10b981 0%, #059669 25%, #047857 50%, #065f46 100%);
+      padding: 4rem 0 5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.15) 0%, transparent 50%),
+                  url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      opacity: 0.6;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+
+    .hero-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 1.5rem;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      color: #fff;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .hero-title {
+      font-size: 3rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.02em;
+    }
+
+    .hero-subtitle {
+      font-size: 1.25rem;
+      color: rgba(255, 255, 255, 0.9);
+      margin-bottom: 2rem;
+    }
+
+    .btn-create {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem 2.5rem;
+      background: #fff;
+      color: #059669;
+      text-decoration: none;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-create:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+      background: #f0fdf4;
+    }
+
+    .stats-row {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-top: 2.5rem;
+    }
+
+    .stat-card {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 1.5rem 2rem;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .stat-card i {
+      font-size: 2rem;
+      color: #fff;
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .stat-label {
+      font-size: 0.875rem;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    /* Courses Section */
+    .courses-section {
+      padding: 4rem 0;
+      position: relative;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .section-header h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #f8fafc;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-header p {
+      color: #94a3b8;
+      font-size: 1.1rem;
+    }
+
+    .courses-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 2rem;
+    }
+
+    .course-card {
+      background: #1e293b;
+      border-radius: 20px;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .course-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      border-color: rgba(16, 185, 129, 0.3);
+    }
+
+    .course-image-wrapper {
+      position: relative;
+      overflow: hidden;
+      height: 220px;
+    }
+
+    .course-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+
+    .course-card:hover .course-image {
+      transform: scale(1.1);
+    }
+
+    .course-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.1), rgba(0,0,0,0.6));
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-end;
+      padding: 1rem;
+    }
+
+    .instructor-badge {
+      background: rgba(245, 158, 11, 0.95);
+      backdrop-filter: blur(8px);
+      padding: 0.5rem 1rem;
+      border-radius: 50px;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: #fff;
+    }
+
+    .course-content {
+      padding: 1.5rem;
+    }
+
+    .course-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #f8fafc;
+      margin-bottom: 1rem;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .course-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #94a3b8;
+      font-size: 0.875rem;
+    }
+
+    .meta-item i {
+      color: #10b981;
+    }
+
+    .meta-item.price {
+      font-weight: 700;
+      font-size: 1rem;
+      color: #10b981;
+    }
+
+    .actions-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      width: 100%;
+    }
+
+    .delete-form {
+      display: contents;
+    }
+
+    .action-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.875rem;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: #334155;
+      color: #fff;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .action-btn.view {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+    }
+
+    .action-btn.view:hover {
+      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+    }
+
+    .action-btn.upload {
+      background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .action-btn.upload:hover {
+      box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+    }
+
+    .action-btn.edit {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+
+    .action-btn.edit:hover {
+      box-shadow: 0 8px 20px rgba(245, 158, 11, 0.4);
+    }
+
+    .action-btn.delete {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      width: 100%;
+    }
+
+    .action-btn.delete:hover {
+      box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: #1e293b;
+      border-radius: 20px;
+      border: 2px dashed rgba(255, 255, 255, 0.1);
+    }
+
+    .empty-icon {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 1.5rem;
+      background: linear-gradient(135deg, #10b981, #059669);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      color: #fff;
+    }
+
+    .empty-state h3 {
+      font-size: 1.75rem;
+      color: #f8fafc;
+      margin-bottom: 0.75rem;
+    }
+
+    .empty-state p {
+      color: #94a3b8;
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .btn-modern {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.875rem 2rem;
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 50px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      border: none;
+    }
+
+    .btn-modern:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero-title {
+        font-size: 2rem;
+      }
+
+      .hero-subtitle {
+        font-size: 1rem;
+      }
+
+      .courses-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stat-card {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .actions-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* 🌙 DARK MODE STYLING FOR INSTRUCTOR DASHBOARD */
+    body.dark-theme {
+      background: #0e0e0e !important;
+      color: #e6e6e6 !important;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    /* Dark Hero Section */
+    body.dark-theme .hero-section {
+      background: radial-gradient(ellipse at top right, #1a1a2e 0%, #16213e 25%, #0f3460 50%, #000000 100%) !important;
+      position: relative;
+    }
+
+    body.dark-theme .hero-section::before {
+      background: radial-gradient(circle at 20% 80%, rgba(157, 125, 255, 0.1) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 20%, rgba(255, 113, 200, 0.1) 0%, transparent 50%),
+                  url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    body.dark-theme .hero-title {
+      color: #ffffff !important;
+      font-weight: 900;
+      background: linear-gradient(135deg, #9d7dff 0%, #ff71c8 50%, #ffd86b 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 1px;
+      text-shadow: 0 0 30px rgba(146, 110, 255, 0.4);
+    }
+
+    body.dark-theme .hero-subtitle {
+      color: #dcdcdc !important;
+      text-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+
+    body.dark-theme .hero-icon {
+      background: rgba(255, 255, 255, 0.1) !important;
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    body.dark-theme .btn-create {
+      background: linear-gradient(135deg, #9d7dff, #ff71c8) !important;
+      box-shadow: 0 0 20px rgba(255, 113, 200, 0.4) !important;
+      color: #fff !important;
+    }
+
+    body.dark-theme .btn-create:hover {
+      background: linear-gradient(135deg, #7c5bff, #ff51c8) !important;
+      box-shadow: 0 0 40px rgba(255, 113, 200, 0.65) !important;
+    }
+
+    /* Dark Stats */
+    body.dark-theme .stat-card {
+      background: rgba(255, 255, 255, 0.1) !important;
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    body.dark-theme .stat-card:hover {
+      box-shadow: 0 0 30px rgba(124, 91, 255, 0.3) !important;
+    }
+
+    body.dark-theme .stat-number {
+      color: #ffffff !important;
+      background: none !important;
+      -webkit-text-fill-color: #ffffff !important;
+      text-shadow: 0 0 20px rgba(124, 91, 255, 0.5);
+    }
+
+    body.dark-theme .stat-label {
+      color: #bfbfbf !important;
+    }
+
+    /* Dark Courses Section */
+    body.dark-theme .courses-section {
+      background: #111 !important;
+    }
+
+    body.dark-theme .section-header h2 {
+      color: #ffffff !important;
+      font-weight: 800;
+      background: linear-gradient(135deg, #9d7dff, #ff71c8, #ffd86b);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 35px rgba(146, 110, 255, 0.25);
+    }
+
+    body.dark-theme .section-header p {
+      color: #bfbfbf !important;
+      text-shadow: 0 0 20px rgba(0,0,0,0.4);
+    }
+
+    /* Dark Course Cards */
+    body.dark-theme .course-card {
+      background: #1c1c1c !important;
+      border-color: #333 !important;
+      box-shadow: 0 5px 25px rgba(0,0,0,0.5) !important;
+    }
+
+    body.dark-theme .course-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 0 30px rgba(124, 91, 255, 0.3) !important;
+    }
+
+    body.dark-theme .course-title {
+      color: #ffffff !important;
+    }
+
+    body.dark-theme .course-meta {
+      color: #bfbfbf !important;
+    }
+
+    body.dark-theme .course-meta span {
+      color: #bfbfbf !important;
+    }
+
+    body.dark-theme .course-meta i {
+      color: #9b87ff !important;
+    }
+
+    /* Dark Action Buttons */
+    body.dark-theme .action-btn.view {
+      background: linear-gradient(135deg, #9d7dff, #ff71c8) !important;
+    }
+
+    body.dark-theme .action-btn.view:hover {
+      box-shadow: 0 8px 20px rgba(157, 125, 255, 0.4) !important;
+    }
+
+    body.dark-theme .action-btn.upload {
+      background: linear-gradient(135deg, #4ade80, #22c55e) !important;
+    }
+
+    body.dark-theme .action-btn.upload:hover {
+      box-shadow: 0 8px 20px rgba(74, 222, 128, 0.4) !important;
+    }
+
+    body.dark-theme .action-btn.edit {
+      background: linear-gradient(135deg, #fbbf24, #f59e0b) !important;
+    }
+
+    body.dark-theme .action-btn.edit:hover {
+      box-shadow: 0 8px 20px rgba(251, 191, 36, 0.4) !important;
+    }
+
+    body.dark-theme .action-btn.delete {
+      background: linear-gradient(135deg, #f87171, #ef4444) !important;
+    }
+
+    body.dark-theme .action-btn.delete:hover {
+      box-shadow: 0 8px 20px rgba(248, 113, 113, 0.4) !important;
+    }
+
+    /* Dark Empty State */
+    body.dark-theme .empty-state {
+      background: #1a1a1a !important;
+      border-color: #333 !important;
+    }
+
+    body.dark-theme .empty-icon {
+      background: linear-gradient(135deg, #9d7dff, #ff71c8) !important;
+    }
+
+    body.dark-theme .empty-state h3 {
+      color: #ffffff !important;
+    }
+
+    body.dark-theme .empty-state p {
+      color: #bfbfbf !important;
+    }
+
+    body.dark-theme .btn-modern {
+      background: linear-gradient(135deg, #9d7dff, #ff71c8) !important;
+      box-shadow: 0 0 20px rgba(255, 113, 200, 0.4) !important;
+    }
+
+    body.dark-theme .btn-modern:hover {
+      box-shadow: 0 0 40px rgba(255, 113, 200, 0.65) !important;
+    }
+
+    /* Dark Alert Messages */
+    body.dark-theme .alert {
+      background: #1a1a1a !important;
+      border-color: #333 !important;
+      color: #e6e6e6 !important;
+    }
+
+    body.dark-theme .alert-success {
+      background: rgba(34, 197, 94, 0.1) !important;
+      border-color: rgba(34, 197, 94, 0.3) !important;
+      color: #4ade80 !important;
+    }
+
+    body.dark-theme .alert-danger {
+      background: rgba(239, 68, 68, 0.1) !important;
+      border-color: rgba(239, 68, 68, 0.3) !important;
+      color: #f87171 !important;
+    }
+
+    /* Light Mode - Dark Courses Section (like student dashboard) */
+    body:not(.dark-theme) .courses-section {
+      background: #0f0f0f !important;
+    }
+
+    body:not(.dark-theme) .section-header h2 {
+      color: #ffffff !important;
+      font-weight: 800;
+      background: linear-gradient(135deg, #9d7dff, #ff71c8, #ffd86b);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 35px rgba(146, 110, 255, 0.25);
+    }
+
+    body:not(.dark-theme) .section-header p {
+      color: #bfbfbf !important;
+    }
+  </style>
+</body>
+</html>
